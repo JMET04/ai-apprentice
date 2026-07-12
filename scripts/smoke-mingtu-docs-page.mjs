@@ -33,6 +33,7 @@ try {
       heroBottom: document.querySelector(".hero")?.getBoundingClientRect().bottom,
       viewportHeight: innerHeight,
       brokenImages: [...document.images].filter((image) => !image.complete || image.naturalWidth === 0).map((image) => image.src),
+      parentRelativeLinks: [...document.querySelectorAll("a[href]")].map((link) => link.getAttribute("href")).filter((href) => href?.startsWith("../")),
       h1: document.querySelector("h1")?.textContent?.trim(),
       workflowItems: document.querySelectorAll(".workflow-list li").length,
       capabilityRows: document.querySelectorAll(".capability-table .table-row").length
@@ -41,7 +42,7 @@ try {
     await page.screenshot({ path: screenshot, fullPage: true });
     checks.push({
       name: `${viewport.name} docs page is complete and does not overflow`,
-      pass: metrics.bodyWidth <= metrics.viewportWidth + 1 && metrics.heroBottom < metrics.viewportHeight && metrics.brokenImages.length === 0 && metrics.h1 === "明徒 AI" && metrics.workflowItems === 8 && metrics.capabilityRows >= 7 && errors.length === 0,
+      pass: metrics.bodyWidth <= metrics.viewportWidth + 1 && metrics.heroBottom < metrics.viewportHeight && metrics.brokenImages.length === 0 && metrics.parentRelativeLinks.length === 0 && metrics.h1 === "明徒 AI" && metrics.workflowItems === 8 && metrics.capabilityRows >= 7 && errors.length === 0,
       evidence: { screenshot, metrics, errors }
     });
     await page.close();
