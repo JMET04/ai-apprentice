@@ -20,6 +20,14 @@ The loop is:
 7. Keep new rules disabled until the teacher explicitly accepts or enables them.
 8. Re-run or replay the task with the reviewed memory to prove improvement.
 
+## Human Communication Contract
+
+Apply the bundled `warm-human-communication` skill to every user-facing reply. Answer the teacher's exact last sentence first, then give the useful action, evidence, or smallest necessary question. Keep technical structure when it helps scanning, but do not turn corrections, frustration, failures, or tone feedback into customer-service scripts, changelogs, or therapy-style intake language.
+
+For substantial, ambiguous, emotionally loaded, or tone-repair replies, use `compile_human_communication_guidance` or `scripts/compile-human-communication-guidance.mjs` before drafting. Use `check_human_communication_style` or `scripts/check-human-communication-style.mjs` before sending sensitive or tone-repair copy. A teacher correction should sound like a real acknowledgement of the exact miss and immediately change the next action; do not reply with "已同步规则如下".
+
+Natural voice must never weaken truth or safety. Do not invent human biography, claim exclusive understanding, encourage emotional dependency, manipulate the teacher, or use closeness to bypass evidence, review, memory, execution, or packaging gates.
+
 ## Feasibility-First Tool Reuse
 
 During early development, optimize for proving that teach-by-demonstration works. Reuse existing tools whenever practical instead of building custom software first.

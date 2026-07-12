@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mingtu.local/schemas/human-communication-guidance.schema.json",
+  "title": "MingTu Human Communication Guidance",
+  "type": "object",
+  "required": [
+    "format",
+    "version",
+    "sourceThreadId",
+    "context",
+    "userSignal",
+    "responsePlan",
+    "requiredBehaviors",
+    "avoidPatterns",
+    "reviewChecklist",
+    "locks",
+    "readyForResponse"
+  ],
+  "properties": {
+    "format": { "const": "mingtu_human_communication_guidance_v1" },
+    "version": { "const": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "sourceThreadId": { "const": "019ef3df-9927-7363-9036-7e68d06c7809" },
+    "context": {
+      "enum": ["clarification", "correction", "failure", "success", "status", "technical", "emotional", "casual"]
+    },
+    "userSignal": {
+      "type": "object",
+      "required": ["message", "frustration", "emotion", "urgency", "toneRepair"],
+      "properties": {
+        "message": { "type": "string", "minLength": 1 },
+        "frustration": { "type": "boolean" },
+        "emotion": { "type": "boolean" },
+        "urgency": { "type": "boolean" },
+        "toneRepair": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "responsePlan": {
+      "type": "object",
+      "required": ["firstMove", "directness", "warmth", "structure", "humor", "questionPolicy", "endingPolicy"],
+      "properties": {
+        "firstMove": { "type": "string", "minLength": 1 },
+        "directness": { "enum": ["high", "balanced"] },
+        "warmth": { "enum": ["light", "grounded", "high_but_specific"] },
+        "structure": { "enum": ["plain", "compact", "scan_friendly"] },
+        "humor": { "enum": ["avoid", "only_if_user_invites", "light_if_natural"] },
+        "questionPolicy": { "type": "string", "minLength": 1 },
+        "endingPolicy": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "requiredBehaviors": { "type": "array", "items": { "type": "string" }, "minItems": 3 },
+    "avoidPatterns": { "type": "array", "items": { "type": "string" }, "minItems": 3 },
+    "reviewChecklist": { "type": "array", "items": { "type": "string" }, "minItems": 3 },
+    "locks": {
+      "type": "object",
+      "required": [
+        "pretendsToBeHuman",
+        "fabricatesBiography",
+        "encouragesExclusiveAttachment",
+        "encouragesDependency",
+        "usesManipulation",
+        "usesSycophancy",
+        "weakensEvidenceOrSafety"
+      ],
+      "properties": {
+        "pretendsToBeHuman": { "const": false },
+        "fabricatesBiography": { "const": false },
+        "encouragesExclusiveAttachment": { "const": false },
+        "encouragesDependency": { "const": false },
+        "usesManipulation": { "const": false },
+        "usesSycophancy": { "const": false },
+        "weakensEvidenceOrSafety": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "readyForResponse": { "const": true },
+    "outputPath": { "type": "string" }
+  },
+  "additionalProperties": false
+}

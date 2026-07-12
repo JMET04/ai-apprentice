@@ -45,6 +45,40 @@ function mergeGeneratedPacket(result, pathKey) {
 
 const tools = [
   {
+    name: "compile_human_communication_guidance",
+    description: "Compile context-aware guidance for a natural, direct, warm, and honest user-facing reply without writing or sending the reply.",
+    inputSchema: {
+      type: "object",
+      required: ["message"],
+      properties: {
+        message: { type: "string", description: "The user's latest message." },
+        context: {
+          type: "string",
+          enum: ["auto", "clarification", "correction", "failure", "success", "status", "technical", "emotional", "casual"],
+          description: "Conversation context; auto infers it from the message."
+        },
+        preferredTone: { type: "string", description: "Optional user tone preference, without role-play or false identity." },
+        outDir: { type: "string", description: "Optional directory for a durable guidance packet." }
+      }
+    }
+  },
+  {
+    name: "check_human_communication_style",
+    description: "Check a draft reply for canned service language, process narration, false human claims, dependency cues, sycophancy, and context-specific AI-writing patterns.",
+    inputSchema: {
+      type: "object",
+      required: ["text"],
+      properties: {
+        text: { type: "string", description: "Draft user-facing reply to check." },
+        context: {
+          type: "string",
+          enum: ["clarification", "correction", "failure", "success", "status", "technical", "emotional", "casual"],
+          description: "Context used to avoid applying emotional-style rules to technical status reports."
+        }
+      }
+    }
+  },
+  {
     name: "create_plugin_health_index",
     description: "Create a review-only maintainer index for the plugin surface: manifest, MCP tools, skill, scripts, package commands, and fast verification routes.",
     inputSchema: {
@@ -23578,6 +23612,20 @@ function teachApprenticeCard(raw) {
 }
 
 async function callTool(name, input = {}) {
+  if (name === "compile_human_communication_guidance") {
+    const args = ["--message", input.message];
+    if (input.context) args.push("--context", input.context);
+    if (input.preferredTone) args.push("--preferred-tone", input.preferredTone);
+    if (input.outDir) args.push("--out-dir", input.outDir);
+    return textContent(runNodeScript("compile-human-communication-guidance.mjs", args));
+  }
+
+  if (name === "check_human_communication_style") {
+    const args = ["--text", input.text];
+    if (input.context) args.push("--context", input.context);
+    return textContent(runNodeScript("check-human-communication-style.mjs", args));
+  }
+
   if (name === "create_plugin_health_index") {
     const args = [];
     if (input.goal) args.push("--goal", input.goal);

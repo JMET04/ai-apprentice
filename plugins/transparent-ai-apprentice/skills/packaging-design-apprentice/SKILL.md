@@ -7,6 +7,10 @@ description: Use when the user asks MingTu AI to design packaging, generate a pa
 
 Use this skill for packaging design work. The workflow is deliberately staged; never skip directly from a request or Image2 sample to final delivery or CAD.
 
+## Teacher Communication
+
+Use the bundled `warm-human-communication` skill throughout this workflow. During clarification, say what is already understood and ask only the smallest missing data group that blocks safe design. During failure, name the failed stage, preserve any intact sample or mask, and give the smallest recovery step. During correction, acknowledge the exact region or engineering boundary that was misread and apply it without changelog or customer-service language. Keep manufacturing risks and review gates explicit even when the tone is warm.
+
 ## Required Sequence
 
 1. **Clarify requirements.** Ask for the product type, packaging/box type, confirmed internal or product dimensions (`L x W x H` plus unit), material/thickness, weight and transport needs, closure, printing/finish, references, and required output formats. Ask only the smallest useful set of questions at once. Never invent a missing consequential dimension.

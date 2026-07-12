@@ -12,10 +12,14 @@ const requiredFiles = [
   "TLCL_OVERALL_DIRECTION.md",
   "FULL_TARGET_DIRECTION_AND_TASK_LIST.md",
   "skills/teachable-apprentice/SKILL.md",
+  "skills/warm-human-communication/SKILL.md",
+  "skills/warm-human-communication/references/human-voice-contract.md",
+  "skills/warm-human-communication/agents/openai.yaml",
   "skills/image2-prompt-optimizer/SKILL.md",
   "skills/image2-prompt-optimizer/references/initial-generation-contract.md",
   "skills/packaging-design-apprentice/SKILL.md",
   "schemas/image2-initial-prompt-guidance.schema.json",
+  "schemas/human-communication-guidance.schema.json",
   "schemas/packaging-design-session.schema.json",
   "schemas/aicad-packaging-handoff.schema.json",
   "scripts/packaging-design-workflow.mjs",
@@ -23,6 +27,9 @@ const requiredFiles = [
   "scripts/compile-image2-initial-prompt.mjs",
   "scripts/search-image2-prompt-library.py",
   "scripts/smoke-image2-prompt-optimizer.mjs",
+  "scripts/compile-human-communication-guidance.mjs",
+  "scripts/check-human-communication-style.mjs",
+  "scripts/smoke-human-communication.mjs",
   "schemas/mingtu-aicad-request-v1.schema.json",
   "schemas/mingtu-aicad-result-v1.schema.json",
   "scripts/aicad-handoff-adapter.mjs",
@@ -894,6 +901,15 @@ const tlclOverallDirectionText = readFileSync(join(pluginRoot, "TLCL_OVERALL_DIR
 const fullTargetDirectionTaskListText = readFileSync(join(pluginRoot, "FULL_TARGET_DIRECTION_AND_TASK_LIST.md"), "utf8");
 const frameworkText = readFileSync(join(pluginRoot, "TRANSPARENT_AI_APPRENTICE_FRAMEWORK_AND_LOGIC.md"), "utf8");
 const skillText = readFileSync(join(pluginRoot, "skills", "teachable-apprentice", "SKILL.md"), "utf8");
+const warmHumanCommunicationSkillText = readFileSync(join(pluginRoot, "skills", "warm-human-communication", "SKILL.md"), "utf8");
+const humanVoiceContractText = readFileSync(
+  join(pluginRoot, "skills", "warm-human-communication", "references", "human-voice-contract.md"),
+  "utf8"
+);
+const humanCommunicationGuidanceSchemaText = readFileSync(join(pluginRoot, "schemas", "human-communication-guidance.schema.json"), "utf8");
+const humanCommunicationGuidanceCompilerText = readFileSync(join(pluginRoot, "scripts", "compile-human-communication-guidance.mjs"), "utf8");
+const humanCommunicationStyleCheckText = readFileSync(join(pluginRoot, "scripts", "check-human-communication-style.mjs"), "utf8");
+const humanCommunicationSmokeText = readFileSync(join(pluginRoot, "scripts", "smoke-human-communication.mjs"), "utf8");
 const image2PromptOptimizerSkillText = readFileSync(join(pluginRoot, "skills", "image2-prompt-optimizer", "SKILL.md"), "utf8");
 const image2InitialGenerationContractText = readFileSync(
   join(pluginRoot, "skills", "image2-prompt-optimizer", "references", "initial-generation-contract.md"),
@@ -4127,6 +4143,39 @@ const checks = [
     name: "Required plugin files exist",
     pass: missing.length === 0,
     evidence: missing.length === 0 ? `${requiredFiles.length} files present` : `missing=${missing.join(", ")}`
+  },
+  {
+    name: "Warm human communication skill preserves natural voice and identity boundaries",
+    pass:
+      warmHumanCommunicationSkillText.includes("Answer the user's exact last sentence first") &&
+      warmHumanCommunicationSkillText.includes("Do not announce it") &&
+      warmHumanCommunicationSkillText.includes("Never invent biography") &&
+      humanVoiceContractText.includes("The goal is a better user experience") &&
+      humanVoiceContractText.includes("Tone Repair"),
+    evidence: "natural response shape, tone repair, practical optimism, and non-human identity boundaries"
+  },
+  {
+    name: "Human communication compiler and style checker are deterministic and callable",
+    pass:
+      humanCommunicationGuidanceSchemaText.includes("mingtu_human_communication_guidance_v1") &&
+      humanCommunicationGuidanceCompilerText.includes("compileHumanCommunicationGuidance") &&
+      humanCommunicationStyleCheckText.includes("checkHumanCommunicationStyle") &&
+      humanCommunicationSmokeText.includes("mingtu_human_communication_smoke_v1") &&
+      packageText.includes("smoke:human-communication") &&
+      mcpServerText.includes("compile_human_communication_guidance") &&
+      mcpServerText.includes("check_human_communication_style"),
+    evidence: "schema, compiler, context-aware linter, smoke route, npm command, and advanced MCP tools"
+  },
+  {
+    name: "Teaching and packaging flows apply the human communication contract",
+    pass:
+      skillText.includes("Human Communication Contract") &&
+      skillText.includes("warm-human-communication") &&
+      skillText.includes("check_human_communication_style") &&
+      packagingDesignSkillText.includes("Teacher Communication") &&
+      packagingDesignSkillText.includes("warm-human-communication") &&
+      manifest.interface?.capabilities?.includes("warm human communication"),
+    evidence: "core skill, packaging clarification/correction/failure flow, and manifest capability"
   },
   {
     name: "Manifest names the Codex plugin",
