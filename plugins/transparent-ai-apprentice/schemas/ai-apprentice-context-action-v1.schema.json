@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.ai-apprentice/schemas/ai-apprentice-context-action-v1.schema.json",
+  "title": "AI Apprentice native selection context action",
+  "type": "object",
+  "required": [
+    "format",
+    "selectionId",
+    "instruction",
+    "requestedChange",
+    "scope",
+    "executionBoundary",
+    "reviewOnly",
+    "accepted",
+    "ruleEnabled",
+    "packagingGated"
+  ],
+  "properties": {
+    "format": {
+      "const": "ai_apprentice_context_action_v1"
+    },
+    "selectionId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "instruction": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requestedChange": {
+      "type": "object",
+      "required": [
+        "operation"
+      ],
+      "properties": {
+        "operation": {
+          "enum": [
+            "replace_text",
+            "delete_text",
+            "set_dimension",
+            "offset_face",
+            "change_property",
+            "move_object",
+            "other"
+          ]
+        },
+        "replacementText": {
+          "type": "string"
+        },
+        "targetValue": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "unit": {
+          "type": "string"
+        },
+        "propertyName": {
+          "type": "string"
+        },
+        "propertyValue": {},
+        "delta": {
+          "type": "object",
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "z": { "type": "number" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": true
+    },
+    "scope": {
+      "const": "selected_native_target_only"
+    },
+    "executionBoundary": {
+      "type": "object",
+      "required": [
+        "mode",
+        "reasoningOwner",
+        "modelApiRequired",
+        "apiKeyRequired",
+        "companionRole"
+      ],
+      "properties": {
+        "mode": {
+          "const": "host_agent_plugin"
+        },
+        "reasoningOwner": {
+          "const": "host_agent"
+        },
+        "modelApiRequired": {
+          "const": false
+        },
+        "apiKeyRequired": {
+          "const": false
+        },
+        "companionRole": {
+          "const": "capture_and_handoff_only"
+        }
+      },
+      "additionalProperties": false
+    },
+    "reviewOnly": {
+      "const": true
+    },
+    "accepted": {
+      "const": false
+    },
+    "ruleEnabled": {
+      "const": false
+    },
+    "packagingGated": {
+      "const": true
+    },
+    "teacherInstructionRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "handoffRequestedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "preparationMode": {
+      "enum": [
+        "background",
+        "foreground"
+      ]
+    },
+    "screenControlPolicy": {
+      "enum": [
+        "disabled",
+        "explicit_opt_in"
+      ]
+    },
+    "interactionPreference": {
+      "type": "object",
+      "properties": {
+        "backgroundPreparation": {
+          "type": "boolean"
+        },
+        "allowScreenControl": {
+          "type": "boolean"
+        },
+        "keepHostDocumentOpen": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

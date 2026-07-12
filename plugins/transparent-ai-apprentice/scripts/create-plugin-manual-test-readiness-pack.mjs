@@ -207,7 +207,7 @@ const checks = [
     name: "Documentation still states review-only and no acceptance boundaries",
     pass:
       readmeText.includes("review-only") &&
-      readmeText.includes("does not invoke models") &&
+      (readmeText.includes("does not invoke models") || readmeText.includes("do not invoke models")) &&
       skillText.includes("Do not treat a conversation record as acceptance"),
     evidence: "README and skill keep review-only language"
   }

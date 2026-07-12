@@ -449,7 +449,7 @@ const workbenchTemplatePath = join(workbenchRoot, "index.template.html");
 const workbenchStylesPath = join(workbenchRoot, "styles.css");
 const workbenchScriptPath = join(workbenchRoot, "app.js");
 if (![workbenchTemplatePath, workbenchStylesPath, workbenchScriptPath].every(existsSync)) {
-  throw new Error(`MingTu mask workbench assets are incomplete under ${workbenchRoot}`);
+  throw new Error(`AI Apprentice mask workbench assets are incomplete under ${workbenchRoot}`);
 }
 
 function replaceToken(text, token, value) {
@@ -700,7 +700,7 @@ const manifest = {
 };
 
 writeFileSync(readmePath, [
-  "# 明徒 AI 老师蒙版纠错台",
+  "# AI 学徒老师蒙版纠错台",
   "",
   `任务：${goal}`,
   `目标工具：${software}`,

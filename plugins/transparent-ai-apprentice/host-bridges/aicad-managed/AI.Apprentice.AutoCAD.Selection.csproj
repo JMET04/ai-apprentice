@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>AI.Apprentice.AutoCAD.Selection</AssemblyName>
+    <RootNamespace>AI.Apprentice.AutoCAD.Selection</RootNamespace>
+    <AutoCADManagedDir Condition="'$(AutoCADManagedDir)' == ''">D:\软件安装\CAD\AutoCAD 2025</AutoCADManagedDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="NativeSelectionExtension.cs" />
+    <Reference Include="AcCoreMgd"><HintPath>$(AutoCADManagedDir)\accoremgd.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="AcDbMgd"><HintPath>$(AutoCADManagedDir)\acdbmgd.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+  <Target Name="CopyToRuntimeBundle" AfterTargets="Build">
+    <PropertyGroup>
+      <RuntimeBundleContents>$(MSBuildProjectDirectory)\runtime\AI.Apprentice.NativeSelection.bundle\Contents</RuntimeBundleContents>
+    </PropertyGroup>
+    <MakeDir Directories="$(RuntimeBundleContents)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(RuntimeBundleContents)" />
+  </Target>
+</Project>

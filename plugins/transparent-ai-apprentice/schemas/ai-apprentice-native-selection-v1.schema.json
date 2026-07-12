@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.ai-apprentice/schemas/ai-apprentice-native-selection-v1.schema.json",
+  "title": "AI Apprentice native host selection",
+  "type": "object",
+  "required": [
+    "format",
+    "surfaceKind",
+    "host",
+    "selection",
+    "capture",
+    "executionBoundary",
+    "reviewOnly",
+    "accepted",
+    "ruleEnabled",
+    "packagingGated"
+  ],
+  "properties": {
+    "format": {
+      "const": "ai_apprentice_native_selection_v1"
+    },
+    "surfaceKind": {
+      "enum": [
+        "office_native_text",
+        "engineering_native_object"
+      ]
+    },
+    "host": {
+      "type": "object",
+      "required": [
+        "application",
+        "documentName"
+      ],
+      "properties": {
+        "application": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string"
+        },
+        "documentName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "documentPath": {
+          "type": "string"
+        },
+        "sessionId": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "selection": {
+      "type": "object",
+      "required": [
+        "nativeKind",
+        "nativeLocator"
+      ],
+      "properties": {
+        "nativeKind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "nativeLocator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text": {
+          "type": "string"
+        },
+        "objectId": {
+          "type": "string"
+        },
+        "objectType": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "object"
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "protectedObjectIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "contextBefore": {
+          "type": "string"
+        },
+        "contextAfter": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "capture": {
+      "type": "object",
+      "required": [
+        "trigger",
+        "adapter"
+      ],
+      "properties": {
+        "trigger": {
+          "enum": [
+            "right_click",
+            "command",
+            "desktop_companion",
+            "test_fixture"
+          ]
+        },
+        "adapter": {
+          "type": "string",
+          "minLength": 1
+        },
+        "capturedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": true
+    },
+    "executionBoundary": {
+      "type": "object",
+      "required": [
+        "mode",
+        "reasoningOwner",
+        "modelApiRequired",
+        "apiKeyRequired",
+        "companionRole"
+      ],
+      "properties": {
+        "mode": {
+          "const": "host_agent_plugin"
+        },
+        "reasoningOwner": {
+          "const": "host_agent"
+        },
+        "modelApiRequired": {
+          "const": false
+        },
+        "apiKeyRequired": {
+          "const": false
+        },
+        "companionRole": {
+          "const": "capture_and_handoff_only"
+        }
+      },
+      "additionalProperties": false
+    },
+    "reviewOnly": {
+      "const": true
+    },
+    "accepted": {
+      "const": false
+    },
+    "ruleEnabled": {
+      "const": false
+    },
+    "packagingGated": {
+      "const": true
+    },
+    "teacherInstructionDraft": {
+      "type": "string"
+    },
+    "teacherInstructionRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "teacherInstructionHistory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "revision",
+          "instruction",
+          "requestedAt",
+          "backgroundPreparation",
+          "allowScreenControl"
+        ],
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "instruction": {
+            "type": "string"
+          },
+          "requestedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "backgroundPreparation": {
+            "type": "boolean"
+          },
+          "allowScreenControl": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "handoffRequestedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "preparationMode": {
+      "enum": [
+        "background",
+        "foreground"
+      ]
+    },
+    "screenControlPolicy": {
+      "enum": [
+        "disabled",
+        "explicit_opt_in"
+      ]
+    },
+    "interactionPreference": {
+      "type": "object",
+      "properties": {
+        "backgroundPreparation": {
+          "type": "boolean"
+        },
+        "allowScreenControl": {
+          "type": "boolean"
+        },
+        "keepHostDocumentOpen": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

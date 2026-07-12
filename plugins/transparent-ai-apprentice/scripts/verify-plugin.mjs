@@ -8,6 +8,7 @@ const requiredFiles = [
   ".codex-plugin/plugin.json",
   ".mcp.json",
   "README.md",
+  "docs/internal-deep-route-catalog.md",
   "KNOWLEDGE_AUGMENTED_RAG_RESEARCH_DIRECTION.md",
   "TLCL_OVERALL_DIRECTION.md",
   "FULL_TARGET_DIRECTION_AND_TASK_LIST.md",
@@ -543,6 +544,44 @@ const requiredFiles = [
   "scripts/create-engineering-software-mask-workbench.mjs",
   "scripts/create-precise-content-mask-workbench.mjs",
   "scripts/smoke-independent-mask-workbenches.mjs",
+  "scripts/mask-correction-store.mjs",
+  "scripts/mask-correction-service.mjs",
+  "scripts/smoke-mask-correction-service.mjs",
+  "scripts/smoke-mask-workbench-submission-browser.mjs",
+  "scripts/aicad-object-mask-adapter.mjs",
+  "scripts/smoke-aicad-object-mask-adapter.mjs",
+  "scripts/smoke-multiround-learning-convergence.mjs",
+  "scripts/smoke-product-failure-matrix.mjs",
+  "scripts/benchmark-product-performance.mjs",
+  "schemas/ai-apprentice-native-selection-v1.schema.json",
+  "schemas/ai-apprentice-context-action-v1.schema.json",
+  "scripts/native-selection-store.mjs",
+  "scripts/create-native-selection-workbench-v2.mjs",
+  "scripts/smoke-native-selection-workbench-v2.mjs",
+  "assets/native-selection-workbench-v2/shared/tokens.css",
+  "assets/native-selection-workbench-v2/shared/assistant-v2.js",
+  "assets/native-selection-workbench-v2/packaging-mask/index.html",
+  "assets/native-selection-workbench-v2/office-native-selection/index.html",
+  "assets/native-selection-workbench-v2/engineering-native-selection/index.html",
+  "scripts/word-native-selection-adapter.mjs",
+  "scripts/autocad-native-selection-adapter.mjs",
+  "scripts/smoke-native-selection-agent-plugin.mjs",
+  "scripts/smoke-word-native-selection-live.mjs",
+  "scripts/smoke-aicad-managed-selection-bridge.mjs",
+  "assets/desktop-companion/AI-Apprentice-Companion.ps1",
+  "host-bridges/word/capture-word-selection.ps1",
+  "host-bridges/word/apply-word-selection.ps1",
+  "host-bridges/aicad/AI_Apprentice_Selection.lsp",
+  "host-bridges/aicad-managed/NativeSelectionExtension.cs",
+  "host-bridges/aicad-managed/ContextMenuHostExtension.cs",
+  "host-bridges/aicad-managed/AI.Apprentice.AutoCAD.ContextMenu.csproj",
+  "host-bridges/aicad-managed/install-autocad-managed-selection-bridge.ps1",
+  "host-bridges/aicad-managed/apply-autocad-selection.ps1",
+  "host-bridges/aicad-managed/smoke-autocad-managed-runtime.ps1",
+  "host-bridges/aicad-managed/smoke-autocad-managed-desktop-live.ps1",
+  "host-bridges/aicad-managed/runtime/AI.Apprentice.NativeSelection.bundle/PackageContents.xml",
+  "host-bridges/aicad-managed/runtime/AI.Apprentice.NativeSelection.bundle/Contents/AI.Apprentice.AutoCAD.Selection.dll",
+  "host-bridges/aicad-managed/runtime/AI.Apprentice.NativeSelection.bundle/Contents/AI.Apprentice.AutoCAD.ContextMenu.dll",
   "scripts/validate-multimodal-surgical-mask-correction.mjs",
   "scripts/surgical-office-text-edit.py",
   "scripts/smoke-surgical-office-text-edit.mjs",
@@ -553,6 +592,8 @@ const requiredFiles = [
   "assets/mask-workbench/app.js",
   "assets/mask-workbench/design-tokens.json",
   "assets/examples/engineering-object-index.png",
+  "assets/examples/aicad-object-mask-source.plan.json",
+  "assets/mask-submission-client.js",
   "schemas/multimodal-surgical-mask-correction.schema.json",
   "assets/text-mask-workbench/index.template.html",
   "assets/text-mask-workbench/app.js",
@@ -912,7 +953,10 @@ const requiredFiles = [
 const missing = requiredFiles.filter((file) => !existsSync(join(pluginRoot, file)));
 const manifest = JSON.parse(readFileSync(join(pluginRoot, ".codex-plugin", "plugin.json"), "utf8"));
 const mcpConfig = JSON.parse(readFileSync(join(pluginRoot, ".mcp.json"), "utf8"));
-const readmeText = readFileSync(join(pluginRoot, "README.md"), "utf8");
+const readmeText = [
+  readFileSync(join(pluginRoot, "README.md"), "utf8"),
+  readFileSync(join(pluginRoot, "docs", "internal-deep-route-catalog.md"), "utf8")
+].join("\n");
 const knowledgeAugmentedRagResearchDirectionText = readFileSync(join(pluginRoot, "KNOWLEDGE_AUGMENTED_RAG_RESEARCH_DIRECTION.md"), "utf8");
 const tlclOverallDirectionText = readFileSync(join(pluginRoot, "TLCL_OVERALL_DIRECTION.md"), "utf8");
 const fullTargetDirectionTaskListText = readFileSync(join(pluginRoot, "FULL_TARGET_DIRECTION_AND_TASK_LIST.md"), "utf8");
@@ -950,6 +994,12 @@ const originalGoalLowTokenCompactEvidenceRequestValidatorRunnerSmokeText = readF
 const repoPackagePath = resolve(pluginRoot, "..", "..", "package.json");
 const bundledPackagePath = join(pluginRoot, "package.json");
 const packageText = readFileSync(existsSync(repoPackagePath) ? repoPackagePath : bundledPackagePath, "utf8");
+const packageScripts = JSON.parse(packageText).scripts || {};
+const workspaceTempWrapper = "node scripts/run-with-workspace-temp.mjs -- ";
+const packageScriptMatches = (name, command) => {
+  const actual = packageScripts[name];
+  return actual === command || actual === `${workspaceTempWrapper}${command}`;
+};
 const pluginHealthIndexText = readFileSync(join(pluginRoot, "scripts", "create-plugin-health-index.mjs"), "utf8");
 const pluginHealthIndexSmokeText = readFileSync(join(pluginRoot, "scripts", "smoke-plugin-health-index.mjs"), "utf8");
 const pluginManualTestReadinessText = readFileSync(
@@ -3437,6 +3487,24 @@ const engineeringSoftwareMaskTemplateText = readFileSync(join(pluginRoot, "asset
 const engineeringSoftwareMaskScriptText = readFileSync(join(pluginRoot, "assets", "engineering-software-mask-workbench", "app.js"), "utf8");
 const preciseContentMaskGeneratorText = readFileSync(join(pluginRoot, "scripts", "create-precise-content-mask-workbench.mjs"), "utf8");
 const independentMaskSmokeText = readFileSync(join(pluginRoot, "scripts", "smoke-independent-mask-workbenches.mjs"), "utf8");
+const maskCorrectionStoreText = readFileSync(join(pluginRoot, "scripts", "mask-correction-store.mjs"), "utf8");
+const maskCorrectionServiceText = readFileSync(join(pluginRoot, "scripts", "mask-correction-service.mjs"), "utf8");
+const maskSubmissionClientText = readFileSync(join(pluginRoot, "assets", "mask-submission-client.js"), "utf8");
+const maskSubmissionBrowserSmokeText = readFileSync(join(pluginRoot, "scripts", "smoke-mask-workbench-submission-browser.mjs"), "utf8");
+const aicadObjectMaskAdapterText = readFileSync(join(pluginRoot, "scripts", "aicad-object-mask-adapter.mjs"), "utf8");
+const aicadObjectMaskSmokeText = readFileSync(join(pluginRoot, "scripts", "smoke-aicad-object-mask-adapter.mjs"), "utf8");
+const multiroundLearningSmokeText = readFileSync(join(pluginRoot, "scripts", "smoke-multiround-learning-convergence.mjs"), "utf8");
+const productFailureMatrixText = readFileSync(join(pluginRoot, "scripts", "smoke-product-failure-matrix.mjs"), "utf8");
+const productPerformanceBenchmarkText = readFileSync(join(pluginRoot, "scripts", "benchmark-product-performance.mjs"), "utf8");
+const nativeSelectionStoreText = readFileSync(join(pluginRoot, "scripts", "native-selection-store.mjs"), "utf8");
+const nativeSelectionWorkbenchText = readFileSync(join(pluginRoot, "scripts", "create-native-selection-workbench-v2.mjs"), "utf8");
+const nativeSelectionWorkbenchSmokeText = readFileSync(join(pluginRoot, "scripts", "smoke-native-selection-workbench-v2.mjs"), "utf8");
+const nativeSelectionSmokeText = readFileSync(join(pluginRoot, "scripts", "smoke-native-selection-agent-plugin.mjs"), "utf8");
+const wordNativeBridgeText = readFileSync(join(pluginRoot, "host-bridges", "word", "capture-word-selection.ps1"), "utf8");
+const desktopCompanionText = readFileSync(join(pluginRoot, "assets", "desktop-companion", "AI-Apprentice-Companion.ps1"), "utf8");
+const aicadManagedBridgeText = readFileSync(join(pluginRoot, "host-bridges", "aicad-managed", "NativeSelectionExtension.cs"), "utf8");
+const aicadManagedContextMenuText = readFileSync(join(pluginRoot, "host-bridges", "aicad-managed", "ContextMenuHostExtension.cs"), "utf8");
+const aicadManagedSmokeText = readFileSync(join(pluginRoot, "scripts", "smoke-aicad-managed-selection-bridge.mjs"), "utf8");
 const multimodalSurgicalMaskSchemaText = readFileSync(join(pluginRoot, "schemas", "multimodal-surgical-mask-correction.schema.json"), "utf8");
 const multimodalSurgicalMaskValidationText = readFileSync(join(pluginRoot, "scripts", "validate-multimodal-surgical-mask-correction.mjs"), "utf8");
 const surgicalOfficeTextEditText = readFileSync(join(pluginRoot, "scripts", "surgical-office-text-edit.py"), "utf8");
@@ -4214,7 +4282,7 @@ const checks = [
       /^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(manifest.version) &&
       manifest.skills === "./skills/" &&
       manifest.mcpServers === "./.mcp.json" &&
-      manifest.interface?.displayName === "\u660e\u5f92 AI",
+      manifest.interface?.displayName === "AI \u5b66\u5f92",
     evidence: `${manifest.name}; version=${manifest.version}; skills=${manifest.skills}; mcp=${manifest.mcpServers}; display=${manifest.interface?.displayName}`
   },
   {
@@ -4231,7 +4299,9 @@ const checks = [
   {
     name: "Manifest starts ordinary teachers in Chinese",
     pass:
-      manifest.interface?.shortDescription?.includes("\u6210\u957f") &&
+      manifest.interface?.shortDescription?.includes("\u793a\u8303") &&
+      manifest.interface?.shortDescription?.includes("\u7ea0\u9519") &&
+      manifest.interface?.shortDescription?.includes("\u5ba1\u6838") &&
       manifest.interface?.shortDescription?.includes("\u505a\u4e8b") &&
       manifest.interface?.longDescription?.includes("\u5c40\u90e8\u4fee\u6539\u8499\u7248") &&
       manifest.interface?.longDescription?.includes("Image2") &&
@@ -8811,6 +8881,74 @@ const checks = [
       mcpServerText.includes("apply_surgical_office_text_edit") &&
       packageText.includes("smoke:office-surgical-edit"),
     evidence: "DOCX paragraph and XLSX cell edits use exact native locators, never overwrite the source, and hash-check every unselected package part"
+  },
+  {
+    name: "Mask workbench submissions persist, retry, review, and replay without false success",
+    pass:
+      maskCorrectionStoreText.includes("ai_apprentice_mask_correction_store_v1") &&
+      maskCorrectionStoreText.includes("pending_teacher_review") &&
+      maskCorrectionStoreText.includes("reviewed_ready_for_separate_execution") &&
+      maskCorrectionServiceText.includes("/api/mask-corrections") &&
+      maskSubmissionClientText.includes("retry-queue-v1") &&
+      maskSubmissionClientText.includes("提交失败，已进入本地待重试队列") &&
+      maskSubmissionBrowserSmokeText.includes("Store contains both successfully submitted workbench records") &&
+      mcpServerText.includes("manage_mask_correction"),
+    evidence: "Office and engineering workbench buttons now submit to a durable local task service, expose teacher review and result replay, and queue failed browser submissions for retry"
+  },
+  {
+    name: "Reviewed AICAD object masks execute one native object with rollback and protected-object proof",
+    pass:
+      aicadObjectMaskAdapterText.includes("ai_apprentice_aicad_object_mask_result_v1") &&
+      aicadObjectMaskAdapterText.includes("onlySelectedObjectChanged") &&
+      aicadObjectMaskAdapterText.includes("rollbackExact") &&
+      aicadObjectMaskSmokeText.includes("D04 is changed from 420 to 450 mm") &&
+      aicadObjectMaskSmokeText.includes("D08 and D10 hashes remain identical") &&
+      mcpServerText.includes('"execute_aicad"'),
+    evidence: "The first engineering adapter consumes a teacher-reviewed correction, changes only D04, compiles native AICAD/SCR/DXF artifacts, verifies D08/D10, and restores the exact source"
+  },
+  {
+    name: "Multiround learning proves correction reuse and later teacher disable",
+    pass:
+      multiroundLearningSmokeText.includes("Unapproved memory does not change the next run") &&
+      multiroundLearningSmokeText.includes("Second attempt applies the corrected behavior") &&
+      multiroundLearningSmokeText.includes("Disabled memory stops affecting future runs") &&
+      multiroundLearningSmokeText.includes("antistatic bag"),
+    evidence: "A repeatable experiment records the first failure, applies only approved correction memory on the second run, persists it across sessions, and stops reuse after teacher disable"
+  },
+  {
+    name: "Native Word and AutoCAD selections are captured by an Agent plugin, not a standalone AI",
+    pass:
+      nativeSelectionStoreText.includes('mode: "host_agent_plugin"') &&
+      nativeSelectionStoreText.includes('reasoningOwner: "host_agent"') &&
+      nativeSelectionStoreText.includes("modelApiRequired: false") &&
+      nativeSelectionStoreText.includes("apiKeyRequired: false") &&
+      nativeSelectionSmokeText.includes("rejects a standalone AI execution boundary") &&
+      nativeSelectionWorkbenchText.includes("ai_apprentice_native_selection_workbench_result_v1") &&
+      nativeSelectionWorkbenchText.includes("ai_apprentice_context_action_v1") &&
+      nativeSelectionWorkbenchSmokeText.includes("Generated Office packet preserves the formal native selection and context action contracts") &&
+      wordNativeBridgeText.includes('reasoningOwner = "host_agent"') &&
+      desktopCompanionText.includes("桌面助手不运行模型") &&
+      aicadManagedBridgeText.includes("selected.GetSubentities()") &&
+      aicadManagedBridgeText.includes("FullSubentityPath") &&
+      aicadManagedContextMenuText.includes("AddDefaultContextMenuExtension") &&
+      aicadManagedSmokeText.includes("Bridge contains no model client or API key") &&
+      mcpServerText.includes("manage_native_selection") &&
+      packageText.includes("smoke:native-selection-agent-plugin") &&
+      packageText.includes("smoke:aicad-managed-selection-bridge") &&
+      packageText.includes("smoke:aicad-managed-runtime"),
+    evidence: "Word and AutoCAD host bridges capture exact native targets into a locked host-Agent protocol; the desktop signal is capture/handoff only, and no separate model API or API key is introduced"
+  },
+  {
+    name: "Product failure and performance gates cover real Office, CAD, packaging, concurrency, and memory behavior",
+    pass:
+      productFailureMatrixText.includes("expectedBlockedScenarios") &&
+      productFailureMatrixText.includes("Excel formula cell") &&
+      productFailureMatrixText.includes("image pixels used as dimensions") &&
+      productPerformanceBenchmarkText.includes("mcpColdStartP95Ms") &&
+      productPerformanceBenchmarkText.includes("largeOfficeParagraphs") &&
+      productPerformanceBenchmarkText.includes("serviceMemoryGrowthMb") &&
+      productPerformanceBenchmarkText.includes("concurrentSubmissions"),
+    evidence: "The plugin has a 29-case fail-closed matrix and explicit cold-start, page, 5000-paragraph Office, concurrent, long-sequence, memory, and AICAD performance baselines"
   },
   {
     name: "Learned rule differences receive context-aware decisions and visible problem markers",
@@ -21082,28 +21220,16 @@ const checks = [
       readmeText.includes("## Maintainer Health Index") &&
       readmeText.includes("npm run build:plugin-health-index") &&
       readmeText.includes("npm run smoke:plugin-tool-surface:full") &&
-      packageText.includes('"build:plugin-health-index": "node plugins/transparent-ai-apprentice/scripts/create-plugin-health-index.mjs"') &&
-      packageText.includes('"smoke:plugin-health-index": "node plugins/transparent-ai-apprentice/scripts/smoke-plugin-health-index.mjs"') &&
-      packageText.includes(
-        '"build:plugin-manual-test-readiness": "node plugins/transparent-ai-apprentice/scripts/create-plugin-manual-test-readiness-pack.mjs"'
-      ) &&
-      packageText.includes(
-        '"smoke:plugin-manual-test-readiness": "node plugins/transparent-ai-apprentice/scripts/smoke-plugin-manual-test-readiness.mjs"'
-      ) &&
-      packageText.includes(
-        '"build:plugin-manual-test-result-receipt-template": "node plugins/transparent-ai-apprentice/scripts/create-plugin-manual-test-result-receipt-template.mjs"'
-      ) &&
-      packageText.includes(
-        '"smoke:plugin-manual-test-result-receipt": "node plugins/transparent-ai-apprentice/scripts/smoke-plugin-manual-test-result-receipt.mjs"'
-      ) &&
-      packageText.includes(
-        '"build:plugin-manual-test-session-packet": "node plugins/transparent-ai-apprentice/scripts/create-plugin-manual-test-session-packet.mjs"'
-      ) &&
-      packageText.includes(
-        '"smoke:plugin-manual-test-session-packet": "node plugins/transparent-ai-apprentice/scripts/smoke-plugin-manual-test-session-packet.mjs"'
-      ) &&
-      packageText.includes('"smoke:plugin-tool-surface": "node plugins/transparent-ai-apprentice/scripts/smoke-mcp-tool-surface-fast.mjs"') &&
-      packageText.includes('"smoke:plugin-tool-surface:full": "node plugins/transparent-ai-apprentice/scripts/smoke-mcp-tool-surface.mjs"') &&
+      packageScriptMatches("build:plugin-health-index", "node plugins/transparent-ai-apprentice/scripts/create-plugin-health-index.mjs") &&
+      packageScriptMatches("smoke:plugin-health-index", "node plugins/transparent-ai-apprentice/scripts/smoke-plugin-health-index.mjs") &&
+      packageScriptMatches("build:plugin-manual-test-readiness", "node plugins/transparent-ai-apprentice/scripts/create-plugin-manual-test-readiness-pack.mjs") &&
+      packageScriptMatches("smoke:plugin-manual-test-readiness", "node plugins/transparent-ai-apprentice/scripts/smoke-plugin-manual-test-readiness.mjs") &&
+      packageScriptMatches("build:plugin-manual-test-result-receipt-template", "node plugins/transparent-ai-apprentice/scripts/create-plugin-manual-test-result-receipt-template.mjs") &&
+      packageScriptMatches("smoke:plugin-manual-test-result-receipt", "node plugins/transparent-ai-apprentice/scripts/smoke-plugin-manual-test-result-receipt.mjs") &&
+      packageScriptMatches("build:plugin-manual-test-session-packet", "node plugins/transparent-ai-apprentice/scripts/create-plugin-manual-test-session-packet.mjs") &&
+      packageScriptMatches("smoke:plugin-manual-test-session-packet", "node plugins/transparent-ai-apprentice/scripts/smoke-plugin-manual-test-session-packet.mjs") &&
+      packageScriptMatches("smoke:plugin-tool-surface", "node plugins/transparent-ai-apprentice/scripts/smoke-mcp-tool-surface-fast.mjs") &&
+      packageScriptMatches("smoke:plugin-tool-surface:full", "node plugins/transparent-ai-apprentice/scripts/smoke-mcp-tool-surface.mjs") &&
       mcpServerText.includes('name: "create_plugin_health_index"') &&
       mcpServerText.includes('runNodeScript("create-plugin-health-index.mjs", args)'),
     evidence:
@@ -21124,12 +21250,8 @@ const checks = [
       mcpServerText.includes('runNodeScript("create-plugin-manual-test-readiness-pack.mjs", args)') &&
       readmeText.includes("## Manual Test Readiness") &&
       readmeText.includes("npm run smoke:plugin-manual-test-readiness") &&
-      packageText.includes(
-        '"build:plugin-manual-test-readiness": "node plugins/transparent-ai-apprentice/scripts/create-plugin-manual-test-readiness-pack.mjs"'
-      ) &&
-      packageText.includes(
-        '"smoke:plugin-manual-test-readiness": "node plugins/transparent-ai-apprentice/scripts/smoke-plugin-manual-test-readiness.mjs"'
-      ),
+      packageScriptMatches("build:plugin-manual-test-readiness", "node plugins/transparent-ai-apprentice/scripts/create-plugin-manual-test-readiness-pack.mjs") &&
+      packageScriptMatches("smoke:plugin-manual-test-readiness", "node plugins/transparent-ai-apprentice/scripts/smoke-plugin-manual-test-readiness.mjs"),
     evidence:
       "A review-only manual testing handoff now maps install/tool surface, teacher entry, visual demonstration, correction memory, TLCL safety, and real-case pilot lanes to commands, pass criteria, and stop conditions"
   },
@@ -21147,12 +21269,8 @@ const checks = [
       mcpServerText.includes('name: "create_plugin_manual_test_session_packet"') &&
       mcpServerText.includes('runNodeScript("create-plugin-manual-test-session-packet.mjs", args)') &&
       readmeText.includes("npm run smoke:plugin-manual-test-session-packet") &&
-      packageText.includes(
-        '"build:plugin-manual-test-session-packet": "node plugins/transparent-ai-apprentice/scripts/create-plugin-manual-test-session-packet.mjs"'
-      ) &&
-      packageText.includes(
-        '"smoke:plugin-manual-test-session-packet": "node plugins/transparent-ai-apprentice/scripts/smoke-plugin-manual-test-session-packet.mjs"'
-      ),
+      packageScriptMatches("build:plugin-manual-test-session-packet", "node plugins/transparent-ai-apprentice/scripts/create-plugin-manual-test-session-packet.mjs") &&
+      packageScriptMatches("smoke:plugin-manual-test-session-packet", "node plugins/transparent-ai-apprentice/scripts/smoke-plugin-manual-test-session-packet.mjs"),
     evidence:
       "A one-pass tester packet now bundles readiness, fillable result receipt, and validation return command while preserving review-only locks"
   },
@@ -21179,12 +21297,8 @@ const checks = [
       mcpServerText.includes('runNodeScript("create-plugin-manual-test-result-receipt-template.mjs", args)') &&
       mcpServerText.includes('runNodeScript("validate-plugin-manual-test-result-receipt.mjs", args)') &&
       readmeText.includes("npm run smoke:plugin-manual-test-result-receipt") &&
-      packageText.includes(
-        '"build:plugin-manual-test-result-receipt-template": "node plugins/transparent-ai-apprentice/scripts/create-plugin-manual-test-result-receipt-template.mjs"'
-      ) &&
-      packageText.includes(
-        '"smoke:plugin-manual-test-result-receipt": "node plugins/transparent-ai-apprentice/scripts/smoke-plugin-manual-test-result-receipt.mjs"'
-      ),
+      packageScriptMatches("build:plugin-manual-test-result-receipt-template", "node plugins/transparent-ai-apprentice/scripts/create-plugin-manual-test-result-receipt-template.mjs") &&
+      packageScriptMatches("smoke:plugin-manual-test-result-receipt", "node plugins/transparent-ai-apprentice/scripts/smoke-plugin-manual-test-result-receipt.mjs"),
     evidence:
       "Returned human testing results now have a review-only receipt template and validator that preserves blockers/follow-up while blocking acceptance, memory, rule enablement, execution, packaging, and completion claims"
   },

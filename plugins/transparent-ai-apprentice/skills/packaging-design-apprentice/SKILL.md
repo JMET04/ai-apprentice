@@ -1,6 +1,6 @@
 ---
 name: packaging-design-apprentice
-description: Use when the user asks MingTu AI to design packaging, generate a packaging sample with Image2, accept visual mask corrections, locally edit the result, or hand a reviewed packaging design to AICAD for engineering drawings.
+description: Use when the user asks AI Apprentice to design packaging, generate a packaging sample with Image2, accept visual mask corrections, locally edit the result, or hand a reviewed packaging design to AICAD for engineering drawings.
 ---
 
 # Packaging Design Apprentice

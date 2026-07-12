@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mingtu.local/schemas/packaging-design-session.schema.json",
-  "title": "MingTu packaging design session",
+  "title": "AI Apprentice packaging design session",
   "type": "object",
   "required": ["format", "version", "id", "stage", "status", "requirements", "artifacts", "locks"],
   "properties": {

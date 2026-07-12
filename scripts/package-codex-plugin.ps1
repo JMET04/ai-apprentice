@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$OutputPath
 )
 
@@ -30,7 +30,21 @@ foreach ($Path in @($PackageRoot, $VerifyRoot)) {
 Get-ChildItem -LiteralPath $SourcePlugin -Force | ForEach-Object {
   Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $PackageRoot $_.Name) -Recurse -Force
 }
+$resolvedPackageRoot = [IO.Path]::GetFullPath($PackageRoot).TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
+Get-ChildItem -LiteralPath $PackageRoot -Directory -Recurse -Force |
+  Where-Object { $_.Name -in @("bin", "obj") } |
+  Sort-Object { $_.FullName.Length } -Descending |
+  ForEach-Object {
+    $resolvedBuildDirectory = [IO.Path]::GetFullPath($_.FullName)
+    if (-not $resolvedBuildDirectory.StartsWith($resolvedPackageRoot, [StringComparison]::OrdinalIgnoreCase)) {
+      throw "Refusing to remove a build directory outside the package staging root: $resolvedBuildDirectory"
+    }
+    if (Test-Path -LiteralPath $resolvedBuildDirectory) {
+      Remove-Item -LiteralPath $resolvedBuildDirectory -Recurse -Force
+    }
+  }
 Copy-Item -LiteralPath (Join-Path $RepoRoot "package.json") -Destination (Join-Path $PackageRoot "package.json") -Force
+Copy-Item -LiteralPath (Join-Path $RepoRoot "scripts\run-with-workspace-temp.mjs") -Destination (Join-Path $PackageRoot "scripts\run-with-workspace-temp.mjs") -Force
 
 if (Test-Path -LiteralPath $OutputPath) {
   Remove-Item -LiteralPath $OutputPath -Force
@@ -123,6 +137,51 @@ $Required = @(
   "scripts\create-office-text-mask-demo.mjs",
   "scripts\create-office-text-mask-workbench.mjs",
   "scripts\create-engineering-software-mask-workbench.mjs",
+  "scripts\mask-correction-store.mjs",
+  "scripts\mask-correction-service.mjs",
+  "scripts\smoke-mask-correction-service.mjs",
+  "scripts\smoke-mask-workbench-submission-browser.mjs",
+  "scripts\aicad-object-mask-adapter.mjs",
+  "scripts\smoke-aicad-object-mask-adapter.mjs",
+  "scripts\smoke-multiround-learning-convergence.mjs",
+  "scripts\smoke-product-failure-matrix.mjs",
+  "scripts\benchmark-product-performance.mjs",
+  "schemas\ai-apprentice-native-selection-v1.schema.json",
+  "schemas\ai-apprentice-context-action-v1.schema.json",
+  "scripts\native-selection-store.mjs",
+  "scripts\create-native-selection-workbench-v2.mjs",
+  "scripts\smoke-native-selection-workbench-v2.mjs",
+  "assets\native-selection-workbench-v2\shared\tokens.css",
+  "assets\native-selection-workbench-v2\shared\assistant-v2.js",
+  "assets\native-selection-workbench-v2\packaging-mask\index.html",
+  "assets\native-selection-workbench-v2\office-native-selection\index.html",
+  "assets\native-selection-workbench-v2\engineering-native-selection\index.html",
+  "scripts\word-native-selection-adapter.mjs",
+  "scripts\autocad-native-selection-adapter.mjs",
+  "scripts\smoke-native-selection-agent-plugin.mjs",
+  "scripts\smoke-word-native-selection-host.ps1",
+  "scripts\smoke-word-native-selection-live.mjs",
+  "scripts\smoke-aicad-managed-selection-bridge.mjs",
+  "assets\desktop-companion\AI-Apprentice-Companion.ps1",
+  "assets\desktop-companion\README.md",
+  "host-bridges\word\capture-word-selection.ps1",
+  "host-bridges\word\apply-word-selection.ps1",
+  "host-bridges\word\CAIApprenticeEvents.cls",
+  "host-bridges\word\AI_Apprentice_WordBridge.bas",
+  "host-bridges\word\install-word-bridge.ps1",
+  "host-bridges\aicad\AI_Apprentice_Selection.lsp",
+  "host-bridges\aicad-managed\AI.Apprentice.AutoCAD.Selection.csproj",
+  "host-bridges\aicad-managed\NativeSelectionExtension.cs",
+  "host-bridges\aicad-managed\ContextMenuHostExtension.cs",
+  "host-bridges\aicad-managed\AI.Apprentice.AutoCAD.ContextMenu.csproj",
+  "host-bridges\aicad-managed\install-autocad-managed-selection-bridge.ps1",
+  "host-bridges\aicad-managed\apply-autocad-selection.ps1",
+  "host-bridges\aicad-managed\smoke-autocad-managed-runtime.ps1",
+  "host-bridges\aicad-managed\smoke-autocad-managed-desktop-live.ps1",
+  "host-bridges\aicad-managed\runtime\AI.Apprentice.NativeSelection.bundle\PackageContents.xml",
+  "host-bridges\aicad-managed\runtime\AI.Apprentice.NativeSelection.bundle\Contents\AI.Apprentice.AutoCAD.Selection.dll",
+  "host-bridges\aicad-managed\runtime\AI.Apprentice.NativeSelection.bundle\Contents\AI.Apprentice.AutoCAD.ContextMenu.dll",
+  "scripts\run-with-workspace-temp.mjs",
   "scripts\create-precise-content-mask-workbench.mjs",
   "scripts\validate-multimodal-surgical-mask-correction.mjs",
   "scripts\surgical-office-text-edit.py",
@@ -137,6 +196,9 @@ $Required = @(
   "assets\engineering-software-mask-workbench\index.template.html",
   "assets\engineering-software-mask-workbench\styles.css",
   "assets\engineering-software-mask-workbench\app.js",
+  "assets\mask-submission-client.js",
+  "assets\examples\aicad-object-mask-source.plan.json",
+  "docs\internal-deep-route-catalog.md",
   "assets\examples\engineering-object-index.png",
   "schemas\multimodal-surgical-mask-correction.schema.json",
   "scripts\interpret-transparent-sketch-spatial-intent.mjs",
@@ -281,9 +343,18 @@ if ($Missing.Count -gt 0) {
   throw "Plugin package is missing required files: $($Missing -join ', ')"
 }
 
+$BuildArtifacts = @(Get-ChildItem -LiteralPath $VerifyRoot -Directory -Recurse -Force | Where-Object { $_.Name -in @("bin", "obj") })
+if ($BuildArtifacts.Count -gt 0) {
+  throw "Plugin package contains build artifact directories: $($BuildArtifacts.FullName -join ', ')"
+}
+
 $FileCount = (Get-ChildItem -LiteralPath $VerifyRoot -Recurse -Force -File).Count
 $PackageInfo = Get-Item -LiteralPath $OutputPath
-$Manifest = Get-Content -LiteralPath (Join-Path $VerifyRoot ".codex-plugin\plugin.json") -Raw | ConvertFrom-Json
+$PackageHash = (Get-FileHash -LiteralPath $PackageInfo.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+$ChecksumPath = Join-Path $PackageInfo.DirectoryName "SHA256SUMS.txt"
+$ChecksumLine = "$PackageHash  $($PackageInfo.Name)"
+Set-Content -LiteralPath $ChecksumPath -Value $ChecksumLine -Encoding ascii
+$Manifest = Get-Content -LiteralPath (Join-Path $VerifyRoot ".codex-plugin\plugin.json") -Raw -Encoding UTF8 | ConvertFrom-Json
 $StarterPrompts = @($Manifest.interface.defaultPrompt)
 if ($StarterPrompts.Count -lt 1 -or $StarterPrompts.Count -gt 3) {
   throw "Plugin package manifest must include 1 to 3 starter prompts."
@@ -305,6 +376,8 @@ $VerifyResult = ConvertFrom-Json ($Verify -join "`n")
   pluginName = $PluginName
   packagePath = $PackageInfo.FullName
   packageBytes = $PackageInfo.Length
+  packageSha256 = $PackageHash
+  checksumPath = $ChecksumPath
   verifiedFileCount = $FileCount
   requiredFilesPresent = $Required.Count
   starterPrompts = $StarterPrompts.Count

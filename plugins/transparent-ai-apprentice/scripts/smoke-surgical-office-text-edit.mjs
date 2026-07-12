@@ -100,7 +100,7 @@ function request(contentType, locator, sourceText, replacementText, targetId) {
 }
 
 const fixtures = runPython(["--create-test-fixtures", join(root, "fixtures")]).payload;
-check("Portable test fixtures are created without Office dependencies", existsSync(fixtures.docx) && existsSync(fixtures.xlsx), JSON.stringify(fixtures));
+check("Portable test fixtures are created without Office dependencies", existsSync(fixtures.docx) && existsSync(fixtures.xlsx) && existsSync(fixtures.complexDocx) && existsSync(fixtures.complexXlsx), JSON.stringify(fixtures));
 
 const docxRequest = request("word_docx", "paragraph:2", "周五", "周一", "word-paragraph-2");
 const docxValidation = validateMultimodalSurgicalMask(docxRequest);
@@ -125,6 +125,36 @@ check("Excel edits only the confirmed cell text", xlsxRun.targetedEdit.nativeTar
 check("Excel source file stays untouched", xlsxRun.verification.originalFileUnchanged && xlsxRun.locks.sourceOverwritten === false, xlsxRun.sourceFileSha256Before);
 check("Excel package changes only the selected worksheet XML", xlsxRun.changedPackageParts.length === 1 && xlsxRun.changedPackageParts[0] === "xl/worksheets/sheet1.xml", JSON.stringify(xlsxRun.changedPackageParts));
 check("Excel report narrows review to the selected cell", xlsxRun.verification.fullDocumentRecheckRequired === false && xlsxRun.verification.reviewScope === "进度表!B2", JSON.stringify(xlsxRun.verification));
+
+const tableRequest = request("word_docx", "table:1/row:1/cell:1/paragraph:1", "审核中", "已审核", "word-table-target");
+const tableRequestPath = join(root, "word-table-request.json");
+const tableOutput = join(root, "word-table-edited.docx");
+writeFileSync(tableRequestPath, JSON.stringify(tableRequest, null, 2), "utf8");
+const tableRun = runPython(["--request", tableRequestPath, "--input", fixtures.complexDocx, "--output", tableOutput]).payload;
+check("Word table locator edits the exact table-cell paragraph", tableRun.targetedEdit.targetKind === "table_cell_paragraph" && tableRun.targetedEdit.targetAfter === "已审核", JSON.stringify(tableRun.targetedEdit));
+check("Word replacement works across rich-text runs", tableRun.targetedEdit.textRunCount === 2 && tableRun.targetedEdit.richTextRunPropertiesPreserved === true);
+check("Word comments and styles remain byte-identical", tableRun.changedPackageParts.length === 1 && tableRun.changedPackageParts[0] === "word/document.xml");
+
+const richExcelRequest = request("excel_xlsx", "进度表!A1", "待处理", "已完成", "excel-rich-merged-A1");
+const richExcelRequestPath = join(root, "excel-rich-request.json");
+const richExcelOutput = join(root, "excel-rich-edited.xlsx");
+writeFileSync(richExcelRequestPath, JSON.stringify(richExcelRequest, null, 2), "utf8");
+const richExcelRun = runPython(["--request", richExcelRequestPath, "--input", fixtures.complexXlsx, "--output", richExcelOutput]).payload;
+check("Excel merged anchor can be edited safely", richExcelRun.targetedEdit.mergedRange === "A1:B1" && richExcelRun.targetedEdit.mergedAnchor === "A1");
+check("Excel shared rich text is localized and preserves run properties", richExcelRun.targetedEdit.richTextRunPropertiesPreserved === true && richExcelRun.targetedEdit.targetAfter === "已完成");
+check("Excel styles, comments, formulas, and shared-string parts remain unchanged", richExcelRun.changedPackageParts.length === 1 && richExcelRun.changedPackageParts[0] === "xl/worksheets/sheet1.xml");
+
+const nonAnchorRequest = request("excel_xlsx", "进度表!B1", "待处理", "不应写入", "excel-merged-non-anchor");
+const nonAnchorPath = join(root, "excel-merged-non-anchor.json");
+writeFileSync(nonAnchorPath, JSON.stringify(nonAnchorRequest, null, 2), "utf8");
+const nonAnchor = runPython(["--request", nonAnchorPath, "--input", fixtures.complexXlsx, "--output", join(root, "non-anchor.xlsx")], false);
+check("Excel merged non-anchor target is blocked", nonAnchor.result.status !== 0 && /not its anchor A1/.test(nonAnchor.payload.error), nonAnchor.payload.error);
+
+const formulaRequest = request("excel_xlsx", "进度表!C1", "2", "3", "excel-formula-C1");
+const formulaPath = join(root, "excel-formula.json");
+writeFileSync(formulaPath, JSON.stringify(formulaRequest, null, 2), "utf8");
+const formula = runPython(["--request", formulaPath, "--input", fixtures.complexXlsx, "--output", join(root, "formula.xlsx")], false);
+check("Excel formula replacement remains blocked", formula.result.status !== 0 && /contains a formula/.test(formula.payload.error), formula.payload.error);
 
 const badRequest = request("excel_xlsx", "进度表!B2", "不存在的原文", "不应写入", "excel-bad-source");
 const badRequestPath = join(root, "bad-request.json");

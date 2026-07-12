@@ -18,29 +18,29 @@ const teacherFacingNames = [
   "show_teaching_card",
   "run_apprentice_profile",
   "review_apprentice_profile",
-  "correct_last_result"
+  "correct_last_result",
+  "manage_native_selection",
+  "manage_mask_correction"
 ];
 
 const requiredAdvancedNames = [
   "continue_teaching",
   "create_plugin_health_index",
   "create_plugin_manual_test_readiness_pack",
-  "create_plugin_manual_test_result_receipt_template",
   "create_plugin_manual_test_session_packet",
   "validate_plugin_manual_test_result_receipt",
-  "create_tlcl_direction_operational_console",
-  "create_tlcl_next_route_input_contract",
-  "create_tlcl_runtime_gate",
-  "create_tlcl_reasoning_budget_governor",
-  "create_tlcl_rag_evidence_attachment",
-  "create_real_case_pilot_intake",
   "create_packaging_design_workflow",
   "create_transparent_sketch_overlay_kit",
   "create_office_text_mask_workbench",
   "create_engineering_software_mask_workbench",
   "validate_multimodal_surgical_mask_correction",
   "apply_surgical_office_text_edit",
-  "resolve_learned_rule_conflicts"
+  "resolve_learned_rule_conflicts",
+  "approve_teaching_memory",
+  "save_apprentice_memory",
+  "correct_apprentice_memory",
+  "manage_native_selection",
+  "manage_mask_correction"
 ];
 
 const checks = [];
@@ -156,15 +156,54 @@ check(
   `tools=${defaultNames.join(",")}`
 );
 
-const advancedList = await withServer({ TRANSPARENT_AI_APPRENTICE_EXPOSE_ADVANCED_TOOLS: "1" }, (server) =>
+const correctionStore = join(repoRoot, ".ta-smoke", "mcp-tool-surface-fast", "mask-corrections", "store.json");
+const managedCorrection = await withServer({}, async server => parseToolJson(await server.rpc(
+  "tools/call",
+  {
+    name: "manage_mask_correction",
+    arguments: {
+      action: "submit",
+      storePath: correctionStore,
+      packet: {
+        format: "mingtu_multimodal_surgical_mask_correction_v1",
+        surfaceKind: "office_native_text",
+        source: { nativeLocator: "paragraph:2" },
+        correction: { operation: "replace_text", originalText: "周五", replacementText: "周一" },
+        maskSemantics: { modify: [{ id: "mcp-change-1" }], protect: [], reference: [] },
+        reviewOnly: true,
+        accepted: false,
+        ruleEnabled: false,
+        packagingGated: true
+      }
+    }
+  },
+  10000
+)));
+check(
+  "Default unified mask correction tool persists a review task",
+  managedCorrection.status === "pending_teacher_review" && managedCorrection.locks?.accepted === false,
+  `id=${managedCorrection.id}; store=${managedCorrection.storePath}`
+);
+
+const advancedList = await withServer({ TRANSPARENT_AI_APPRENTICE_TOOL_MODE: "advanced" }, (server) =>
   server.rpc("tools/list", {}, 10000)
 );
 const advancedNames = namesFromList(advancedList);
 const missingAdvancedNames = requiredAdvancedNames.filter((name) => !advancedNames.includes(name));
 check(
-  "Advanced MCP surface exposes the maintainer and TLCL core tools",
-  advancedList.mode === "advanced" && advancedNames.length >= 300 && missingAdvancedNames.length === 0,
+  "Advanced MCP surface exposes a bounded task-oriented tool set",
+  advancedList.mode === "advanced" && advancedNames.length >= 20 && advancedNames.length <= 30 && missingAdvancedNames.length === 0,
   `mode=${advancedList.mode}; tools=${advancedNames.length}; missing=${missingAdvancedNames.join(",") || "none"}`
+);
+
+const fullList = await withServer({ TRANSPARENT_AI_APPRENTICE_TOOL_MODE: "full" }, server =>
+  server.rpc("tools/list", {}, 10000)
+);
+const fullNames = namesFromList(fullList);
+check(
+  "Full maintainer surface remains available only through explicit full mode",
+  fullList.mode === "full" && fullNames.length >= 380 && fullNames.includes("create_tlcl_runtime_gate"),
+  `mode=${fullList.mode}; tools=${fullNames.length}`
 );
 
 const defaultTeachResult = await withServer({}, async (server) =>
@@ -194,7 +233,7 @@ check(
   `route=${defaultTeachResult.route || "unknown"}; bytes=${serializedTeachResult.length}`
 );
 
-const healthIndexResult = await withServer({ TRANSPARENT_AI_APPRENTICE_EXPOSE_ADVANCED_TOOLS: "1" }, async (server) =>
+const healthIndexResult = await withServer({ TRANSPARENT_AI_APPRENTICE_TOOL_MODE: "advanced" }, async (server) =>
   parseToolJson(
     await server.rpc(
       "tools/call",
@@ -217,7 +256,7 @@ check(
   `status=${healthIndexResult.status}; index=${healthIndexResult.indexPath || "missing"}`
 );
 
-const packagingWorkflowResult = await withServer({ TRANSPARENT_AI_APPRENTICE_EXPOSE_ADVANCED_TOOLS: "1" }, async (server) =>
+const packagingWorkflowResult = await withServer({ TRANSPARENT_AI_APPRENTICE_TOOL_MODE: "advanced" }, async (server) =>
   parseToolJson(
     await server.rpc(
       "tools/call",
@@ -250,7 +289,7 @@ check(
 
 const surgicalRoot = join(repoRoot, ".ta-smoke", "mcp-tool-surface-fast", "surgical-correction");
 mkdirSync(surgicalRoot, { recursive: true });
-const advancedEnv = { TRANSPARENT_AI_APPRENTICE_EXPOSE_ADVANCED_TOOLS: "1" };
+const advancedEnv = { TRANSPARENT_AI_APPRENTICE_TOOL_MODE: "advanced" };
 
 const originalImageKitResult = await withServer(advancedEnv, async (server) =>
   parseToolJson(

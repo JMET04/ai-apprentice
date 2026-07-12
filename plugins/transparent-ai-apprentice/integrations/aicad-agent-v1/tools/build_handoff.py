@@ -447,7 +447,7 @@ def create_contracts() -> None:
     request = {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "$id": "https://mingtu.local/schemas/mingtu-aicad-request-v1.schema.json",
-        "title": "Strict MingTu AICAD request", "type": "object", "additionalProperties": False,
+        "title": "Strict AI Apprentice AICAD request", "type": "object", "additionalProperties": False,
         "required": ["format", "handoffId", "mode", "project", "product", "materials", "engineeringTruth", "evidence", "requestedArtifacts", "hostPolicy", "safety"],
         "$defs": {"artifactRef": ref, "visualArtifactRef": visual_ref, "safety": contract_safety()},
         "properties": {
@@ -485,7 +485,7 @@ def create_contracts() -> None:
     }
     result = {
         "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://mingtu.local/schemas/mingtu-aicad-result-v1.schema.json",
-        "title": "MingTu AICAD result", "type": "object", "additionalProperties": False,
+        "title": "AI Apprentice AICAD result", "type": "object", "additionalProperties": False,
         "required": ["format", "handoffId", "requestSha256", "status", "provenance", "artifacts", "validation", "hostExecutions", "errors", "preventionRuleDrafts", "safety"],
         "$defs": {"safety": contract_safety()},
         "properties": {

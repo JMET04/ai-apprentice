@@ -1,0 +1,1 @@
+{"brand":"AI 学徒","assistant":{"name":"桌面信标","role":"唤起入口与状态反馈","prohibited":["受保护角色名称","圆头角色轮廓","口袋","铃铛","拟人化能力宣称"]},"maskColors":{"modify":"#D4473B","protect":"#2D7A50","reference":"#1769A6"},"shell":{"canvas":"#E9EDEF","workspace":"#D2D8DC","surface":"#F8F9FA","ink":"#172126","border":"#C1CBD0"},"radiusMax":6,"motionMs":{"feedback":140,"panel":180}}

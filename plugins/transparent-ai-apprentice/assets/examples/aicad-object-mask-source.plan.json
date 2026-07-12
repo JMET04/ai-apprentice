@@ -1,0 +1,51 @@
+{
+  "schema_version": "2.0",
+  "drawing": {
+    "name": "AI 学徒工程对象蒙版验证图",
+    "units": "mm",
+    "origin": [0, 0],
+    "tolerance": 0.000001
+  },
+  "steps": [
+    {
+      "id": "D04",
+      "type": "line",
+      "purpose": "待修改的箱口宽度对象",
+      "reasoning": "D04 是老师明确选中的唯一修改对象，初始长度为 420 mm。",
+      "start": { "ref": "origin" },
+      "construction": { "kind": "vector", "dx": 420, "dy": 0 },
+      "constraints": [
+        { "kind": "horizontal" },
+        { "kind": "length", "value": 420 }
+      ]
+    },
+    {
+      "id": "D08",
+      "type": "line",
+      "purpose": "受保护的高度对象",
+      "reasoning": "D08 必须保持 240 mm，不受 D04 修改影响。",
+      "start": { "ref": "D04.start" },
+      "construction": { "kind": "perpendicular", "to": "D04", "length": 240, "turn": "left" },
+      "constraints": [
+        { "kind": "start_coincident", "target": "D04.start" },
+        { "kind": "vertical" },
+        { "kind": "perpendicular", "target": "D04" },
+        { "kind": "length", "value": 240 }
+      ]
+    },
+    {
+      "id": "D10",
+      "type": "line",
+      "purpose": "受保护的内部宽度对象",
+      "reasoning": "D10 必须保持 310 mm，不受 D04 修改影响。",
+      "start": { "ref": "D04.start" },
+      "construction": { "kind": "parallel", "to": "D04", "length": 310, "direction": "same" },
+      "constraints": [
+        { "kind": "start_coincident", "target": "D04.start" },
+        { "kind": "horizontal" },
+        { "kind": "parallel", "target": "D04" },
+        { "kind": "length", "value": 310 }
+      ]
+    }
+  ]
+}

@@ -124,8 +124,12 @@ const requiredPackageScripts = {
     "node plugins/transparent-ai-apprentice/scripts/smoke-tlcl-market-response-provider-boundary-audit.mjs"
 };
 
+const workspaceTempWrapper = "node scripts/run-with-workspace-temp.mjs -- ";
+const packageCommandMatches = (actual, expected) =>
+  actual === expected || actual === `${workspaceTempWrapper}${expected}`;
+
 const missingPackageScripts = Object.entries(requiredPackageScripts)
-  .filter(([name, command]) => packageScripts[name] !== command)
+  .filter(([name, command]) => !packageCommandMatches(packageScripts[name], command))
   .map(([name]) => name);
 
 const coreMcpTools = [
@@ -302,7 +306,7 @@ const index = {
     requiredPackageScripts: Object.entries(requiredPackageScripts).map(([name, command]) => ({
       name,
       command,
-      present: packageScripts[name] === command
+      present: packageCommandMatches(packageScripts[name], command)
     })),
     missingPackageScripts
   },

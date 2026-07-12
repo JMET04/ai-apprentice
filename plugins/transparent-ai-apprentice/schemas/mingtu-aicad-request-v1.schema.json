@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mingtu.local/schemas/mingtu-aicad-request-v1.schema.json",
-  "title": "Strict MingTu AICAD request",
+  "title": "Strict AI Apprentice AICAD request",
   "type": "object",
   "additionalProperties": false,
   "required": [

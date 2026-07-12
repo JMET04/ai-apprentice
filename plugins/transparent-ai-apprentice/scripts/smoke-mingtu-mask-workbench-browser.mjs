@@ -43,7 +43,7 @@ const executablePath = [
   "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
   "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe"
 ].find((candidate) => candidate && existsSync(candidate));
-const browser = await chromium.launch({ headless: true, ...(executablePath ? { executablePath } : {}) });
+const browser = await chromium.launch({ headless: true, args: ["--disable-gpu"], ...(executablePath ? { executablePath } : {}) });
 const checks = [];
 
 function addCheck(name, pass, evidence) {
@@ -156,8 +156,8 @@ try {
 }
 
 addCheck(
-  "Generated page is standalone Chinese MingTu UI",
-  html.includes("明徒 AI") && html.includes("老师蒙版纠错台") && html.includes("人工审校边界") && !html.includes('__INLINE_STYLES__') && !html.includes('__INLINE_SCRIPT__'),
+  "Generated page is standalone Chinese AI Apprentice UI",
+  html.includes("AI 学徒") && html.includes("老师蒙版纠错台") && html.includes("人工审校边界") && !html.includes('__INLINE_STYLES__') && !html.includes('__INLINE_SCRIPT__'),
   generated.browserOverlay
 );
 

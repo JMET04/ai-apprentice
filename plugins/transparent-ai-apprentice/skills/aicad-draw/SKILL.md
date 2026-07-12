@@ -45,7 +45,7 @@ Never claim that a drawing was created when the tool returned `ok: false`, when 
 
 ## CLI fallback
 
-When MCP tools are unavailable, invoke the integrated script from the MingTu repository root:
+When MCP tools are unavailable, invoke the integrated script from the AI Apprentice repository root:
 
 ```powershell
 python plugins/transparent-ai-apprentice/integrations/aicad-agent-v1/plugin/aicad-agent/scripts/aicad_agent.py capabilities

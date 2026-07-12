@@ -28,6 +28,7 @@ const software = argValue("--software", argValue("--app", "target software"));
 const mode = argValue("--mode", "2d_3d");
 const contentType = argValue("--content-type", "text");
 const demoPreset = argValue("--demo-preset", "");
+const apiEndpoint = argValue("--api-endpoint", "http://127.0.0.1:4317/api/mask-corrections");
 if (!["text", "engineering"].includes(contentType)) {
   throw new Error(`Unsupported --content-type: ${contentType}. This separate workbench supports text or engineering only.`);
 }
@@ -675,8 +676,9 @@ const workbenchRoot = resolve(
 const workbenchTemplatePath = join(workbenchRoot, "index.template.html");
 const workbenchStylesPath = join(workbenchRoot, "styles.css");
 const workbenchScriptPath = join(workbenchRoot, "app.js");
-if (![workbenchTemplatePath, workbenchStylesPath, workbenchScriptPath].every(existsSync)) {
-  throw new Error(`MingTu mask workbench assets are incomplete under ${workbenchRoot}`);
+const submissionClientPath = resolve(__dirname, "..", "assets", "mask-submission-client.js");
+if (![workbenchTemplatePath, workbenchStylesPath, workbenchScriptPath, submissionClientPath].every(existsSync)) {
+  throw new Error(`AI Apprentice mask workbench assets are incomplete under ${workbenchRoot}`);
 }
 
 function replaceToken(text, token, value) {
@@ -707,6 +709,7 @@ const workbenchConfig = {
   mode,
   contentType,
   demoPreset,
+  apiEndpoint,
   initialBackdropName,
   initialBackdropDataUrl,
   initialBackdropSha256,
@@ -721,6 +724,7 @@ const workbenchConfig = {
 let html = readFileSync(workbenchTemplatePath, "utf8");
 html = replaceToken(html, "__INLINE_STYLES__", readFileSync(workbenchStylesPath, "utf8"));
 html = replaceToken(html, "__INLINE_SCRIPT__", readFileSync(workbenchScriptPath, "utf8"));
+html = replaceToken(html, "__MASK_SUBMISSION_CLIENT__", readFileSync(submissionClientPath, "utf8"));
 html = replaceToken(html, "__OVERLAY_CONFIG__", inlineJson(workbenchConfig));
 html = replaceToken(html, "__KIT_ID__", htmlEscape(kitId));
 html = replaceToken(html, "__SOFTWARE__", htmlEscape(software));
@@ -942,7 +946,7 @@ const manifest = {
 };
 
 writeFileSync(readmePath, [
-  contentType === "text" ? "# 明徒 AI 办公文字修改蒙版" : "# 明徒 AI 工程软件修改蒙版",
+  contentType === "text" ? "# AI 学徒办公文字修改蒙版" : "# AI 学徒工程软件修改蒙版",
   "",
   `任务：${goal}`,
   `目标工具：${software}`,

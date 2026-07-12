@@ -4,6 +4,23 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import readline from "node:readline";
+import {
+  getMaskCorrection,
+  listMaskCorrections,
+  recordMaskCorrectionResult,
+  retryMaskCorrection,
+  reviewMaskCorrection,
+  submitMaskCorrection
+} from "./mask-correction-store.mjs";
+import {
+  contextActionToMaskPacket,
+  createNativeContextAction,
+  getNativeContextAction,
+  getNativeSelection,
+  ingestLatestNativeSelection,
+  linkContextActionCorrection,
+  listNativeSelections
+} from "./native-selection-store.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pluginRoot = resolve(__dirname, "..");
@@ -56,6 +73,84 @@ function mergeGeneratedPacket(result, pathKey) {
 }
 
 const tools = [
+  {
+    name: "manage_native_selection",
+    description: "Agent-plugin tool for reading a Word or engineering-software native selection, preparing a bounded change, previewing it, submitting it into teacher review, and applying an explicitly reviewed Word or AutoCAD edit. Reasoning belongs to the connected host Agent; this plugin has no model runtime, model API, or API key.",
+    inputSchema: {
+      type: "object",
+      required: ["action"],
+      properties: {
+        action: { type: "string", enum: ["read_latest", "list", "get", "create_workbench", "create_action", "get_action", "submit_action", "execute_word_live", "execute_autocad_live"] },
+        filePath: { type: "string", description: "Optional explicit ai_apprentice_native_selection_v1 JSON file." },
+        inboxPath: { type: "string", description: "Optional native selection inbox; defaults inside .transparent-apprentice." },
+        selectionStorePath: { type: "string", description: "Optional durable native selection store." },
+        correctionStorePath: { type: "string", description: "Optional durable correction task store." },
+        outputDir: { type: "string", description: "Optional workbench or reviewed adapter evidence directory." },
+        surface: { type: "string", enum: ["packaging", "office", "engineering"], description: "Workbench surface. Native selection records infer office or engineering when omitted." },
+        submitEndpoint: { type: "string", description: "Optional existing mask-correction service endpoint; no model API is created." },
+        id: { type: "string", description: "Selection id for get/create_action or action id for get_action/submit_action." },
+        instruction: { type: "string", description: "Teacher's natural-language modification opinion." },
+        teacherInstructionRevision: { type: "integer", minimum: 1, description: "Optional incremental opinion revision recorded by the desktop capture helper." },
+        handoffRequestedAt: { type: "string", description: "Optional ISO timestamp from the capture helper." },
+        interactionPreference: {
+          type: "object",
+          description: "Host-Agent work preference; screen control is false unless explicitly opted in.",
+          properties: {
+            backgroundPreparation: { type: "boolean" },
+            allowScreenControl: { type: "boolean" },
+            keepHostDocumentOpen: { type: "boolean" }
+          },
+          additionalProperties: false
+        },
+        requestedChange: {
+          type: "object",
+          description: "Structured bounded change derived from the teacher's opinion before review.",
+          required: ["operation"],
+          properties: {
+            operation: { type: "string", enum: ["replace_text", "delete_text", "set_dimension", "offset_face", "change_property", "move_object", "other"] },
+            replacementText: { type: "string" },
+            targetValue: { type: ["number", "string"] },
+            unit: { type: "string" },
+            propertyName: { type: "string" },
+            propertyValue: {},
+            delta: {
+              type: "object",
+              required: ["x", "y", "z"],
+              properties: { x: { type: "number" }, y: { type: "number" }, z: { type: "number" } },
+              additionalProperties: false
+            }
+          },
+          additionalProperties: true
+        },
+        status: { type: "string" },
+        limit: { type: "number" }
+      }
+    }
+  },
+  {
+    name: "manage_mask_correction",
+    description: "Submit, inspect, review, retry, list, or record the result of a packaging-mask, Office-text, or engineering-object correction through one durable task entry.",
+    inputSchema: {
+      type: "object",
+      required: ["action"],
+      properties: {
+        action: { type: "string", enum: ["submit", "get", "list", "review", "retry", "execute_aicad", "record_result"] },
+        packet: { type: "object", description: "mingtu_multimodal_surgical_mask_correction_v1 packet for submit." },
+        metadata: { type: "object", description: "Optional submission metadata." },
+        id: { type: "string", description: "Correction id for get, review, retry, or record_result." },
+        decision: { type: "string", enum: ["needs_changes", "approved_for_separate_execution", "blocked"] },
+        note: { type: "string" },
+        reviewer: { type: "string" },
+        resultStatus: { type: "string", enum: ["succeeded", "failed", "blocked"] },
+        evidence: { type: "object" },
+        sourcePlan: { type: "string", description: "Source AICAD plan for execute_aicad." },
+        outputDir: { type: "string", description: "Output directory for execute_aicad." },
+        status: { type: "string", description: "Optional list status filter." },
+        limit: { type: "number" },
+        storePath: { type: "string", description: "Optional correction store path." }
+      }
+    }
+  },
   {
     name: "compile_human_communication_guidance",
     description: "Compile context-aware guidance for a natural, direct, warm, and honest user-facing reply without writing or sending the reply.",
@@ -8234,7 +8329,7 @@ const tools = [
   },
   {
     name: "create_packaging_design_workflow",
-    description: "Create or advance the gated MingTu packaging workflow: clarify requirements, plan, generate an Image2 sample, self-check, collect mask correction, locally edit, and prepare an AICAD handoff without stage skipping.",
+    description: "Create or advance the gated AI Apprentice packaging workflow: clarify requirements, plan, generate an Image2 sample, self-check, collect mask correction, locally edit, and prepare an AICAD handoff without stage skipping.",
     inputSchema: {
       type: "object",
       properties: {
@@ -8748,16 +8843,51 @@ const teacherFacingToolNames = new Set([
   "show_teaching_card",
   "run_apprentice_profile",
   "review_apprentice_profile",
-  "correct_last_result"
+  "correct_last_result",
+  "manage_native_selection",
+  "manage_mask_correction"
 ]);
 
-function exposeAdvancedTools() {
-  return process.env.TRANSPARENT_AI_APPRENTICE_EXPOSE_ADVANCED_TOOLS === "1";
+const taskFacingAdvancedToolNames = new Set([
+  ...teacherFacingToolNames,
+  "compile_human_communication_guidance",
+  "create_plugin_health_index",
+  "create_plugin_manual_test_readiness_pack",
+  "create_plugin_manual_test_session_packet",
+  "validate_plugin_manual_test_result_receipt",
+  "start_guided_teaching",
+  "continue_teaching",
+  "create_visual_teaching_kit",
+  "create_voice_teaching_kit",
+  "create_workalong_teaching_kit",
+  "create_transparent_sketch_overlay_kit",
+  "create_office_text_mask_workbench",
+  "create_engineering_software_mask_workbench",
+  "validate_multimodal_surgical_mask_correction",
+  "apply_surgical_office_text_edit",
+  "resolve_learned_rule_conflicts",
+  "create_packaging_design_workflow",
+  "create_teaching_session",
+  "replay_teaching_session",
+  "review_teaching_session",
+  "approve_teaching_memory",
+  "save_apprentice_memory",
+  "correct_apprentice_memory"
+]);
+
+function toolSurfaceMode() {
+  const requested = process.env.TRANSPARENT_AI_APPRENTICE_TOOL_MODE?.toLowerCase();
+  const legacy = process.env.TRANSPARENT_AI_APPRENTICE_EXPOSE_ADVANCED_TOOLS?.toLowerCase();
+  if (requested === "full" || legacy === "full" || legacy === "1") return "full";
+  if (requested === "advanced") return "advanced";
+  return "teacher_facing";
 }
 
 function listedTools() {
-  if (exposeAdvancedTools()) return tools;
-  return tools.filter((tool) => teacherFacingToolNames.has(tool.name));
+  const mode = toolSurfaceMode();
+  if (mode === "full") return tools;
+  if (mode === "advanced") return tools.filter(tool => taskFacingAdvancedToolNames.has(tool.name));
+  return tools.filter(tool => teacherFacingToolNames.has(tool.name));
 }
 
 function hasVoiceTeachingIntent(...values) {
@@ -23690,6 +23820,151 @@ function teachApprenticeCard(raw) {
 }
 
 async function callTool(name, input = {}) {
+  if (name === "manage_native_selection") {
+    const selectionStorePath = input.selectionStorePath ?? "";
+    if (input.action === "create_workbench") {
+      let surface = input.surface ?? "";
+      if (input.id) {
+        const selection = getNativeSelection({ id: input.id, storePath: selectionStorePath });
+        if (!selection) throw new Error(`Native selection not found: ${input.id}`);
+        surface ||= selection.snapshot.surfaceKind === "office_native_text" ? "office" : "engineering";
+      }
+      surface ||= "office";
+      const args = ["--surface", surface, "--output-dir", input.outputDir ?? join(repoRoot, ".transparent-apprentice", "native-selection-workbenches")];
+      if (input.id) args.push("--selection-id", input.id);
+      if (input.selectionStorePath) args.push("--selection-store", input.selectionStorePath);
+      if (input.submitEndpoint) args.push("--submit-endpoint", input.submitEndpoint);
+      return textContent(runNodeScript("create-native-selection-workbench-v2.mjs", args));
+    }
+    if (input.action === "read_latest") {
+      return textContent(ingestLatestNativeSelection({
+        filePath: input.filePath ?? "",
+        inboxPath: input.inboxPath ?? "",
+        storePath: selectionStorePath
+      }));
+    }
+    if (input.action === "list") {
+      return textContent(listNativeSelections({
+        storePath: selectionStorePath,
+        status: input.status ?? "",
+        limit: input.limit ?? 50
+      }));
+    }
+    if (input.action === "get") {
+      const selection = getNativeSelection({ id: input.id, storePath: selectionStorePath });
+      if (!selection) throw new Error(`Native selection not found: ${input.id}`);
+      return textContent(selection);
+    }
+    if (input.action === "create_action") {
+      return textContent(createNativeContextAction({
+        selectionId: input.id,
+        instruction: input.instruction,
+        requestedChange: input.requestedChange,
+        teacherInstructionRevision: input.teacherInstructionRevision ?? null,
+        handoffRequestedAt: input.handoffRequestedAt ?? "",
+        interactionPreference: input.interactionPreference ?? null,
+        storePath: selectionStorePath
+      }));
+    }
+    if (input.action === "get_action") {
+      const action = getNativeContextAction({ id: input.id, storePath: selectionStorePath });
+      if (!action) throw new Error(`Native context action not found: ${input.id}`);
+      return textContent(action);
+    }
+    if (input.action === "submit_action") {
+      const action = getNativeContextAction({ id: input.id, storePath: selectionStorePath });
+      if (!action) throw new Error(`Native context action not found: ${input.id}`);
+      const selection = getNativeSelection({ id: action.selectionId, storePath: selectionStorePath });
+      if (!selection) throw new Error(`Native selection not found: ${action.selectionId}`);
+      const correction = submitMaskCorrection({
+        packet: contextActionToMaskPacket({ action, selection }),
+        metadata: {
+          source: "agent_plugin_native_selection",
+          selectionId: selection.id,
+          contextActionId: action.id
+        },
+        storePath: input.correctionStorePath ?? ""
+      });
+      const linkedAction = linkContextActionCorrection({
+        actionId: action.id,
+        correctionId: correction.id,
+        storePath: selectionStorePath
+      });
+      return textContent({ action: linkedAction, correction });
+    }
+    if (input.action === "execute_word_live") {
+      if (!input.id) throw new Error("execute_word_live requires the reviewed correction id in id.");
+      const args = [
+        "--action", "apply",
+        "--correction-id", input.id,
+        "--output-dir", input.outputDir ?? join(repoRoot, ".transparent-apprentice", "word-native-selection-edits")
+      ];
+      if (input.correctionStorePath) args.push("--correction-store", input.correctionStorePath);
+      if (input.selectionStorePath) args.push("--selection-store", input.selectionStorePath);
+      return textContent(runNodeScript("word-native-selection-adapter.mjs", args));
+    }
+    if (input.action === "execute_autocad_live") {
+      if (!input.id) throw new Error("execute_autocad_live requires the reviewed correction id in id.");
+      const args = [
+        "--action", "apply",
+        "--correction-id", input.id,
+        "--output-dir", input.outputDir ?? join(repoRoot, ".transparent-apprentice", "autocad-native-selection-edits")
+      ];
+      if (input.correctionStorePath) args.push("--correction-store", input.correctionStorePath);
+      if (input.selectionStorePath) args.push("--selection-store", input.selectionStorePath);
+      return textContent(runNodeScript("autocad-native-selection-adapter.mjs", args));
+    }
+    throw new Error(`Unsupported native selection action: ${input.action}`);
+  }
+
+  if (name === "manage_mask_correction") {
+    const common = { storePath: input.storePath ?? "" };
+    if (input.action === "submit") {
+      return textContent(submitMaskCorrection({ packet: input.packet, metadata: input.metadata ?? {}, ...common }));
+    }
+    if (input.action === "get") {
+      const record = getMaskCorrection({ id: input.id, ...common });
+      if (!record) throw new Error(`Mask correction not found: ${input.id}`);
+      return textContent(record);
+    }
+    if (input.action === "list") {
+      return textContent(listMaskCorrections({ status: input.status ?? "", limit: input.limit ?? 50, ...common }));
+    }
+    if (input.action === "review") {
+      return textContent(reviewMaskCorrection({
+        id: input.id,
+        decision: input.decision,
+        note: input.note ?? "",
+        reviewer: input.reviewer ?? "teacher",
+        ...common
+      }));
+    }
+    if (input.action === "retry") {
+      return textContent(retryMaskCorrection({ id: input.id, reason: input.note ?? "manual_retry", ...common }));
+    }
+    if (input.action === "execute_aicad") {
+      if (!input.id || !input.sourcePlan) throw new Error("execute_aicad requires id and sourcePlan.");
+      const args = [
+        "--action", "apply",
+        "--correction-id", input.id,
+        "--source-plan", input.sourcePlan,
+        "--output-dir", input.outputDir ?? join(repoRoot, ".transparent-apprentice", "aicad-object-edits")
+      ];
+      if (input.storePath) args.push("--store", input.storePath);
+      return textContent(runNodeScript("aicad-object-mask-adapter.mjs", args));
+    }
+    if (input.action === "record_result") {
+      return textContent(recordMaskCorrectionResult({
+        id: input.id,
+        status: input.resultStatus,
+        evidence: input.evidence ?? {},
+        note: input.note ?? "",
+        ...common
+      }));
+    }
+    throw new Error(`Unsupported mask correction action: ${input.action}`);
+  }
+
   if (name === "compile_human_communication_guidance") {
     const args = ["--message", input.message];
     if (input.context) args.push("--context", input.context);
@@ -33822,7 +34097,7 @@ rl.on("line", async (line) => {
       respond(message.id, {
         protocolVersion: "2024-11-05",
         capabilities: { tools: {} },
-        serverInfo: { name: "mingtu-ai", version: "1.0.0" }
+        serverInfo: { name: "ai-apprentice", version: "1.0.0" }
       });
       return;
     }
@@ -33834,8 +34109,9 @@ rl.on("line", async (line) => {
     if (message.method === "tools/list") {
       respond(message.id, {
         tools: listedTools(),
-        mode: exposeAdvancedTools() ? "advanced" : "teacher_facing",
-        advancedToolsAvailableWithEnv: "TRANSPARENT_AI_APPRENTICE_EXPOSE_ADVANCED_TOOLS=1"
+        mode: toolSurfaceMode(),
+        advancedToolsAvailableWithEnv: "TRANSPARENT_AI_APPRENTICE_TOOL_MODE=advanced",
+        fullMaintainerToolsAvailableWithEnv: "TRANSPARENT_AI_APPRENTICE_TOOL_MODE=full"
       });
       return;
     }

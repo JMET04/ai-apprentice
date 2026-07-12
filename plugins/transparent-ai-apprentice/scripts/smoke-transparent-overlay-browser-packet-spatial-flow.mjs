@@ -173,8 +173,8 @@ const overlayKit = runNodeScript("create-transparent-sketch-overlay-kit.mjs", [
   join(smokeRoot, "overlay-kit")
 ]);
 const html = readFileSync(overlayKit.browserOverlay, "utf8");
-if (!html.includes("明徒 AI") || !html.includes("老师蒙版纠错")) {
-  throw new Error("Generated overlay did not include the MingTu mask workbench UI.");
+if (!html.includes("AI 学徒") || !html.includes("老师蒙版纠错")) {
+  throw new Error("Generated overlay did not include the AI Apprentice mask workbench UI.");
 }
 const browserExecutable = [
   process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,

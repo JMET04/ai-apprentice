@@ -1,20 +1,22 @@
 {
   "name": "transparent-ai-apprentice",
   "version": "1.0.0",
-  "description": "MingTu AI is a teachable, traceable apprentice for visual correction, reusable rules, and reviewed packaging-to-CAD workflows.",
+  "description": "AI Apprentice is an Agent plugin for teachable, traceable visual correction, native host selections, reusable rules, and reviewed packaging-to-CAD workflows. It uses the host Agent and requires no separate model API or API key.",
   "author": {
-    "name": "MingTu AI"
+    "name": "AI Apprentice"
   },
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
-    "displayName": "明徒 AI",
-    "shortDescription": "看得见成长，教得会做事。",
-    "longDescription": "明徒 AI 把 Codex 变成可带教、可纠错、可追踪的智能学徒。原有工程图片蒙版保持独立，继续用于图片上的画笔、圈选、框选、箭头和文字纠错。Word/Excel 文字修改与工程软件对象修改分别使用两套独立局部修改蒙版工作台，不在原蒙版中切换：文字版绑定段落或单元格定位器并验证未选中 Office 部件不变；工程软件版绑定对象编号、参数、约束、保护区和参考关系。学会的规则出现差异时会按上下文、具体性和老师例外做决策，并显式标记疑点。Image2 与 AICAD 流程仍保留证据和人工审核边界。",
-    "developerName": "MingTu AI",
+    "displayName": "AI 学徒",
+    "shortDescription": "通过示范、纠错和审核，逐步学会做事。",
+    "longDescription": "AI 学徒把 Codex 变成可带教、可纠错、可追踪的工作助手。原有工程图片蒙版保持独立，继续用于图片上的画笔、圈选、框选、箭头和文字纠错。Word/Excel 文字修改与工程软件对象修改分别使用两套独立局部修改蒙版工作台，不在原蒙版中切换：文字版绑定段落或单元格定位器并验证未选中 Office 部件不变；工程软件版绑定对象编号、参数、约束、保护区和参考关系。学会的规则出现差异时会按上下文、具体性和老师例外做决策，并显式标记疑点。Image2 与 AICAD 流程仍保留证据和人工审核边界。",
+    "developerName": "AI Apprentice",
     "category": "Productivity",
     "capabilities": [
       "skills",
+      "host Agent execution",
+      "no separate model API or API key",
       "local scripts",
       "teaching templates",
       "structured traces",
@@ -26,6 +28,7 @@
       "standalone Office text mask",
       "standalone engineering software object mask",
       "native Word paragraph and Excel cell targeted edits",
+      "native Word and CAD selection handoff to the host Agent",
       "visible context-aware rule conflict decisions",
       "reviewed packaging-to-CAD workflow",
       "AICAD deterministic 2D and SolidWorks 3D"

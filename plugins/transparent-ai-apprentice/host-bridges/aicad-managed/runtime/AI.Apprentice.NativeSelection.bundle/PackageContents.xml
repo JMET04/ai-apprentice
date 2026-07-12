@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationPackage SchemaVersion="1.0" AppVersion="1.0.0"
+  ProductCode="{9EAAB644-AC65-43F9-A331-EF2485A4F133}"
+  UpgradeCode="{74341CF2-315A-4AF6-9758-9D4FBF9A19ED}"
+  Name="AI Apprentice Native Selection"
+  Description="Captures AutoCAD entity and subentity selections for the connected Agent plugin"
+  Author="AI Apprentice">
+  <Components>
+    <RuntimeRequirements OS="Win64" Platform="AutoCAD*" SeriesMin="R25.0" SeriesMax="R25.0" />
+    <ComponentEntry AppName="AI Apprentice Native Selection Core"
+      ModuleName="./Contents/AI.Apprentice.AutoCAD.Selection.dll"
+      AppDescription="Headless-safe Agent-plugin data bridge with no model runtime or API key"
+      LoadReasons="LoadOnAutoCADStartup" />
+    <ComponentEntry AppName="AI Apprentice Native Selection Context Menu"
+      ModuleName="./Contents/AI.Apprentice.AutoCAD.ContextMenu.dll"
+      AppDescription="Desktop AutoCAD right-click handoff for the host Agent"
+      LoadReasons="LoadOnAutoCADStartup" />
+  </Components>
+</ApplicationPackage>
