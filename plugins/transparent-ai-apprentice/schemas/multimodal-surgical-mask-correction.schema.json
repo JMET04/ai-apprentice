@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mingtu.local/schemas/multimodal-surgical-mask-correction.schema.json",
+  "title": "MingTu Multimodal Surgical Mask Correction",
+  "type": "object",
+  "required": [
+    "format",
+    "workbenchFormat",
+    "modificationFormat",
+    "activeContentType",
+    "modificationTargets",
+    "changeTargets",
+    "preservationRegions",
+    "surgicalEditContract",
+    "teacherCorrection",
+    "proposedSoftwareAction",
+    "locks"
+  ],
+  "properties": {
+    "format": { "const": "transparent_ai_sketch_overlay_packet_v1" },
+    "workbenchFormat": { "const": "mingtu_teacher_mask_correction_v1" },
+    "modificationFormat": { "const": "mingtu_multimodal_surgical_mask_correction_v1" },
+    "activeContentType": { "enum": ["text", "image", "engineering"] },
+    "supportedContentTypes": {
+      "type": "array",
+      "contains": { "const": "text" },
+      "minContains": 1
+    },
+    "modificationTargets": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/target" }
+    },
+    "changeTargets": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/target" }
+    },
+    "preservationRegions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/target" }
+    },
+    "surgicalEditContract": {
+      "type": "object",
+      "required": [
+        "format",
+        "policy",
+        "selectedChangeTargetIds",
+        "globalPreserveInstruction",
+        "changeOnlyInsideSelectedTargets",
+        "preserveAllUnmarkedContent",
+        "fullRegenerationAllowed",
+        "validation"
+      ],
+      "properties": {
+        "format": { "const": "mingtu_surgical_edit_contract_v1" },
+        "policy": { "enum": ["surgical_only", "local_then_review_regeneration", "teacher_requested_regeneration"] },
+        "selectedChangeTargetIds": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "globalPreserveInstruction": { "type": "string", "minLength": 1 },
+        "changeOnlyInsideSelectedTargets": { "const": true },
+        "preserveAllUnmarkedContent": { "const": true },
+        "fullRegenerationAllowed": { "type": "boolean" },
+        "validation": {
+          "type": "object",
+          "required": ["textOutsideTargets", "imageOutsideTargets", "engineeringOutsideTargets", "beforeAfterComparisonRequired", "rejectIfUnmarkedContentChanged"],
+          "properties": {
+            "beforeAfterComparisonRequired": { "const": true },
+            "rejectIfUnmarkedContentChanged": { "const": true }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "teacherCorrection": {
+      "type": "object",
+      "required": ["requestedEditMode", "editScopePolicy", "preserveUnmarkedRegions", "rejectWholeArtifactReplacementForLocalIssue"],
+      "properties": {
+        "preserveUnmarkedRegions": { "const": true },
+        "rejectWholeArtifactReplacementForLocalIssue": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "proposedSoftwareAction": {
+      "type": "object",
+      "required": ["executionMode", "nativeExecutionImplemented", "targetIds", "fullArtifactReplacementPrepared"],
+      "properties": {
+        "executionMode": { "const": "teacher_review_only" },
+        "nativeExecutionImplemented": { "const": false },
+        "fullArtifactReplacementPrepared": { "const": false }
+      },
+      "additionalProperties": true
+    },
+    "locks": {
+      "type": "object",
+      "required": ["ruleEnabled", "accepted", "technologyAccepted", "packagingGated", "softwareActionsExecuted", "targetSoftwareCommandsExecuted", "uiEventsSent", "memoryWritten"],
+      "properties": {
+        "ruleEnabled": { "const": false },
+        "accepted": { "const": false },
+        "technologyAccepted": { "const": false },
+        "packagingGated": { "const": true },
+        "softwareActionsExecuted": { "const": false },
+        "targetSoftwareCommandsExecuted": { "const": false },
+        "uiEventsSent": { "const": false },
+        "memoryWritten": { "const": false }
+      },
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "target": {
+      "type": "object",
+      "required": ["id", "contentType", "role", "maskGeometry", "editIntent", "preserveOutsideThisMask", "teacherReviewRequired", "completeness"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "contentType": { "enum": ["text", "image", "engineering"] },
+        "role": { "enum": ["change", "protect", "reference"] },
+        "maskGeometry": {
+          "type": "object",
+          "required": ["kind", "box", "points", "coordinateUnits"],
+          "properties": {
+            "box": {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": { "type": "number", "minimum": 0, "maximum": 1 }
+            }
+          },
+          "additionalProperties": true
+        },
+        "editIntent": { "type": "object" },
+        "preserveOutsideThisMask": { "const": true },
+        "teacherReviewRequired": { "const": true },
+        "completeness": {
+          "type": "object",
+          "required": ["complete", "reason"],
+          "properties": { "complete": { "type": "boolean" }, "reason": { "type": "string" } },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

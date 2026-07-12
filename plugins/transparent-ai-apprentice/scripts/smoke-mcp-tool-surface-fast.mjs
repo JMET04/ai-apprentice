@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { spawn, spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -34,7 +34,11 @@ const requiredAdvancedNames = [
   "create_tlcl_reasoning_budget_governor",
   "create_tlcl_rag_evidence_attachment",
   "create_real_case_pilot_intake",
-  "create_packaging_design_workflow"
+  "create_packaging_design_workflow",
+  "create_transparent_sketch_overlay_kit",
+  "validate_multimodal_surgical_mask_correction",
+  "apply_surgical_office_text_edit",
+  "resolve_learned_rule_conflicts"
 ];
 
 const checks = [];
@@ -240,6 +244,171 @@ check(
     packagingWorkflowResult.locks?.ruleEnabled === false &&
     packagingWorkflowResult.locks?.packagingGated === true,
   `stage=${packagingWorkflowResult.stage}; session=${packagingWorkflowResult.sessionPath || "missing"}`
+);
+
+const surgicalRoot = join(repoRoot, ".ta-smoke", "mcp-tool-surface-fast", "surgical-correction");
+mkdirSync(surgicalRoot, { recursive: true });
+const advancedEnv = { TRANSPARENT_AI_APPRENTICE_EXPOSE_ADVANCED_TOOLS: "1" };
+
+const engineeringKitResult = await withServer(advancedEnv, async (server) =>
+  parseToolJson(
+    await server.rpc(
+      "tools/call",
+      {
+        name: "create_transparent_sketch_overlay_kit",
+        arguments: {
+          goal: "Only change engineering dimension D04 to 450 mm and preserve every other entity.",
+          software: "AICAD / AutoCAD",
+          contentType: "engineering",
+          demoPreset: "engineering_dimension_change",
+          backdrop: join(pluginRoot, "assets", "examples", "engineering-object-index.png"),
+          outputDir: join(surgicalRoot, "engineering-mask")
+        }
+      },
+      20000
+    )
+  )
+);
+check(
+  "Advanced engineering mask tool creates a surgical D04 demonstration through MCP",
+  engineeringKitResult.ok === true &&
+    engineeringKitResult.contentType === "engineering" &&
+    engineeringKitResult.demoPreset === "engineering_dimension_change" &&
+    engineeringKitResult.enforcesSurgicalEditAndOutsideMaskPreservation === true &&
+    engineeringKitResult.reviewLocks?.softwareActionsExecuted === false,
+  `packet=${engineeringKitResult.samplePacket || "missing"}`
+);
+
+const maskValidationResult = await withServer(advancedEnv, async (server) =>
+  parseToolJson(
+    await server.rpc(
+      "tools/call",
+      {
+        name: "validate_multimodal_surgical_mask_correction",
+        arguments: { input: engineeringKitResult.samplePacket }
+      },
+      15000
+    )
+  )
+);
+check(
+  "Advanced surgical mask validator accepts the D04 packet and keeps execution locked",
+  maskValidationResult.passed === true &&
+    maskValidationResult.contentType === "engineering" &&
+    maskValidationResult.readyForExecution === false &&
+    maskValidationResult.locks?.softwareActionsExecuted === false,
+  `status=${maskValidationResult.status}; targets=${maskValidationResult.changeTargetCount}`
+);
+
+const officeFixtureDir = join(surgicalRoot, "office-fixtures");
+const officeEditor = join(pluginRoot, "scripts", "surgical-office-text-edit.py");
+const fixtureRun = spawnSync("python", ["-B", officeEditor, "--create-test-fixtures", officeFixtureDir], {
+  cwd: repoRoot,
+  encoding: "utf8",
+  env: { ...process.env, PYTHONUTF8: "1", TEMP: join(repoRoot, ".ta-smoke"), TMP: join(repoRoot, ".ta-smoke") }
+});
+if (fixtureRun.status !== 0) throw new Error(fixtureRun.stderr || "Unable to create Office fixtures");
+const officeFixtures = JSON.parse((fixtureRun.stdout || "{}").replace(/^\uFEFF/, ""));
+const officeTarget = {
+  id: "word-paragraph-2",
+  contentType: "text",
+  role: "change",
+  label: "paragraph:2",
+  maskGeometry: { kind: "rect", box: [0.2, 0.2, 0.7, 0.3], points: [], coordinateUnits: "normalized_0_to_1" },
+  editIntent: {
+    kind: "text_edit",
+    documentType: "word_docx",
+    locator: "paragraph:2",
+    operation: "replace",
+    sourceText: "\u5468\u4e94",
+    replacementText: "\u5468\u4e00",
+    typographyNote: "preserve existing style",
+    sourceTextConfirmedByTeacher: true,
+    requiresExactTextMatch: true
+  },
+  preserveOutsideThisMask: true,
+  teacherReviewRequired: true,
+  completeness: { complete: true, reason: "exact_source_and_text_operation_present" }
+};
+const officeRequest = {
+  modificationFormat: "mingtu_multimodal_surgical_mask_correction_v1",
+  activeContentType: "text",
+  modificationTargets: [officeTarget],
+  changeTargets: [officeTarget],
+  surgicalEditContract: {
+    format: "mingtu_surgical_edit_contract_v1",
+    policy: "surgical_only",
+    selectedChangeTargetIds: [officeTarget.id],
+    globalPreserveInstruction: "Preserve every unselected paragraph, style, and package part.",
+    changeOnlyInsideSelectedTargets: true,
+    preserveAllUnmarkedContent: true,
+    fullRegenerationAllowed: false,
+    localEditFailureBehavior: "block_and_return_to_teacher_without_regenerating",
+    validation: {
+      textOutsideTargets: "exact_text_and_style_match_required",
+      beforeAfterComparisonRequired: true,
+      rejectIfUnmarkedContentChanged: true
+    }
+  },
+  locks: {
+    ruleEnabled: false,
+    accepted: false,
+    packagingGated: true,
+    softwareActionsExecuted: false,
+    targetSoftwareCommandsExecuted: false,
+    uiEventsSent: false,
+    memoryWritten: false
+  }
+};
+const officeRequestPath = join(surgicalRoot, "word-request.json");
+const officeOutputPath = join(surgicalRoot, "word-edited.docx");
+writeFileSync(officeRequestPath, JSON.stringify(officeRequest, null, 2), "utf8");
+const officeEditResult = await withServer(advancedEnv, async (server) =>
+  parseToolJson(
+    await server.rpc(
+      "tools/call",
+      {
+        name: "apply_surgical_office_text_edit",
+        arguments: { request: officeRequestPath, input: officeFixtures.docx, output: officeOutputPath }
+      },
+      20000
+    )
+  )
+);
+check(
+  "Advanced Office tool changes only the confirmed Word paragraph through MCP",
+  officeEditResult.status === "passed_targeted_edit" &&
+    officeEditResult.targetedEdit?.nativeTarget === "paragraph:2" &&
+    officeEditResult.changedPackageParts?.length === 1 &&
+    officeEditResult.changedPackageParts[0] === "word/document.xml" &&
+    officeEditResult.verification?.fullDocumentRecheckRequired === false,
+  `target=${officeEditResult.targetedEdit?.nativeTarget}; changed=${officeEditResult.changedPackageParts?.join(",")}`
+);
+
+const ruleRequestPath = join(surgicalRoot, "rule-conflict-request.json");
+writeFileSync(ruleRequestPath, JSON.stringify({
+  context: { documentType: "excel_xlsx", sheet: "finance-review" },
+  rules: [
+    { id: "general", enabled: true, action: "round to whole number", appliesWhen: { documentType: "excel_xlsx" }, confidence: "high" },
+    { id: "teacher-exception", enabled: true, action: "keep two decimals", appliesWhen: { documentType: "excel_xlsx", sheet: "finance-review" }, teacherException: true, confidence: "high", reviewStatus: "approved" }
+  ]
+}, null, 2), "utf8");
+const ruleDecisionResult = await withServer(advancedEnv, async (server) =>
+  parseToolJson(
+    await server.rpc(
+      "tools/call",
+      { name: "resolve_learned_rule_conflicts", arguments: { input: ruleRequestPath } },
+      15000
+    )
+  )
+);
+check(
+  "Advanced rule resolver selects the contextual teacher exception and marks the issue through MCP",
+  ruleDecisionResult.status === "resolved_by_teacher_exception" &&
+    ruleDecisionResult.decision?.selectedRuleId === "teacher-exception" &&
+    ruleDecisionResult.problemMarkers?.[0]?.type === "apparent_rule_conflict" &&
+    ruleDecisionResult.rulesMutated === false,
+  `selected=${ruleDecisionResult.decision?.selectedRuleId}; markers=${ruleDecisionResult.problemMarkers?.length || 0}`
 );
 
 const passed = checks.filter((item) => item.pass).length;

@@ -537,10 +537,18 @@ const requiredFiles = [
   "scripts/create-universal-software-observer-kit.mjs",
   "scripts/compact-universal-observation-learning-events.mjs",
   "scripts/create-transparent-sketch-overlay-kit.mjs",
+  "scripts/create-engineering-mask-demo.mjs",
+  "scripts/validate-multimodal-surgical-mask-correction.mjs",
+  "scripts/surgical-office-text-edit.py",
+  "scripts/smoke-surgical-office-text-edit.mjs",
+  "scripts/resolve-learned-rule-conflicts.mjs",
+  "scripts/smoke-learned-rule-conflict-resolution.mjs",
   "assets/mask-workbench/index.template.html",
   "assets/mask-workbench/styles.css",
   "assets/mask-workbench/app.js",
   "assets/mask-workbench/design-tokens.json",
+  "assets/examples/engineering-object-index.png",
+  "schemas/multimodal-surgical-mask-correction.schema.json",
   "scripts/create-physical-world-spatial-grounding-pack.mjs",
   "scripts/smoke-physical-world-spatial-grounding-pack.mjs",
   "scripts/create-current-goal-shortest-teacher-evidence-pack.mjs",
@@ -3413,6 +3421,13 @@ const currentGoalNextTeacherConfirmationCockpitReceiptValidationSmokeText = read
   "utf8"
 );
 const transparentOverlayText = readFileSync(join(pluginRoot, "scripts", "create-transparent-sketch-overlay-kit.mjs"), "utf8");
+const engineeringMaskDemoText = readFileSync(join(pluginRoot, "scripts", "create-engineering-mask-demo.mjs"), "utf8");
+const multimodalSurgicalMaskSchemaText = readFileSync(join(pluginRoot, "schemas", "multimodal-surgical-mask-correction.schema.json"), "utf8");
+const multimodalSurgicalMaskValidationText = readFileSync(join(pluginRoot, "scripts", "validate-multimodal-surgical-mask-correction.mjs"), "utf8");
+const surgicalOfficeTextEditText = readFileSync(join(pluginRoot, "scripts", "surgical-office-text-edit.py"), "utf8");
+const surgicalOfficeTextEditSmokeText = readFileSync(join(pluginRoot, "scripts", "smoke-surgical-office-text-edit.mjs"), "utf8");
+const learnedRuleConflictResolutionText = readFileSync(join(pluginRoot, "scripts", "resolve-learned-rule-conflicts.mjs"), "utf8");
+const learnedRuleConflictResolutionSmokeText = readFileSync(join(pluginRoot, "scripts", "smoke-learned-rule-conflict-resolution.mjs"), "utf8");
 const maskWorkbenchTemplateText = readFileSync(join(pluginRoot, "assets", "mask-workbench", "index.template.html"), "utf8");
 const maskWorkbenchStylesText = readFileSync(join(pluginRoot, "assets", "mask-workbench", "styles.css"), "utf8");
 const maskWorkbenchScriptText = readFileSync(join(pluginRoot, "assets", "mask-workbench", "app.js"), "utf8");
@@ -4203,7 +4218,7 @@ const checks = [
     pass:
       manifest.interface?.shortDescription?.includes("\u6210\u957f") &&
       manifest.interface?.shortDescription?.includes("\u505a\u4e8b") &&
-      manifest.interface?.longDescription?.includes("\u8499\u7248\u6807\u6ce8") &&
+      manifest.interface?.longDescription?.includes("\u5c40\u90e8\u4fee\u6539\u8499\u7248") &&
       manifest.interface?.longDescription?.includes("Image2") &&
       manifest.interface?.longDescription?.includes("AICAD") &&
       manifest.interface?.defaultPrompt?.some((prompt) => prompt.includes("\u8bbe\u8ba1\u5305\u88c5")) &&
@@ -8733,6 +8748,62 @@ const checks = [
       toolSurfaceSmokeText.includes("Default teach_apprentice creates transparent overlay kit from natural 2D/3D sketch request") &&
       universalOverlaySmokeText.includes("teacher-review-only"),
     evidence: "Transparent overlay exports spatial sketch packets from the actual browser page, and default teach_apprentice can create the kit from natural 2D/3D sketch requests while keeping arbitrary software execution teacher-review-only"
+  },
+  {
+    name: "Multimodal surgical mask supports precise text image and engineering corrections without full redraw",
+    pass:
+      maskWorkbenchTemplateText.includes('data-content-type="text"') &&
+      maskWorkbenchTemplateText.includes('data-content-type="image"') &&
+      maskWorkbenchTemplateText.includes('data-content-type="engineering"') &&
+      maskWorkbenchTemplateText.includes('id="maskRole"') &&
+      maskWorkbenchTemplateText.includes('id="editScopePolicy"') &&
+      maskWorkbenchTemplateText.includes('id="engineeringObjectId"') &&
+      maskWorkbenchScriptText.includes("mingtu_multimodal_surgical_mask_correction_v1") &&
+      maskWorkbenchScriptText.includes("mingtu_surgical_edit_contract_v1") &&
+      maskWorkbenchScriptText.includes("changeOnlyInsideSelectedTargets: true") &&
+      maskWorkbenchScriptText.includes("rejectIfUnmarkedContentChanged: true") &&
+      maskWorkbenchScriptText.includes("replace_whole_artifact_for_local_issue_without_teacher_request") &&
+      multimodalSurgicalMaskSchemaText.includes("preserveAllUnmarkedContent") &&
+      multimodalSurgicalMaskValidationText.includes("Every mask preserves content outside its boundary") &&
+      engineeringMaskDemoText.includes("engineering_dimension_change") &&
+      engineeringMaskDemoText.includes("wholeDrawingRegenerationAllowed: false") &&
+      mcpServerText.includes("validate_multimodal_surgical_mask_correction") &&
+      mcpServerText.includes("contentType") &&
+      packageText.includes("demo:engineering-mask"),
+    evidence: "One workbench now binds change/protect/reference masks to text, image, or engineering targets and rejects unrelated changes or silent full regeneration"
+  },
+  {
+    name: "Word and Excel text masks can execute native one-target edits with untouched-part proof",
+    pass:
+      maskWorkbenchTemplateText.includes('id="textDocumentType"') &&
+      maskWorkbenchTemplateText.includes('id="textLocator"') &&
+      surgicalOfficeTextEditText.includes("paragraph:N") &&
+      surgicalOfficeTextEditText.includes("SheetName!A1") &&
+      surgicalOfficeTextEditText.includes("onlyExpectedNativePartChanged") &&
+      surgicalOfficeTextEditText.includes("fullDocumentRecheckRequired") &&
+      surgicalOfficeTextEditText.includes("Original Office file changed during surgical edit") &&
+      surgicalOfficeTextEditSmokeText.includes("Word package changes only document.xml") &&
+      surgicalOfficeTextEditSmokeText.includes("Excel package changes only the selected worksheet XML") &&
+      surgicalOfficeTextEditSmokeText.includes("Mismatched source text blocks instead of guessing or rewriting") &&
+      mcpServerText.includes("apply_surgical_office_text_edit") &&
+      packageText.includes("smoke:office-surgical-edit"),
+    evidence: "DOCX paragraph and XLSX cell edits use exact native locators, never overwrite the source, and hash-check every unselected package part"
+  },
+  {
+    name: "Learned rule differences receive context-aware decisions and visible problem markers",
+    pass:
+      learnedRuleConflictResolutionText.includes("teacher-confirmed exception") &&
+      learnedRuleConflictResolutionText.includes("resolved_by_context_specificity") &&
+      learnedRuleConflictResolutionText.includes("apparent_rule_conflict") &&
+      learnedRuleConflictResolutionText.includes("silentRuleDrop: false") &&
+      learnedRuleConflictResolutionText.includes("blocked_high_impact_ambiguity") &&
+      learnedRuleConflictResolutionSmokeText.includes("Compatible rules merge instead of reporting a false absolute conflict") &&
+      learnedRuleConflictResolutionSmokeText.includes("Teacher exception wins in its exact context") &&
+      learnedRuleConflictResolutionSmokeText.includes("High-impact ambiguity blocks execution but records a recommendation") &&
+      skillText.includes("Surgical Correction And Rule Decisions") &&
+      mcpServerText.includes("resolve_learned_rule_conflicts") &&
+      packageText.includes("smoke:rule-conflicts"),
+    evidence: "Rules are compared by context, specificity, teacher exception, evidence and risk; selected and suppressed rules remain visible and underlying memory is not mutated"
   },
   {
     name: "Current goal spatial drawing handoff exposes overlay paths and 2D perspective 3D capability summary",

@@ -30,6 +30,9 @@
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
     <symbol id="i-close" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-document" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6Z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="1"/><circle cx="9" cy="10" r="2"/><path d="m4 18 5-5 3 3 2-2 6 5"/></symbol>
+    <symbol id="i-cad" viewBox="0 0 24 24"><path d="M4 18V6h16v12ZM8 6v12M16 6v12M4 12h16"/><path d="m18 3 3 3-3 3M6 15l-3 3 3 3"/></symbol>
   </svg>
 
   <div class="app-shell" id="appShell">
@@ -52,6 +55,12 @@
 
     <main class="workspace">
       <div class="tool-rail" role="toolbar" aria-label="蒙版标注工具">
+        <div class="content-switch" role="group" aria-label="修改内容类型">
+          <button data-content-type="text" aria-pressed="false"><svg><use href="#i-document"/></svg><span>文字</span></button>
+          <button data-content-type="image" aria-pressed="true"><svg><use href="#i-image"/></svg><span>图片</span></button>
+          <button data-content-type="engineering" aria-pressed="false"><svg><use href="#i-cad"/></svg><span>工程</span></button>
+        </div>
+        <span class="tool-separator" aria-hidden="true"></span>
         <div class="tool-group tool-modes">
           <button class="tool-button active" data-tool="brush" aria-pressed="true" aria-label="自由画笔，快捷键 B" data-tooltip="自由画笔 · B"><svg><use href="#i-brush"/></svg><span>画笔</span></button>
           <button class="tool-button" data-tool="ellipse" aria-pressed="false" aria-label="圈选，快捷键 O" data-tooltip="圈选 · O"><svg><use href="#i-circle"/></svg><span>圈选</span></button>
@@ -73,6 +82,7 @@
 
       <div class="canvas-statusbar">
         <span>工具 <strong id="toolState">自由画笔</strong></span>
+        <span>内容 <strong id="contentState">图片局部修改</strong></span>
         <span>缩放 <strong id="zoomState" class="mono">100%</strong></span>
         <span>蒙版 <strong id="maskState">无修改</strong></span>
         <span class="dirty-state" id="dirtyState"><i></i>草稿已保存</span>
@@ -82,17 +92,18 @@
         <button id="emptyToggle" class="status-button" aria-pressed="false"><svg><use href="#i-more"/></svg><span>无底图演示</span></button>
       </div>
 
-      <section class="canvas-workarea" aria-label="包装图纸蒙版画布">
+      <section class="canvas-workarea" aria-label="文字、图片与工程图纸修改蒙版画布">
         <div class="canvas-viewport" id="canvasViewport">
           <div class="scene" id="scene">
             <img id="baseImage" alt="__BACKDROP_NAME__">
             <canvas id="maskCanvas" width="1344" height="756" aria-label="老师蒙版绘制层，支持触控和鼠标"></canvas>
+            <div class="content-badge" id="contentBadge"><svg><use href="#i-image"/></svg><span id="contentBadgeLabel">图片局部修改</span></div>
             <div class="readonly-banner" id="readonlyBanner" hidden><svg><use href="#i-play"/></svg><span>只读回放 · <b id="playbackIndex">1 / 1</b></span><button id="playbackNext">下一条</button></div>
             <div class="empty-stage" id="emptyStage" hidden>
               <svg><use href="#i-upload"/></svg>
               <strong>尚未加载底图</strong>
-              <span>上传 Image2 样图、包装刀版图或工程索引图后再开始纠错。</span>
-              <label class="upload-button">选择本地图片<input id="imageUpload" type="file" accept="image/png,image/jpeg,image/webp"></label>
+              <span>上传图片、TXT / Markdown 文档截图化底稿、包装刀版图或工程软件截图后再开始纠错。</span>
+              <label class="upload-button">选择本地内容<input id="imageUpload" type="file" accept="image/png,image/jpeg,image/webp,text/plain,text/markdown,.txt,.md,.csv,.json"></label>
             </div>
           </div>
         </div>
@@ -117,6 +128,33 @@
         <div><span>状态</span><strong id="summaryStatus">草稿</strong></div>
       </div>
       <div class="inspector-scroll">
+        <section class="inspector-section target-section">
+          <div class="section-title"><h2>修改目标</h2><span id="contentContractStatus">图片区域</span></div>
+          <div class="field-pair target-policy-row"><label class="field"><span>标注角色</span><select id="maskRole"><option value="change">修改区</option><option value="protect">保护区</option><option value="reference">参考关系</option></select></label><label class="field"><span>修改策略</span><select id="editScopePolicy"><option value="surgical_only">只做局部修改</option><option value="local_then_review_regeneration">局部不可行时再审整体方案</option><option value="teacher_requested_regeneration">老师明确要求整体重生成</option></select></label></div>
+          <div class="content-panel" data-content-panel="text" hidden>
+            <label class="field"><span>办公内容类型</span><select id="textDocumentType"><option value="word_docx">Word（DOCX）</option><option value="excel_xlsx">Excel（XLSX）</option><option value="plain_text">纯文字 / Markdown</option></select></label>
+            <label class="field"><span>原生定位器</span><input id="textLocator" type="text" placeholder="Word: paragraph:3；Excel: Sheet1!B4"></label>
+            <label class="field"><span>文字操作</span><select id="textOperation"><option value="replace">替换文字</option><option value="delete">删除文字</option><option value="format">只改格式 / 排版</option></select></label>
+            <label class="field"><span>待修改原文</span><input id="sourceText" type="text" placeholder="按底稿准确填写，不自动猜测"></label>
+            <label class="field"><span>替换为</span><textarea id="replacementText" rows="3" placeholder="填写新的完整文字"></textarea></label>
+            <label class="field"><span>字体与排版约束</span><input id="typographyNote" type="text" placeholder="例如：保持字号、颜色和对齐方式"></label>
+            <p class="panel-note">蒙版负责指位置，原生定位器负责真正修改文件。Word 段落按 1 开始编号（表格内段落也计入）；Excel 使用“工作表!单元格”。</p>
+          </div>
+          <div class="content-panel" data-content-panel="image">
+            <label class="field"><span>图片操作</span><select id="imageOperation"><option value="replace_region">替换区域</option><option value="remove_region">移除内容</option><option value="move_region">移动内容</option><option value="recolor_region">调整颜色</option><option value="retouch_region">局部修复</option></select></label>
+            <label class="field"><span>修改要求</span><textarea id="imageInstruction" rows="3" placeholder="说明蒙版内需要出现什么、删除什么或如何调整">只修改标注区域，保留未标注结构与版式。</textarea></label>
+            <label class="field"><span>必须保留</span><input id="imagePreserve" type="text" value="未标注区域、已确认尺寸和文字"></label>
+          </div>
+          <div class="content-panel" data-content-panel="engineering" hidden>
+            <label class="field"><span>工程对象</span><select id="engineeringObjectType"><option value="dimension">尺寸标注</option><option value="entity">线 / 圆弧 / 面等实体</option><option value="annotation">工程文字标注</option><option value="feature">孔、槽、折弯等特征</option><option value="command_target">软件命令目标</option></select></label>
+            <label class="field"><span>对象编号 / 名称</span><input id="engineeringObjectId" type="text" placeholder="例如 D04、E18、Sketch3 或 面板2"></label>
+            <label class="field"><span>修改动作</span><select id="engineeringAction"><option value="change_dimension">修改尺寸</option><option value="move_entity">移动对象</option><option value="edit_annotation">修改标注</option><option value="delete_entity">删除对象</option><option value="add_feature">新增特征</option><option value="select_command_target">确认命令目标</option></select></label>
+            <div class="field-pair"><label class="field"><span>目标值</span><input id="engineeringValue" type="text" placeholder="例如 450"></label><label class="field"><span>单位</span><select id="engineeringUnit"><option value="mm">mm</option><option value="in">in</option><option value="deg">deg</option><option value="none">无单位</option></select></label></div>
+            <label class="field"><span>约束与保持项</span><textarea id="engineeringConstraint" rows="3" placeholder="说明对称、共线、公式、材料或不可改动对象"></textarea></label>
+            <p class="panel-note">蒙版只确认对象与意图。真正修改前仍需对象编号、参数来源、适配器、回滚点和老师确认。</p>
+          </div>
+          <label class="field global-preserve-field"><span>未标注内容必须保持</span><textarea id="globalPreserveNote" rows="2">保持所有未标注区域、已通过检查的结构、尺寸、文字、颜色和对象关系不变。</textarea></label>
+        </section>
         <section class="inspector-section annotation-section">
           <div class="section-title"><h2>标注列表</h2><span id="listHint">按创建时间排序</span></div>
           <ol class="annotation-list" id="annotationList">

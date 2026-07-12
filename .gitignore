@@ -9,6 +9,7 @@ artifacts/
 .transparent-apprentice/
 .ta/
 .ta-smoke/
+.ta-package/
 .rollback-points/
 .cleanup-manifests/
 .agents/

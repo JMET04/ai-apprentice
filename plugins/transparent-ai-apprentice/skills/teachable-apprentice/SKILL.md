@@ -107,6 +107,14 @@ When extracting reusable memory, produce draft rules with:
 
 Do not silently enable a new rule after one demonstration. Prefer conservative drafts and explicit teacher review.
 
+## Surgical Correction And Rule Decisions
+
+Treat a correction as a local patch by default, not permission to regenerate the whole artifact. Use the multimodal mask workbench to bind every correction to one of three roles: `change`, `protect`, or `reference`. The exported `mingtu_multimodal_surgical_mask_correction_v1` packet must identify exact change targets, preserve every unmarked region, compare before/after state outside the mask, and reject a result when unselected text, pixels, Office package parts, engineering entities, parameters, constraints, or topology changed. Whole-artifact regeneration is a separate teacher choice and must never silently replace a partly correct result.
+
+For Word and Excel text, the visual mask is only a pointer. Bind Word edits to `paragraph:N` and Excel edits to `SheetName!A1`, preserve the source file, and use `surgical-office-text-edit.py` to create a separate output plus `mingtu_surgical_office_text_edit_report_v1`. Require an exact source-text match and prove that only `word/document.xml` or the selected worksheet XML changed. A layout-risk warning narrows any visual check to the changed paragraph or cell; do not make the teacher recheck the whole document.
+
+When learned rules appear to conflict, do not call every difference an absolute conflict and do not silently choose or discard a rule. First compare current context, scope specificity, teacher-confirmed exceptions, evidence quality, priority, confidence, and risk. Use `resolve-learned-rule-conflicts.mjs` to create a public decision, selected and suppressed rule ids, confidence, and a visible `apparent_rule_conflict` marker. Make the best defensible context-specific decision for ordinary work. For low-confidence or high-impact ambiguity, keep the recommendation visible but stop execution at the marked review point. Never mutate the underlying rules while resolving one task.
+
 ## Working Style
 
 When the teacher gives a demonstration, first restate the taught behavior in one sentence, then create a tiny replay. After replay, ask for correction only if the next useful action cannot be inferred.
@@ -2474,6 +2482,6 @@ A teaching loop is not complete until current evidence shows:
 - explicit teacher approval is recorded before any learned memory changes behavior,
 - a replay or learned run shows how the apprentice improved,
 - approved memory can be persisted into an apprentice profile and reused in a later profile run,
-- profile memory conflicts pause with `needs_teacher_review_conflict` instead of guessing,
+- profile memory differences are resolved by context, specificity, teacher exception, evidence, and risk; every genuine conflict receives a visible problem marker, while low-confidence or high-impact ambiguity pauses for review instead of guessing,
 - persisted memory can be corrected or disabled when the teacher says it is too broad, stale, or wrong,
 - packaging and technology acceptance remain separate from session memory approval.

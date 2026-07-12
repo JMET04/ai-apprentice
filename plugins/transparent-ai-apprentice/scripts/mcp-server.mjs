@@ -33,6 +33,18 @@ function runNodeScript(scriptName, args) {
   return JSON.parse(result.stdout);
 }
 
+function runPythonScript(scriptName, args) {
+  const result = spawnSync("python", ["-B", join(pluginRoot, "scripts", scriptName), ...args], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: { ...process.env, PYTHONUTF8: "1" }
+  });
+  if (result.status !== 0) {
+    throw new Error(result.stderr || result.stdout || `${scriptName} failed`);
+  }
+  return JSON.parse(result.stdout);
+}
+
 function readGeneratedJson(path) {
   if (!path || !existsSync(path)) return null;
   return JSON.parse(readFileSync(path, "utf8").replace(/^\uFEFF/, ""));
@@ -8140,7 +8152,7 @@ const tools = [
   },
   {
     name: "create_transparent_sketch_overlay_kit",
-    description: "Create a transparent drawing overlay kit for teacher sketches over software, including 2D planes, perspective cues, and 3D depth hints.",
+    description: "Create a multimodal surgical mask workbench for precise text, image, or engineering-object corrections, with change/protect/reference regions plus 2D, perspective, and 3D hints.",
     inputSchema: {
       type: "object",
       properties: {
@@ -8149,8 +8161,48 @@ const tools = [
         software: { type: "string", description: "Target software or app." },
         app: { type: "string", description: "Alias for software." },
         mode: { type: "string", description: "screen_2d, plane_2d, perspective_grid, depth_axis_3d, or 2d_3d." },
+        contentType: { type: "string", enum: ["text", "image", "engineering"], description: "Content being corrected with the mask." },
+        demoPreset: { type: "string", enum: ["engineering_dimension_change"], description: "Optional seeded review-only demonstration preset." },
         backdrop: { type: "string", description: "Optional local PNG/JPEG/WebP image to preload as the correction backdrop." },
         outputDir: { type: "string", description: "Optional output directory for the generated overlay kit." }
+      }
+    }
+  },
+  {
+    name: "validate_multimodal_surgical_mask_correction",
+    description: "Validate precise text, image, or engineering change masks, protection regions, outside-mask preservation, and no-regeneration policy before adapter planning.",
+    inputSchema: {
+      type: "object",
+      required: ["input"],
+      properties: {
+        input: { type: "string", description: "Path to a mingtu_multimodal_surgical_mask_correction_v1 compatible packet." },
+        output: { type: "string", description: "Optional validation report path." }
+      }
+    }
+  },
+  {
+    name: "apply_surgical_office_text_edit",
+    description: "Apply exactly one teacher-confirmed Word paragraph or Excel cell text edit to a separate output file and prove all unselected Office package parts stayed unchanged.",
+    inputSchema: {
+      type: "object",
+      required: ["request", "input", "output"],
+      properties: {
+        request: { type: "string", description: "Path to the reviewed multimodal surgical mask packet." },
+        input: { type: "string", description: "Source DOCX or XLSX path; it is never overwritten." },
+        output: { type: "string", description: "Separate edited DOCX or XLSX output path." },
+        targetId: { type: "string", description: "Required only when the packet contains multiple text change targets." }
+      }
+    }
+  },
+  {
+    name: "resolve_learned_rule_conflicts",
+    description: "Compare applicable learned rules by context, specificity, teacher exception, evidence, confidence, priority, and risk; make a visible decision and mark remaining ambiguity without mutating rules.",
+    inputSchema: {
+      type: "object",
+      required: ["input"],
+      properties: {
+        input: { type: "string", description: "Path to JSON containing context, rules, and optional riskLevel." },
+        output: { type: "string", description: "Optional conflict resolution report path." }
       }
     }
   },
@@ -33318,9 +33370,29 @@ async function callTool(name, input = {}) {
     if (input.software) args.push("--software", input.software);
     if (input.app) args.push("--app", input.app);
     if (input.mode) args.push("--mode", input.mode);
+    if (input.contentType) args.push("--content-type", input.contentType);
+    if (input.demoPreset) args.push("--demo-preset", input.demoPreset);
     if (input.backdrop) args.push("--backdrop", input.backdrop);
     if (input.outputDir) args.push("--output-dir", input.outputDir);
     return textContent(runNodeScript("create-transparent-sketch-overlay-kit.mjs", args));
+  }
+
+  if (name === "validate_multimodal_surgical_mask_correction") {
+    const args = ["--input", input.input];
+    if (input.output) args.push("--output", input.output);
+    return textContent(runNodeScript("validate-multimodal-surgical-mask-correction.mjs", args));
+  }
+
+  if (name === "apply_surgical_office_text_edit") {
+    const args = ["--request", input.request, "--input", input.input, "--output", input.output];
+    if (input.targetId) args.push("--target-id", input.targetId);
+    return textContent(runPythonScript("surgical-office-text-edit.py", args));
+  }
+
+  if (name === "resolve_learned_rule_conflicts") {
+    const args = ["--input", input.input];
+    if (input.output) args.push("--output", input.output);
+    return textContent(runNodeScript("resolve-learned-rule-conflicts.mjs", args));
   }
 
   if (name === "create_packaging_design_workflow") {

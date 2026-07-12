@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { basename, dirname, extname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -25,6 +26,11 @@ function writeUtf8Bom(path, text) {
 const goal = argValue("--goal", "Let the teacher draw over software to explain intent.");
 const software = argValue("--software", argValue("--app", "target software"));
 const mode = argValue("--mode", "2d_3d");
+const contentType = argValue("--content-type", "image");
+const demoPreset = argValue("--demo-preset", "");
+if (!["text", "image", "engineering"].includes(contentType)) {
+  throw new Error(`Unsupported --content-type: ${contentType}. Use text, image, or engineering.`);
+}
 const backdropPath = argValue("--backdrop");
 const outputRoot = argValue("--output-dir", join(process.cwd(), ".transparent-apprentice", "transparent-overlay-kits"));
 mkdirSync(outputRoot, { recursive: true });
@@ -53,6 +59,81 @@ const initialBackdropName = backdropPath && existsSync(backdropPath) && backdrop
 const initialBackdropDataUrl = initialBackdropName
   ? `data:${backdropMimeType};base64,${readFileSync(backdropPath).toString("base64")}`
   : "";
+const initialBackdropSha256 = initialBackdropName
+  ? createHash("sha256").update(readFileSync(backdropPath)).digest("hex")
+  : "";
+
+const demoTimestamp = new Date().toISOString();
+const engineeringDemoIntent = {
+  kind: "engineering_edit",
+  objectType: "dimension",
+  objectId: "D04",
+  action: "change_dimension",
+  expectedValue: "450",
+  unit: "mm",
+  constraintNote: "只修改 D04 对应的箱口宽度；保持 D08、D10、面板拓扑、切线、折线和其他已确认尺寸不变。",
+  objectIdentityConfirmedByTeacher: true,
+  dimensionsMayNotBeInferredFromPixels: true
+};
+const initialFields = demoPreset === "engineering_dimension_change" ? {
+  maskRole: "change",
+  editScopePolicy: "surgical_only",
+  globalPreserveNote: "仅修改对象 D04；D08、D10、所有未标注对象、线型、颜色、面板拓扑和文字必须保持不变。",
+  engineeringObjectType: "dimension",
+  engineeringObjectId: "D04",
+  engineeringAction: "change_dimension",
+  engineeringValue: "450",
+  engineeringUnit: "mm",
+  engineeringConstraint: engineeringDemoIntent.constraintNote,
+  issueType: "尺寸错误",
+  workflowStep: "CAD 工程图生成",
+  spatialMode: "screen_2d",
+  correctionNote: "将 D04 对应尺寸精确改为 450 mm。不要重画整张图，也不要改变 D08、D10 或其他对象。"
+} : {};
+const initialAnnotations = demoPreset === "engineering_dimension_change" ? [
+  {
+    id: "engineering-change-D04",
+    tool: "rect",
+    role: "change",
+    contentType: "engineering",
+    editIntent: engineeringDemoIntent,
+    mode: "screen_2d",
+    semanticLabel: "D04 · change_dimension 450 mm",
+    color: "#d4463a",
+    width: 6,
+    depthHint: 0,
+    createdAt: demoTimestamp,
+    points: [{ x: 0.49, y: 0.84, t: 0, pressure: 0.5, zHint: 0, planeId: "screen_2d" }, { x: 0.61, y: 0.96, t: 1, pressure: 0.5, zHint: 0, planeId: "screen_2d" }]
+  },
+  {
+    id: "engineering-protect-approved-layout",
+    tool: "rect",
+    role: "protect",
+    contentType: "engineering",
+    editIntent: engineeringDemoIntent,
+    mode: "screen_2d",
+    semanticLabel: "保护已确认的面板与对象编号",
+    color: "#26734a",
+    width: 4,
+    depthHint: 0,
+    createdAt: demoTimestamp,
+    points: [{ x: 0.035, y: 0.08, t: 0, pressure: 0.5, zHint: 0, planeId: "screen_2d" }, { x: 0.47, y: 0.82, t: 1, pressure: 0.5, zHint: 0, planeId: "screen_2d" }]
+  },
+  {
+    id: "engineering-reference-D04",
+    tool: "arrow",
+    role: "reference",
+    contentType: "engineering",
+    editIntent: engineeringDemoIntent,
+    mode: "screen_2d",
+    semanticLabel: "尺寸值只绑定到对象 D04",
+    color: "#1769a6",
+    width: 5,
+    depthHint: 0,
+    createdAt: demoTimestamp,
+    points: [{ x: 0.69, y: 0.76, t: 0, pressure: 0.5, zHint: 0, planeId: "screen_2d" }, { x: 0.55, y: 0.88, t: 1, pressure: 0.5, zHint: 0, planeId: "screen_2d" }]
+  }
+] : [];
 
 const locks = {
   ruleEnabled: false,
@@ -60,7 +141,11 @@ const locks = {
   technologyAccepted: false,
   packagingGated: true,
   nativeExecutionImplemented: false,
-  teacherReviewRequired: true
+  teacherReviewRequired: true,
+  softwareActionsExecuted: false,
+  targetSoftwareCommandsExecuted: false,
+  uiEventsSent: false,
+  memoryWritten: false
 };
 
 const universalDetailLogicContract = {
@@ -97,6 +182,9 @@ const universalDetailLogicContract = {
 const packetSchema = {
   format: "transparent_ai_sketch_overlay_packet_schema_v1",
   supportedModes: ["screen_2d", "plane_2d", "perspective_grid", "depth_axis_3d"],
+  supportedContentTypes: ["text", "image", "engineering"],
+  supportedMaskRoles: ["change", "protect", "reference"],
+  modificationFormat: "mingtu_multimodal_surgical_mask_correction_v1",
   strokeFields: ["id", "mode", "points", "color", "width", "semanticLabel", "targetAnchorId", "depthHint"],
   pointFields: ["x", "y", "t", "pressure", "zHint", "planeId"],
   relationshipFields: [
@@ -129,6 +217,7 @@ const packetSchema = {
 
 const samplePacket = {
   format: "transparent_ai_sketch_overlay_packet_v1",
+  modificationFormat: "mingtu_multimodal_surgical_mask_correction_v1",
   kitId,
   software,
   goal,
@@ -249,6 +338,78 @@ const samplePacket = {
   },
   locks
 };
+
+if (demoPreset === "engineering_dimension_change") {
+  const modificationTargets = initialAnnotations.map((annotation) => {
+    const xs = annotation.points.map((point) => point.x);
+    const ys = annotation.points.map((point) => point.y);
+    return {
+      id: annotation.id,
+      contentType: annotation.contentType,
+      role: annotation.role,
+      label: annotation.semanticLabel,
+      maskGeometry: {
+        kind: annotation.tool,
+        box: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)],
+        points: annotation.points,
+        coordinateUnits: "normalized_0_to_1"
+      },
+      editIntent: annotation.editIntent,
+      preserveOutsideThisMask: true,
+      teacherReviewRequired: true,
+      completeness: {
+        complete: true,
+        reason: annotation.role === "change"
+          ? "engineering_object_action_and_parameter_present"
+          : `${annotation.role}_relationship_present`
+      }
+    };
+  });
+  const changeTargets = modificationTargets.filter((target) => target.role === "change");
+  const protectionRegions = modificationTargets.filter((target) => target.role === "protect");
+  const referenceRelations = modificationTargets.filter((target) => target.role === "reference");
+  Object.assign(samplePacket, {
+    workbenchFormat: "mingtu_teacher_mask_correction_v1",
+    activeContentType: "engineering",
+    supportedContentTypes: ["text", "image", "engineering"],
+    modificationTargets,
+    changeTargets,
+    preservationRegions: protectionRegions,
+    referenceRelations,
+    surgicalEditContract: {
+      format: "mingtu_surgical_edit_contract_v1",
+      policy: "surgical_only",
+      selectedChangeTargetIds: changeTargets.map((target) => target.id),
+      explicitProtectionRegionIds: protectionRegions.map((target) => target.id),
+      globalPreserveInstruction: initialFields.globalPreserveNote,
+      changeOnlyInsideSelectedTargets: true,
+      preserveAllUnmarkedContent: true,
+      fullRegenerationAllowed: false,
+      localEditFailureBehavior: "block_and_return_to_teacher_without_regenerating",
+      validation: {
+        textOutsideTargets: "not_applicable",
+        imageOutsideTargets: "not_applicable",
+        engineeringOutsideTargets: "unselected_entity_ids_parameters_constraints_and_topology_must_match_before_state",
+        beforeAfterComparisonRequired: true,
+        rejectIfUnmarkedContentChanged: true
+      }
+    },
+    teacherCorrection: {
+      requestedEditMode: "engineering_object_edit_only",
+      editScopePolicy: "surgical_only",
+      preserveUnmarkedRegions: true,
+      rejectWholeArtifactReplacementForLocalIssue: true
+    },
+    proposedSoftwareAction: {
+      executionMode: "teacher_review_only",
+      nativeExecutionImplemented: false,
+      requiresToolAdapter: true,
+      targetIds: changeTargets.map((target) => target.id),
+      fullArtifactReplacementPrepared: false,
+      draftAction: "Change only the confirmed D04 dimension through a reviewed engineering adapter."
+    }
+  });
+}
 
 const legacyHtml = String.raw`<!doctype html>
 <html lang="zh-CN">
@@ -473,13 +634,18 @@ function inlineJson(value) {
 }
 
 const workbenchConfig = {
-  format: "mingtu_mask_workbench_config_v1",
+  format: "mingtu_mask_workbench_config_v2",
   kitId,
   software,
   goal,
   mode,
+  contentType,
+  demoPreset,
   initialBackdropName,
   initialBackdropDataUrl,
+  initialBackdropSha256,
+  initialFields,
+  initialAnnotations,
   canvasWidth: 1344,
   canvasHeight: 756,
   reviewLocks: locks
@@ -662,6 +828,8 @@ const manifest = {
   goal,
   software,
   mode,
+  contentType,
+  demoPreset: demoPreset || null,
   files: {
     readme: readmePath,
     browserOverlay: browserOverlayPath,
@@ -676,6 +844,13 @@ const manifest = {
     browserBackdropImage: true,
     responsiveMaskWorkbench: true,
     freehandEllipseRectangleArrowAndText: true,
+    textContentRegionReplacement: true,
+    plainTextMarkdownCsvAndJsonBackdropRendering: true,
+    imageLocalEditMask: true,
+    engineeringObjectDimensionAnnotationAndCommandTargetMask: true,
+    changeProtectAndReferenceMaskRoles: true,
+    surgicalEditOutsideMaskPreservationContract: true,
+    fullRegenerationRequiresSeparateTeacherChoice: true,
     undoRedoAndDraftRestore: true,
     annotationListAndReadonlyPlayback: true,
     zoomFitTouchAndKeyboard: true,
@@ -705,9 +880,9 @@ writeFileSync(readmePath, [
   `任务：${goal}`,
   `目标工具：${software}`,
   "",
-  "打开 `transparent-sketch-overlay.html` 后，可以在 Image2 样图、包装刀版图或工程截图上使用自由画笔、圈选、框选、箭头和文字进行纠错。支持颜色与粗细、撤销与重做、草稿恢复、缩放适配、蒙版显隐、无底图状态、只读回放和触控操作。",
+  "打开 `transparent-sketch-overlay.html` 后，先选择文字、图片或工程内容，再用自由画笔、圈选、框选、箭头和文字标出修改区、保护区或参考关系。文字模式记录原文、新文和排版约束；图片模式记录局部修改要求；工程模式记录对象编号、动作、目标值、单位和约束。TXT、Markdown、CSV 与 JSON 可直接渲染成文字审校底稿。",
   "",
-  "在右侧填写问题类型、影响步骤、空间关系、深度提示和老师意见，然后点击“提交纠错”。页面会导出 `mingtu_teacher_mask_correction_v1` / `transparent_ai_sketch_overlay_packet_v1` 兼容数据，可交给 Image2 做局部修改，也可继续进入空间意图解释与目标确认。",
+  "默认策略是只修改选中的目标，并保持未标注内容不变。导出的 `mingtu_multimodal_surgical_mask_correction_v1` 兼容包包含修改目标、保护区域、参考关系和外部零改动验证；局部修改不可行时也必须先停下，由老师决定是否查看单独的整体重生成候选。",
   "",
   "Image2 像素不是工程尺寸真值。所有重要细节都会进入 `transparent_ai_universal_detail_logic_contract_v1`；位置、方向、透视、深度、尺寸、材料与工艺必须绑定已确认的数据、约束或老师规则。缺少逻辑来源时，系统会停止执行并返回人工复核。",
   "",
@@ -736,12 +911,18 @@ console.log(JSON.stringify({
   teacherReadme: readmePath,
   browserOverlay: browserOverlayPath,
   initialBackdrop: initialBackdropName || null,
+  initialBackdropSha256: initialBackdropSha256 || null,
+  contentType,
+  demoPreset: demoPreset || null,
   powershellOverlay: powershellOverlayPath,
   packetSchema: schemaPath,
   samplePacket: samplePacketPath,
   transparentDrawingMask: true,
   responsiveMaskWorkbench: true,
   supportsFreehandEllipseRectangleArrowAndText: true,
+  supportsTextImageAndEngineeringMasks: true,
+  supportsChangeProtectAndReferenceRoles: true,
+  enforcesSurgicalEditAndOutsideMaskPreservation: true,
   supportsUndoRedoDraftRestoreAndReadonlyPlayback: true,
   supports2DPlaneSketch: true,
   supports3DDepthHints: true,

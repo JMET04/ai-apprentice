@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { chromium } from "playwright";
@@ -9,8 +8,9 @@ import { chromium } from "playwright";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pluginRoot = resolve(__dirname, "..");
 const repoRoot = resolve(pluginRoot, "..", "..");
-const smokeRoot = join(tmpdir(), "mingtu-mask-workbench-smoke", String(Date.now()));
+const smokeRoot = join(repoRoot, ".ta-smoke", "mingtu-mask-workbench-smoke", String(Date.now()));
 const outputRoot = join(smokeRoot, "kit");
+const engineeringOutputRoot = join(smokeRoot, "engineering-kit");
 const screenshotRoot = join(smokeRoot, "screenshots");
 mkdirSync(screenshotRoot, { recursive: true });
 
@@ -37,6 +37,20 @@ const generator = spawnSync(process.execPath, [
 if (generator.status !== 0) throw new Error(generator.stderr || generator.stdout || "Mask workbench generation failed");
 const generated = JSON.parse(generator.stdout);
 const html = readFileSync(generated.browserOverlay, "utf8");
+const textFixture = join(smokeRoot, "office-note.md");
+writeFileSync(textFixture, "# 项目周报\n\n本方案将在周五提交审核。\n\n其他段落保持不变。\n", "utf8");
+const engineeringFixture = join(repoRoot, "docs", "assets", "packaging-engineering-index.png");
+const engineeringGenerator = spawnSync(process.execPath, [
+  join(__dirname, "create-transparent-sketch-overlay-kit.mjs"),
+  "--goal", "只修改工程对象 D04，不重画其他内容",
+  "--software", "AICAD / AutoCAD 工程图审校",
+  "--content-type", "engineering",
+  "--demo-preset", "engineering_dimension_change",
+  "--backdrop", engineeringFixture,
+  "--output-dir", engineeringOutputRoot
+], { cwd: repoRoot, encoding: "utf8", timeout: 120000 });
+if (engineeringGenerator.status !== 0) throw new Error(engineeringGenerator.stderr || engineeringGenerator.stdout || "Engineering mask demo generation failed");
+const engineeringGenerated = JSON.parse(engineeringGenerator.stdout);
 
 const executablePath = [
   process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,
@@ -104,7 +118,7 @@ try {
   );
   addCheck(
     "Undo redo readonly playback draft and submit states are functional",
-    desktopResult.state.annotations.length === 5 && desktopResult.draft && failureText?.includes("提交失败") && desktopResult.status?.includes("等待 Image2 局部修改"),
+    desktopResult.state.annotations.length === 5 && desktopResult.draft && failureText?.includes("提交失败") && desktopResult.status?.includes("图片局部修改包已导出"),
     JSON.stringify({
       annotations: desktopResult.state.annotations.length,
       readonly: desktopResult.state.readonly,
@@ -117,14 +131,84 @@ try {
   addCheck(
     "Export keeps visual correction review-only and preserves unmarked regions",
     desktopResult.packet.workbenchFormat === "mingtu_teacher_mask_correction_v1" &&
+      desktopResult.packet.modificationFormat === "mingtu_multimodal_surgical_mask_correction_v1" &&
       desktopResult.packet.teacherCorrection.preserveUnmarkedRegions === true &&
+      desktopResult.packet.surgicalEditContract.changeOnlyInsideSelectedTargets === true &&
+      desktopResult.packet.surgicalEditContract.fullRegenerationAllowed === false &&
       desktopResult.packet.locks.accepted === false &&
       desktopResult.packet.locks.ruleEnabled === false &&
       desktopResult.packet.locks.packagingGated === true,
     JSON.stringify(desktopResult.packet.locks)
   );
+  addCheck(
+    "Image mask exports exact targets and outside-mask zero-change validation",
+    desktopResult.packet.changeTargets.length === 5 &&
+      desktopResult.packet.changeTargets.every((target) => target.contentType === "image" && target.preserveOutsideThisMask === true) &&
+      desktopResult.packet.surgicalEditContract.validation.rejectIfUnmarkedContentChanged === true,
+    JSON.stringify({ changeTargets: desktopResult.packet.changeTargets.length, contract: desktopResult.packet.surgicalEditContract })
+  );
+
+  await desktop.evaluate(() => globalThis.MingTuOverlay.importAnnotations([]));
+  await desktop.setInputFiles("#imageUpload", textFixture);
+  await desktop.waitForTimeout(180);
+  await desktop.click('[data-content-type="text"]');
+  await desktop.selectOption("#textDocumentType", "word_docx");
+  await desktop.fill("#textLocator", "paragraph:2");
+  await desktop.fill("#sourceText", "周五");
+  await desktop.fill("#replacementText", "周一");
+  await draw(desktop, "rect", [0.16, 0.24], [0.56, 0.33]);
+  const textResult = await desktop.evaluate(() => ({ packet: globalThis.packet(), state: globalThis.MingTuOverlay.getState() }));
+  addCheck(
+    "Text mask renders a real text document and binds Word native locator",
+    textResult.state.backdropKind === "text_document" &&
+      textResult.packet.activeContentType === "text" &&
+      textResult.packet.changeTargets.length === 1 &&
+      textResult.packet.changeTargets[0].editIntent.documentType === "word_docx" &&
+      textResult.packet.changeTargets[0].editIntent.locator === "paragraph:2" &&
+      textResult.packet.changeTargets[0].editIntent.sourceText === "周五" &&
+      textResult.packet.changeTargets[0].editIntent.replacementText === "周一",
+    JSON.stringify(textResult.packet.changeTargets[0]?.editIntent)
+  );
   addCheck("Desktop browser has no console or runtime errors", desktopErrors.length === 0, desktopErrors.join(" | ") || "none");
   await desktop.close();
+
+  const engineering = await browser.newPage({ viewport: { width: 1440, height: 960 }, deviceScaleFactor: 1 });
+  const engineeringErrors = [];
+  engineering.on("console", (message) => { if (message.type() === "error") engineeringErrors.push(message.text()); });
+  engineering.on("pageerror", (error) => engineeringErrors.push(error.message));
+  await engineering.goto(pathToFileURL(engineeringGenerated.browserOverlay).href, { waitUntil: "load" });
+  await engineering.waitForFunction(() => Boolean(globalThis.MingTuOverlay));
+  const engineeringResult = await engineering.evaluate(() => ({
+    packet: globalThis.packet(),
+    state: globalThis.MingTuOverlay.getState(),
+    bodyWidth: document.body.scrollWidth,
+    viewportWidth: innerWidth,
+    contentLabel: document.querySelector("#contentBadgeLabel")?.textContent
+  }));
+  const engineeringScreenshot = join(screenshotRoot, "engineering-software-mask.png");
+  await engineering.screenshot({ path: engineeringScreenshot, fullPage: true });
+  addCheck(
+    "Engineering software mask demonstrates one D04 change target plus protected and reference regions",
+    engineeringResult.bodyWidth <= engineeringResult.viewportWidth + 1 &&
+      engineeringResult.contentLabel === "工程对象修改" &&
+      engineeringResult.packet.changeTargets.length === 1 &&
+      engineeringResult.packet.changeTargets[0].editIntent.objectId === "D04" &&
+      engineeringResult.packet.changeTargets[0].editIntent.expectedValue === "450" &&
+      engineeringResult.packet.preservationRegions.length === 1 &&
+      engineeringResult.packet.referenceRelations.length === 1,
+    JSON.stringify({ screenshot: engineeringScreenshot, changeTargets: engineeringResult.packet.changeTargets, protection: engineeringResult.packet.preservationRegions.length, references: engineeringResult.packet.referenceRelations.length })
+  );
+  addCheck(
+    "Engineering mask blocks full redraw and all software side effects",
+    engineeringResult.packet.surgicalEditContract.fullRegenerationAllowed === false &&
+      engineeringResult.packet.teacherCorrection.rejectWholeArtifactReplacementForLocalIssue === true &&
+      engineeringResult.packet.locks.softwareActionsExecuted === false &&
+      engineeringResult.packet.locks.targetSoftwareCommandsExecuted === false &&
+      engineeringResult.packet.proposedSoftwareAction.fullArtifactReplacementPrepared === false,
+    JSON.stringify(engineeringResult.packet.locks)
+  );
+  addCheck("Engineering demo browser has no console or runtime errors", engineeringErrors.length === 0, engineeringErrors.join(" | ") || "none");
+  await engineering.close();
 
   const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, hasTouch: true, isMobile: true });
   const mobile = await mobileContext.newPage();
@@ -168,6 +252,7 @@ console.log(JSON.stringify({
   smoke: "mingtu_mask_workbench_browser_smoke_v1",
   smokeRoot,
   generated,
+  engineeringGenerated,
   checks
 }, null, 2));
 if (failed.length) process.exit(1);

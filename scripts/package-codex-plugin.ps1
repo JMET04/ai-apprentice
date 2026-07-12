@@ -14,8 +14,11 @@ if (-not $OutputPath) {
   $OutputPath = Join-Path $DistDir "$PluginName-codex-plugin.zip"
 }
 
-$PackageRoot = Join-Path ([System.IO.Path]::GetTempPath()) "$PluginName-package"
-$VerifyRoot = Join-Path ([System.IO.Path]::GetTempPath()) "$PluginName-package-verify"
+$WorkRoot = Join-Path $RepoRoot ".ta-package"
+$PackageRoot = Join-Path $WorkRoot "$PluginName-package"
+$VerifyRoot = Join-Path $WorkRoot "$PluginName-package-verify"
+
+New-Item -ItemType Directory -Force -Path $WorkRoot | Out-Null
 
 foreach ($Path in @($PackageRoot, $VerifyRoot)) {
   if (Test-Path -LiteralPath $Path) {
@@ -116,10 +119,16 @@ $Required = @(
   "scripts\create-universal-software-observer-kit.mjs",
   "scripts\compact-universal-observation-learning-events.mjs",
   "scripts\create-transparent-sketch-overlay-kit.mjs",
+  "scripts\create-engineering-mask-demo.mjs",
+  "scripts\validate-multimodal-surgical-mask-correction.mjs",
+  "scripts\surgical-office-text-edit.py",
+  "scripts\resolve-learned-rule-conflicts.mjs",
   "assets\mask-workbench\index.template.html",
   "assets\mask-workbench\styles.css",
   "assets\mask-workbench\app.js",
   "assets\mask-workbench\design-tokens.json",
+  "assets\examples\engineering-object-index.png",
+  "schemas\multimodal-surgical-mask-correction.schema.json",
   "scripts\interpret-transparent-sketch-spatial-intent.mjs",
   "scripts\create-spatial-software-execution-route-bridge.mjs",
   "scripts\create-supervised-software-action-kit.mjs",
@@ -160,6 +169,8 @@ $Required = @(
   "scripts\smoke-existing-drawing-spatial-controlled-execution.mjs",
   "scripts\smoke-sketch-demonstration-implementation-audit.mjs",
   "scripts\smoke-mingtu-mask-workbench-browser.mjs",
+  "scripts\smoke-surgical-office-text-edit.mjs",
+  "scripts\smoke-learned-rule-conflict-resolution.mjs",
   "scripts\smoke-recording-demonstration.mjs",
   "scripts\smoke-mcp-tool-surface-fast.mjs",
   "scripts\smoke-mcp-tool-surface.mjs",
