@@ -1,0 +1,47 @@
+{
+  "dsl_version": "0.1",
+  "rule_id": "pkg.glue_tab.min_width",
+  "title": "Glue tab minimum width",
+  "domain": "packaging.dieline",
+  "lifecycle": "active",
+  "severity": "blocking",
+  "owner": {
+    "teacher_id": "teacher.local",
+    "reviewer_id": "qa.local",
+    "approved_at": "2026-06-12T00:00:00+08:00"
+  },
+  "source": {
+    "type": "teacher_correction",
+    "evidence_refs": ["evidence://demo/glue-tab-correction"],
+    "natural_language": "Glue tab width must be at least 12mm and at least 8 times board thickness."
+  },
+  "scope": {
+    "artifact_types": ["packaging_dieline"],
+    "applies_when": {
+      "type": "expression",
+      "language": "taa-expr-0.1",
+      "expr": "artifact.objects.exists(o, o.kind == 'glue_tab')"
+    }
+  },
+  "inputs_required": [
+    "artifact.objects[*].kind",
+    "artifact.objects[*].width_mm",
+    "context.material.board_thickness_mm"
+  ],
+  "constraint": {
+    "type": "expression",
+    "language": "taa-expr-0.1",
+    "expr": "artifact.objects.filter(o, o.kind == 'glue_tab').all(o, o.width_mm >= max(12, context.material.board_thickness_mm * 8))"
+  },
+  "failure": {
+    "message": "Glue tab width is too small for reliable production.",
+    "action": "reject_delivery",
+    "remediation_hint": "Increase each glue_tab width_mm to at least max(12, board_thickness_mm * 8)."
+  },
+  "audit": {
+    "created_by": "ai",
+    "created_at": "2026-06-12T00:00:00+08:00",
+    "updated_at": "2026-06-12T00:00:00+08:00",
+    "rule_version": "0.1.0"
+  }
+}

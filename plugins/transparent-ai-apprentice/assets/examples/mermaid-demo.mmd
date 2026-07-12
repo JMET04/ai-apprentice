@@ -1,0 +1,8 @@
+flowchart LR
+  A["Teacher shows before state"]
+  B["Teacher performs correction"]
+  C["Apprentice drafts disabled rule"]
+  D["Teacher reviews replay"]
+  A -->|observe| B
+  B -->|extract cue| C
+  C -->|replay only| D

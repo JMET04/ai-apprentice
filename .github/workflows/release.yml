@@ -1,0 +1,50 @@
+name: Package MingTu release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Verify plugin
+        run: npm run verify:plugin
+      - name: Build verified plugin ZIP
+        run: npm run package:codex-plugin
+      - name: Write release checksum
+        shell: powershell
+        run: |
+          $hash = (Get-FileHash -Algorithm SHA256 dist/transparent-ai-apprentice-codex-plugin.zip).Hash.ToLowerInvariant()
+          "$hash  transparent-ai-apprentice-codex-plugin.zip" | Set-Content -Encoding ascii dist/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mingtu-ai-codex-plugin
+          path: |
+            dist/transparent-ai-apprentice-codex-plugin.zip
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create $env:GITHUB_REF_NAME
+          dist/transparent-ai-apprentice-codex-plugin.zip
+          dist/SHA256SUMS.txt
+          --verify-tag
+          --latest
+          --title "明徒 AI $env:GITHUB_REF_NAME"
+          --notes-file RELEASE_NOTES.md

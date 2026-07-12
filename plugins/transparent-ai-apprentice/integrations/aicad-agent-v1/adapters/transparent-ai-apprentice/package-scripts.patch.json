@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "verify:aicad-integration": "python integration-handoffs/aicad-agent-v1/tests/run_integration_tests.py",
+    "smoke:aicad-handoff": "node plugins/transparent-ai-apprentice/scripts/smoke-aicad-handoff-adapter.mjs"
+  },
+  "verifyPluginRequiredFiles": [
+    "plugins/aicad-agent/.codex-plugin/plugin.json",
+    "plugins/transparent-ai-apprentice/schemas/mingtu-aicad-result-v1.schema.json",
+    "plugins/transparent-ai-apprentice/scripts/aicad-handoff-adapter.mjs"
+  ]
+}

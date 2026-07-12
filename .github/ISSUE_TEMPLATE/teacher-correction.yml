@@ -1,0 +1,32 @@
+name: 教学与纠错反馈
+description: 提交一次可复用的老师纠错案例；它不会自动启用规则。
+title: "[纠错案例] "
+labels: [teacher-correction]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: 任务背景
+      description: 学徒原本需要完成什么？
+    validations:
+      required: true
+  - type: textarea
+    id: wrong
+    attributes:
+      label: 哪里不对
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: 正确做法与适用边界
+      description: 请同时写明什么时候不应使用这条纠正。
+    validations:
+      required: true
+  - type: checkboxes
+    id: locks
+    attributes:
+      label: 审核确认
+      options:
+        - label: 我理解该反馈只会形成待审核规则，不代表技术验收或量产批准。
+          required: true

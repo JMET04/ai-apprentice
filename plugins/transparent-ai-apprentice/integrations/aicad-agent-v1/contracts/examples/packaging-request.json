@@ -1,0 +1,107 @@
+{
+  "format": "mingtu_aicad_request_v1",
+  "handoffId": "example-packaging-001",
+  "mode": "packaging_dieline",
+  "project": {
+    "name": "Review carton",
+    "productType": "transport_box",
+    "structureFamily": "FEFCO_0201",
+    "requestedUnits": "mm"
+  },
+  "product": {
+    "name": "Electronic device",
+    "shape": "rectangular",
+    "weightKg": 15,
+    "dimensions": [
+      {
+        "id": "product_envelope",
+        "semantic": "product_envelope",
+        "axes": [
+          "length",
+          "width",
+          "height"
+        ],
+        "values": [
+          380,
+          280,
+          200
+        ],
+        "unit": "mm",
+        "authority": "approved_engineering",
+        "sourceRef": "design-result",
+        "immutable": true
+      }
+    ]
+  },
+  "materials": [
+    {
+      "id": "primary_board",
+      "category": "corrugated_board",
+      "name": "BC double wall",
+      "authority": "approved_engineering",
+      "thickness": {
+        "value": 7,
+        "unit": "mm"
+      }
+    }
+  ],
+  "engineeringTruth": {
+    "origin": [
+      0,
+      0
+    ],
+    "sourcePrecedence": [
+      "teacher_explicit",
+      "approved_engineering",
+      "trusted_catalog",
+      "calculated",
+      "visual_semantics_only"
+    ],
+    "conflictPolicy": "fail_closed_and_report",
+    "imagePixelsUsedAsDimensions": false
+  },
+  "evidence": {
+    "solutionPlan": {
+      "id": "solution",
+      "relativePath": "inputs/design-result.json",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "mediaType": "application/json"
+    },
+    "image2Sample": {
+      "id": "image2",
+      "relativePath": "inputs/sample.png",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "mediaType": "image/png",
+      "role": "visual_topology_only",
+      "pixelMeasurementsAllowed": false
+    },
+    "selfChecks": [],
+    "teacherCorrectionPackets": [],
+    "localModificationResults": []
+  },
+  "localModifications": [],
+  "requestedArtifacts": [
+    "plan",
+    "aicad",
+    "scr",
+    "dxf",
+    "audit",
+    "validation",
+    "manifest",
+    "png"
+  ],
+  "hostPolicy": {
+    "defaultHost": "none",
+    "allowOptionalHosts": [
+      "autocad",
+      "solidworks"
+    ]
+  },
+  "safety": {
+    "reviewOnly": true,
+    "accepted": false,
+    "ruleEnabled": false,
+    "packagingGated": true,
+    "productionApprovalClaimed": false
+  }
+}

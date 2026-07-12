@@ -1,0 +1,13 @@
+{
+  "format": "transparent_ai_teaching_session_v1",
+  "sessionId": "",
+  "apprenticeName": "",
+  "task": "",
+  "teacherDemonstrations": [],
+  "executionAttempts": [],
+  "corrections": [],
+  "publicTraces": [],
+  "ruleDrafts": [],
+  "nextReplayPlan": []
+}
+

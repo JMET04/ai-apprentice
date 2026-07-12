@@ -1,0 +1,13 @@
+{
+  "format": "transparent_ai_rule_memory_draft_v1",
+  "id": "",
+  "condition": "",
+  "action": "",
+  "counterexamples": [],
+  "sourceEvidence": [],
+  "confidence": "low",
+  "enabled": false,
+  "requiresTeacherConfirmation": true,
+  "reviewStatus": "needs_teacher_review"
+}
+

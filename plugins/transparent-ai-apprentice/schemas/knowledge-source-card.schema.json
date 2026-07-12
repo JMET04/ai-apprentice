@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://transparent-ai-apprentice.local/schemas/knowledge-source-card.schema.json",
+  "title": "Knowledge Source Card",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "source_id",
+    "source_type",
+    "domain",
+    "title",
+    "uri",
+    "trust_level",
+    "permission",
+    "review",
+    "hashes"
+  ],
+  "properties": {
+    "schema_version": { "const": "knowledge_source_card_v1" },
+    "source_id": { "type": "string", "minLength": 1 },
+    "source_type": {
+      "type": "string",
+      "enum": ["manual", "standard", "paper", "teacher_note", "software_doc", "log_reference", "example", "unknown"]
+    },
+    "domain": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "uri": { "type": "string", "minLength": 1 },
+    "trust_level": { "type": "string", "enum": ["teacher_supplied", "authoritative", "reference", "unverified"] },
+    "permission": {
+      "type": "object",
+      "required": ["status", "note"],
+      "properties": {
+        "status": { "type": "string", "enum": ["teacher_supplied", "public_reference", "internal_review_only", "unknown"] },
+        "note": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "review": {
+      "type": "object",
+      "required": ["accepted", "review_only", "packaging_gated"],
+      "properties": {
+        "accepted": { "type": "boolean" },
+        "review_only": { "type": "boolean" },
+        "packaging_gated": { "type": "boolean" },
+        "reviewer_id": { "type": ["string", "null"] },
+        "reviewed_at": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "hashes": {
+      "type": "object",
+      "required": ["source_hash"],
+      "properties": {
+        "source_hash": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "created_at": { "type": "string" }
+  },
+  "additionalProperties": false
+}

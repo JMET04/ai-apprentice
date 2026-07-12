@@ -1,0 +1,534 @@
+{
+  "schema": "aicad_agent_integration_manifest_v1",
+  "name": "aicad-agent",
+  "version": "1.2.0",
+  "releaseDecision": {
+    "previous": "1.1.0",
+    "rebuilt": true,
+    "reason": "1.1.0 omitted current packaging rules/QA/tests and complete host/integration assets"
+  },
+  "entries": {
+    "codexPlugin": "plugin/aicad-agent/.codex-plugin/plugin.json",
+    "mcp": "plugin/aicad-agent/.mcp.json",
+    "cli": "plugin/aicad-agent/scripts/aicad_agent.py",
+    "strictRequestSchema": "contracts/mingtu-aicad-request-v1.schema.json",
+    "resultSchema": "contracts/mingtu-aicad-result-v1.schema.json",
+    "mainProjectAdapter": "adapters/transparent-ai-apprentice/aicad-handoff-adapter.mjs"
+  },
+  "runtime": {
+    "python": ">=3.10",
+    "coreDependencies": [],
+    "qaDependenciesFile": "plugin/aicad-agent/requirements-qa.txt",
+    "defaultProvider": "offline",
+    "platform": "cross-platform core; Windows optional hosts"
+  },
+  "optionalHosts": [
+    {
+      "name": "AutoCAD",
+      "testedHistoricalVersion": "2025",
+      "required": false
+    },
+    {
+      "name": "SolidWorks",
+      "testedHistoricalVersion": "2026 / revision 34.0.0",
+      "required": false,
+      "framework": ".NET Framework 4.8 x64"
+    }
+  ],
+  "tools": [
+    "aicad_capabilities",
+    "aicad_get_plan_schema",
+    "aicad_generate",
+    "aicad_validate_plan",
+    "aicad_compile_plan",
+    "aicad_solidworks_doctor",
+    "aicad_get_3d_plan_schema",
+    "aicad_validate_3d_plan",
+    "aicad_build_solidworks_part"
+  ],
+  "capabilities": [
+    "origin-anchored 2D constraint validation",
+    "AICAD/SCR/DXF/audit/manifest export",
+    "packaging dieline QA PKG-G001..PKG-G021",
+    "AutoCAD bundle and XData workflow",
+    "offline 3D plan validation/export",
+    "optional transactional SolidWorks SLDPRT/STEP host",
+    "error root-cause and draft prevention rules"
+  ],
+  "licenses": {
+    "project": "MIT",
+    "file": "plugin/aicad-agent/LICENSE",
+    "thirdParty": "plugin/aicad-agent/THIRD_PARTY_NOTICES.md",
+    "excludedVendorBinaries": [
+      "SolidWorks.Interop.sldworks.dll",
+      "SolidWorks.Interop.swconst.dll"
+    ]
+  },
+  "knownLimits": [
+    "native 2D primitives are LINE/CIRCLE/ARC",
+    "packaging IDs follow current four-panel conventions for several checks",
+    "3D feature family is base/boss/cut extrude only",
+    "native host outputs unavailable without licensed hosts",
+    "historical host evidence does not validate newest packaged binaries"
+  ],
+  "safety": {
+    "reviewOnly": true,
+    "accepted": false,
+    "ruleEnabled": false,
+    "packagingGated": true,
+    "productionApprovalClaimed": false,
+    "failClosedOnTruthConflict": true,
+    "imagePixelsAreNeverDimensionalTruth": true
+  },
+  "validationCommands": [
+    "python tests/run_integration_tests.py",
+    "python tests/verify_manifest.py",
+    "python plugin/aicad-agent/scripts/aicad_agent.py capabilities",
+    "python plugin/aicad-agent/scripts/aicad_agent.py build3d --plan plugin/aicad-agent/runtime/examples/mounting_plate_3d.plan.json --out <temp> --name offline --no-execute"
+  ],
+  "hashPolicy": {
+    "algorithm": "SHA-256",
+    "exclusions": [
+      "integration-manifest.json (self-referential)",
+      "SHA256SUMS (checksum index)",
+      "release/* (archive is recorded in SHA256SUMS)"
+    ]
+  },
+  "files": [
+    {
+      "path": "adapters/transparent-ai-apprentice/aicad-handoff-adapter.mjs",
+      "sha256": "6073e83497e1bca7d084e75e75ae795ad048da319ff9d637d35be84ce4cb0ee8",
+      "sizeBytes": 3090
+    },
+    {
+      "path": "adapters/transparent-ai-apprentice/package-scripts.patch.json",
+      "sha256": "b4bcbb12dd4b3722fa37c48fa23c640604c58fbd934800845e9cc9d590a33e1d",
+      "sizeBytes": 489
+    },
+    {
+      "path": "contracts/examples/packaging-request.json",
+      "sha256": "394023e9e8983c0d5a57a5f988822d5c78f25e16caaf1caed72d493f890cf0a1",
+      "sizeBytes": 2410
+    },
+    {
+      "path": "contracts/mingtu-aicad-packaging-handoff-v1.compat.schema.json",
+      "sha256": "baa85aeae585ecbf11de0ece294f0eab6a1c54fb9be2dd6c278b9b7394b2900a",
+      "sizeBytes": 1757
+    },
+    {
+      "path": "contracts/mingtu-aicad-request-v1.schema.json",
+      "sha256": "434ec1fb350333cb4ffbd33351e15085dd263e10f9ab44dc4b9b5f31f0979010",
+      "sizeBytes": 10168
+    },
+    {
+      "path": "contracts/mingtu-aicad-result-v1.schema.json",
+      "sha256": "8c2f9ed805b794c097a3b4a75e0a105c4c3260dc3287e38a466c408232db8404",
+      "sizeBytes": 6176
+    },
+    {
+      "path": "docs/MAIN_PROJECT_INTEGRATION.md",
+      "sha256": "1603593d927c96bd8911e81d8fbabe3f535061dc529cf618cb94bb86acb67970",
+      "sizeBytes": 2354
+    },
+    {
+      "path": "docs/MERGE_CHECKLIST.md",
+      "sha256": "cc8406d0d137a7b6429a8f396b0e6ae4a0c7123204c063a4ca9cf986e44e7d60",
+      "sizeBytes": 1306
+    },
+    {
+      "path": "docs/SECURITY_AND_LIMITS.md",
+      "sha256": "be988caad826b5d00155901e25bf998f41d5ddce3bc851508b3e0af8b81dbd4e",
+      "sizeBytes": 1077
+    },
+    {
+      "path": "docs/SOURCE_AUDIT.md",
+      "sha256": "0e75714f27c8c68173568dacbbbb0471792b54f1f6ad5f3d0c1670aaf76b3f03",
+      "sizeBytes": 1018
+    },
+    {
+      "path": "evidence/historical-host-evidence-summary.json",
+      "sha256": "2c4287a00ac60cbb5085d1cf88c6afad33c89d2a56c8d453948efce747bed6c8",
+      "sizeBytes": 1257
+    },
+    {
+      "path": "plugin/aicad-agent/.codex-plugin/plugin.json",
+      "sha256": "4d58b9297aa13e4b96e6d3eb992e3dc12c260fb8596746cf4195e1827d1e9259",
+      "sizeBytes": 1559
+    },
+    {
+      "path": "plugin/aicad-agent/.mcp.json",
+      "sha256": "1552ca2d80d1b5368a95e2ad781db7b67ad6e0d25304c4c5e38e13e17e0cc277",
+      "sizeBytes": 279
+    },
+    {
+      "path": "plugin/aicad-agent/CHANGELOG.md",
+      "sha256": "769c001605637f91853dc3380727b6e2588fa8cdd9910d1b4c2d5a362981cdca",
+      "sizeBytes": 647
+    },
+    {
+      "path": "plugin/aicad-agent/installers/build-solidworks-host.ps1",
+      "sha256": "d6d05644718d93e525a4c27faf1c962a778c351143d545794b64f3226c252359",
+      "sizeBytes": 1712
+    },
+    {
+      "path": "plugin/aicad-agent/installers/install-codex-plugin.ps1",
+      "sha256": "3eccd62fe9e2d3c63f0e6d88ca8849a1d4f35d6e80541b51a9bf76118183ece0",
+      "sizeBytes": 1493
+    },
+    {
+      "path": "plugin/aicad-agent/installers/install.ps1",
+      "sha256": "88487cb8c908671b48cd6437e949b0066d3709a9effbaf8e970b91ab0531175c",
+      "sizeBytes": 3233
+    },
+    {
+      "path": "plugin/aicad-agent/installers/test-autocad.ps1",
+      "sha256": "b11f23d8681784f47dcf0a707c21c69ee41d380bbb0d7aa4889783f39f932047",
+      "sizeBytes": 8549
+    },
+    {
+      "path": "plugin/aicad-agent/installers/uninstall.ps1",
+      "sha256": "055e3f1ad8688c1c1b4baa3ab98a2d128393089a93a7a7f7541ab8e9067064eb",
+      "sizeBytes": 1932
+    },
+    {
+      "path": "plugin/aicad-agent/LICENSE",
+      "sha256": "d89b5de568ed19b638d6407f67ce3b5c252c103a3bcad56ca1f2aff43909eb9a",
+      "sizeBytes": 1082
+    },
+    {
+      "path": "plugin/aicad-agent/pyproject.toml",
+      "sha256": "948bb9a5c0bb94f857d5441b09ce5328139ac12ec8b00e98e0de2333e3b9f5c1",
+      "sizeBytes": 311
+    },
+    {
+      "path": "plugin/aicad-agent/README.md",
+      "sha256": "7f17587bdaee8d3ccedb0bef193c90291efbf115a7c6bfce190813d14eef0b62",
+      "sizeBytes": 1020
+    },
+    {
+      "path": "plugin/aicad-agent/requirements-qa.txt",
+      "sha256": "f5dfd0bc267824629fb43669fb805846085b59c5e28d4018028839ca20f1ca91",
+      "sizeBytes": 65
+    },
+    {
+      "path": "plugin/aicad-agent/rules/packaging_dieline_rules.json",
+      "sha256": "387eae5d482a08631a98daaf9e7f833200f6b5cf1299f2edb9f7238b796dcf32",
+      "sizeBytes": 18877
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/autocad/AiCadConstraint.bundle/Contents/AiCadConstraint.lsp",
+      "sha256": "1777c833756308084a0da489b85fabb1aba50f2eff2a920ba617dbc3b04f4867",
+      "sizeBytes": 17143
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/autocad/AiCadConstraint.bundle/PackageContents.xml",
+      "sha256": "1b198ae8494410e848aca4203247c1a2bc16697d035e90b39879a53e2ad02a68",
+      "sizeBytes": 632
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/docs/agent-plugin.md",
+      "sha256": "19338a00cad54369ad4fafe6b32cbcfcde80e0f56f0709eb2f810109ef555884",
+      "sizeBytes": 2518
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/docs/architecture.md",
+      "sha256": "a896ba1e19fcb6398935d320e94feb2fc68c87ac191448c70686dc702dfc8462",
+      "sizeBytes": 1786
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/docs/protocol.md",
+      "sha256": "70ceedea9a330078f601fe6aec81a549a7c4c618bf519a7fc08ed2d01ee1a3f2",
+      "sizeBytes": 1126
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/docs/real-host-validation.md",
+      "sha256": "fddde58319c09c1f9776b23a9e520e45428e7833da1eda2f84904b49c609c186",
+      "sizeBytes": 1484
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/docs/solidworks-3d-research.md",
+      "sha256": "e462155d2b3bba47fcc16a623a50efa127bb61d47eb735618b28683a8c7cd52b",
+      "sizeBytes": 3932
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/docs/UPSTREAM_README.md",
+      "sha256": "1b2d8413ea65b606d30a2363d3f050ac40d9391f8d4f41a7e6e7dae9d61045f6",
+      "sizeBytes": 3099
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/examples/agent-request-zh.txt",
+      "sha256": "80dbbb92335e0a792c43b049eca96c4667d028308df10575ded9f0b08387d55a",
+      "sizeBytes": 67
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/examples/arc.plan.json",
+      "sha256": "0ba112f58e77e8c261aad3750a2249fc440a419b50fdcfe1a5c52343f5960abb",
+      "sizeBytes": 706
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/examples/mounting_plate_3d.plan.json",
+      "sha256": "dceeae97605546935ea5438a25e872873dea9a287afd22134079b8366bf5f5c2",
+      "sizeBytes": 3074
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/examples/rectangle.plan.json",
+      "sha256": "bf6a221b9a302045e4b698ce0aa5b693ee71432312a7c58e76b80fa16a7b9a1e",
+      "sizeBytes": 2430
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/prompts/constraint-drawing-prompt.md",
+      "sha256": "87c43936fbc33e6215bb52cc0b64ce70878521b56e5e519ad803be8840d3e066",
+      "sizeBytes": 1311
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/schema/aicad-3d-plan.schema.json",
+      "sha256": "05b5a24ef13d6ce4486380eb987d714837a33b5b3a259fe5a376a564ce16143c",
+      "sizeBytes": 4108
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/schema/aicad-plan.schema.json",
+      "sha256": "003e3c72fc0b630e0a7ba9ad4643b6c3623964f44f0b93e28c7b5459f0816172",
+      "sizeBytes": 5769
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/solidworks-host/AiCad.SolidWorksHost.exe",
+      "sha256": "fba7ff21d2e9e083d2ab307d73d1baacdaf2404a388b4624f6b76ae86a26bf79",
+      "sizeBytes": 24064
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/solidworks-host/source/AiCad.SolidWorksHost.csproj",
+      "sha256": "390b77661c616b02c935592369ff380d73b50c4ed2bedbc1893130459274a523",
+      "sizeBytes": 1582
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/solidworks-host/source/Program.cs",
+      "sha256": "c105e04e688334e7aa0cd254fa05a77524dd58952b3b3e207dbb68c20844d594",
+      "sizeBytes": 34175
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/src/aicad/__init__.py",
+      "sha256": "3399e35a4d85a456a5ab9e0ec812b96f18c72640e1473d84a2b0038a30982da9",
+      "sizeBytes": 130
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/src/aicad/cli.py",
+      "sha256": "e5f7f6dbceefb846cefd5358cfc06073058afafe021c5eef80563802c8872501",
+      "sizeBytes": 9358
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/src/aicad/engine.py",
+      "sha256": "16ab0eb8de5da2ff789fcd14d7dc286cdb14657d35ad2b4d43dddd22329e55ab",
+      "sizeBytes": 19629
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/src/aicad/engine3d.py",
+      "sha256": "6062f67517a9a4fd5b90d8a1f5f98e2727379b8d5fc43500147ac832def84b57",
+      "sizeBytes": 16667
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/src/aicad/exporters.py",
+      "sha256": "cde26b7186cea175b50880e635326228cfc70a3faa2c347b25a35306e2ffc3f6",
+      "sizeBytes": 7534
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/src/aicad/exporters3d.py",
+      "sha256": "6056075f92545761cef89b3f7ac69dfe5c423cb803487b4844e9c0547db5567f",
+      "sizeBytes": 5351
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/src/aicad/natural.py",
+      "sha256": "b18731f97885d621772d616d5229fc472c6a074f15acee5f17b34c5a9e8b0038",
+      "sizeBytes": 11603
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/src/aicad/provider.py",
+      "sha256": "2838d0ec72c099776f3aed22c6b7a4eb4d3546da08d2d9dd028b7a374d961e0d",
+      "sizeBytes": 6126
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/src/aicad/settings.py",
+      "sha256": "4d8a01c4fcd35c798fe0ff8ff4a2e368cea02b467c3c6eb2e9821e20840b89b9",
+      "sizeBytes": 3542
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/src/aicad/solidworks3d.py",
+      "sha256": "8fa89463038677b324996f9a192a083bc05db30e6e96165c720beb1361db2a44",
+      "sizeBytes": 9973
+    },
+    {
+      "path": "plugin/aicad-agent/runtime/tools/aicad.py",
+      "sha256": "bb4326ba2be801cef6b63ceb4b4f815bcc50c3032793714860498488074e1902",
+      "sizeBytes": 208
+    },
+    {
+      "path": "plugin/aicad-agent/scripts/aicad_agent.py",
+      "sha256": "c718d9d690c055a83b28acc64443718b4836fbf90266438ef5ac21d806203337",
+      "sizeBytes": 20600
+    },
+    {
+      "path": "plugin/aicad-agent/scripts/aicad_packaging_qa.py",
+      "sha256": "b7371430066fa66eef89d8342b2fb663503736933cc4437e5f8d326ed62dcc40",
+      "sizeBytes": 20756
+    },
+    {
+      "path": "plugin/aicad-agent/skills/aicad-draw/agents/openai.yaml",
+      "sha256": "8fc2993b97634c225239a368cd5ff14158faf9f679fa8a96944f49fa70dd7751",
+      "sizeBytes": 259
+    },
+    {
+      "path": "plugin/aicad-agent/skills/aicad-draw/references/examples.md",
+      "sha256": "2d144dee80a8104904487ee60b72bf18dc4cac67e3fd352d8a17bb1538473cdc",
+      "sizeBytes": 1889
+    },
+    {
+      "path": "plugin/aicad-agent/skills/aicad-draw/references/failure-recovery.md",
+      "sha256": "f7c1e62e856bb14f9d0190d46a5d1160a90d4a99316caec754d8c71a96ecc02e",
+      "sizeBytes": 1265
+    },
+    {
+      "path": "plugin/aicad-agent/skills/aicad-draw/references/plan-schema.md",
+      "sha256": "28642dd8ed97d6bfb5075de918265afed4b6928593954cd544feebb8d3cf8b75",
+      "sizeBytes": 1859
+    },
+    {
+      "path": "plugin/aicad-agent/skills/aicad-draw/SKILL.md",
+      "sha256": "b7b9d6ba073620740f288ff8264ceb59a4d15407456ce2654052489b30a9cdec",
+      "sizeBytes": 3480
+    },
+    {
+      "path": "plugin/aicad-agent/skills/aicad-model-3d/agents/openai.yaml",
+      "sha256": "248a653a4a792160e346c79bb5814d2491f6c4b0e71730cbca23abca5016c2f7",
+      "sizeBytes": 263
+    },
+    {
+      "path": "plugin/aicad-agent/skills/aicad-model-3d/references/failure-recovery.md",
+      "sha256": "f02da447c26ce2ff9552c088d2e28b9f24bb35130429463566359b9701e65b85",
+      "sizeBytes": 1053
+    },
+    {
+      "path": "plugin/aicad-agent/skills/aicad-model-3d/references/plan-schema.md",
+      "sha256": "9227ad5a2d03df61ec96e7829e963af3a025d44284a4258da1caa4ecf572670a",
+      "sizeBytes": 1150
+    },
+    {
+      "path": "plugin/aicad-agent/skills/aicad-model-3d/SKILL.md",
+      "sha256": "48c0fb92aca4425feac3e6603ab20dbbdbdbac6128e915cd643b281098e1f02f",
+      "sizeBytes": 2333
+    },
+    {
+      "path": "plugin/aicad-agent/tests/autocad/agent_plugin_test.lsp",
+      "sha256": "61e233e5f30c3bcf3d83e220a5249ef1c76ee338006bd8272759118f95464737",
+      "sizeBytes": 1950
+    },
+    {
+      "path": "plugin/aicad-agent/tests/autocad/integration_test.lsp",
+      "sha256": "37712a8701958d8c403479de2ba1d570cd2bca11dd0de76f214983e47b8339c8",
+      "sizeBytes": 4899
+    },
+    {
+      "path": "plugin/aicad-agent/tests/autocad/probe.scr",
+      "sha256": "efb682e9871bcd0e5cb90b614532bbf966ab0daa482056de144a83ea196d2a3b",
+      "sizeBytes": 527
+    },
+    {
+      "path": "plugin/aicad-agent/tests/autocad/run-agent-plugin.scr",
+      "sha256": "32445df125fb5ec2c51be5410e0d4738d6cb7b670274999c719ed609823b4155",
+      "sizeBytes": 101
+    },
+    {
+      "path": "plugin/aicad-agent/tests/autocad/run-integration.scr",
+      "sha256": "84afcd81cda8431d6291fc3ec8220db89279ef8d2fc65b3e20af3e6d45aea7ee",
+      "sizeBytes": 133
+    },
+    {
+      "path": "plugin/aicad-agent/tests/autocad/run-persistence.scr",
+      "sha256": "e9733ebc85534fb410ae35d611792c7fc091b033b47b9b5dd453b11225bde226",
+      "sizeBytes": 130
+    },
+    {
+      "path": "plugin/aicad-agent/tests/autocad/run-v2.scr",
+      "sha256": "2969ff0976995643733600ecfb33e796b7aeda323eed2e84fd6cb5cb2c45d456",
+      "sizeBytes": 83
+    },
+    {
+      "path": "plugin/aicad-agent/tests/autocad/v2_test.lsp",
+      "sha256": "881458428f3f9895e5345a8ad3fe1adde1cf2e4d2ddd6272ed15b59d630f3ce3",
+      "sizeBytes": 4921
+    },
+    {
+      "path": "plugin/aicad-agent/tests/fixtures/packaging/dieline.dxf",
+      "sha256": "cce5fe10041d215aca836d20ec3425c5735cae7575d3cb66a70717b4e52c3f80",
+      "sizeBytes": 3619
+    },
+    {
+      "path": "plugin/aicad-agent/tests/fixtures/packaging/frame-config.json",
+      "sha256": "41ed69e783e2e12b606fdeb2c876603e385f0ac6a36502ba5f45ccbb57656f3d",
+      "sizeBytes": 281
+    },
+    {
+      "path": "plugin/aicad-agent/tests/fixtures/packaging/geometry.json",
+      "sha256": "e4f0a0ee09bb8c1e2035bf623a7424a02e77cd852669ea395de44af5d8660755",
+      "sizeBytes": 33974
+    },
+    {
+      "path": "plugin/aicad-agent/tests/fixtures/packaging/native-sheet-config.json",
+      "sha256": "8bb2d1ad64476083acea99612d820dda6ca94a16fbb075c911994ff342688087",
+      "sizeBytes": 455
+    },
+    {
+      "path": "plugin/aicad-agent/tests/fixtures/packaging/preview.png",
+      "sha256": "2cb800559a2f68b3ebe3619f039be36e4fb9ecdc23c654fd400b8f3ce428f8c5",
+      "sizeBytes": 79479
+    },
+    {
+      "path": "plugin/aicad-agent/tests/test_agent_plugin.py",
+      "sha256": "2cd6f8b248b6321e4fc8470a4f0eed7d5d5218078e105bda8448cbaf6d8ab6b2",
+      "sizeBytes": 6450
+    },
+    {
+      "path": "plugin/aicad-agent/tests/test_engine.py",
+      "sha256": "95d48eef1beec1dd48397b315b13e7266f7113122ba65891fb84e7426d2b8576",
+      "sizeBytes": 8156
+    },
+    {
+      "path": "plugin/aicad-agent/tests/test_engine3d.py",
+      "sha256": "595b731a5441a2db715fa1d8f01a4e5554122b5a4215f5352d047fb1904b8994",
+      "sizeBytes": 3242
+    },
+    {
+      "path": "plugin/aicad-agent/tests/test_packaging_dieline_rules.py",
+      "sha256": "fc09edc925a9ea92eaa01dec0436a8c0d4c82f17b42aa088a374b325a8c929c8",
+      "sizeBytes": 4356
+    },
+    {
+      "path": "plugin/aicad-agent/THIRD_PARTY_NOTICES.md",
+      "sha256": "903bbc65432399dcd6b058ed29ca531c1cd23fe4486035f430cfc324d39f6919",
+      "sizeBytes": 764
+    },
+    {
+      "path": "tests/run_integration_tests.py",
+      "sha256": "5178f136aa20f6bdb5eb1083c1f6004e3615b1d0548a333803523ce626123856",
+      "sizeBytes": 4313
+    },
+    {
+      "path": "tests/verify_manifest.py",
+      "sha256": "4323775d0debc825b184e65a493326839e5c528e64354325f9e533eb5949db33",
+      "sizeBytes": 625
+    },
+    {
+      "path": "tools/build_handoff.py",
+      "sha256": "f012930889117640190620e0e3f93832fd7e25754626f02aa23d9442e5bb6e37",
+      "sizeBytes": 61254
+    },
+    {
+      "path": "validation/validation.json",
+      "sha256": "1d13407077a724475593ee0827946caa23c5a2a752a49a92de0f65a893fc1419",
+      "sizeBytes": 9190
+    },
+    {
+      "path": "validation/validation.md",
+      "sha256": "a4534d86911e75046faa12f466275edb02afd8414ddaf9461beb3446de5d90cc",
+      "sizeBytes": 945
+    }
+  ]
+}

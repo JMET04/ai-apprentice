@@ -1,0 +1,40 @@
+{
+  "format": "transparent_ai_screen_event_log_v1",
+  "sourceTool": "screen recording event export",
+  "recordingUrl": "jam://local-demo/refund-triage",
+  "goal": "Teach the apprentice how a teacher triages a refund ticket by demonstration.",
+  "teacherAction": "Teacher records the screen while opening a ticket, choosing a category, asking for evidence, and verifying the response.",
+  "taughtBehavior": "Follow the demonstrated triage order only after teacher review.",
+  "events": [
+    {
+      "timestamp": "00:00:01",
+      "type": "open",
+      "target": "support ticket",
+      "url": "https://example.invalid/support/tickets/42"
+    },
+    {
+      "timestamp": "00:00:04",
+      "type": "click",
+      "selector": "[data-testid='category-select']",
+      "label": "Category"
+    },
+    {
+      "timestamp": "00:00:06",
+      "type": "select",
+      "target": "refund",
+      "value": "Damaged item refund"
+    },
+    {
+      "timestamp": "00:00:09",
+      "type": "type",
+      "target": "reply box",
+      "text": "Please attach a photo of the damaged item before I process the refund."
+    },
+    {
+      "timestamp": "00:00:12",
+      "type": "verify",
+      "target": "draft reply",
+      "text": "Reply asks for photo evidence before refund processing."
+    }
+  ]
+}

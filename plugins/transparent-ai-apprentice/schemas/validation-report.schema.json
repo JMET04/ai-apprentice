@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://transparent-ai-apprentice.local/schemas/validation-report.schema.json",
+  "title": "Transparent AI Apprentice Validation Report",
+  "type": "object",
+  "required": [
+    "validation_id",
+    "artifact_id",
+    "rule_package_id",
+    "status",
+    "delivery_allowed",
+    "created_at",
+    "summary",
+    "results",
+    "hashes"
+  ],
+  "properties": {
+    "validation_id": { "type": "string" },
+    "artifact_id": { "type": "string" },
+    "rule_package_id": { "type": "string" },
+    "status": { "enum": ["pass", "fail", "unknown", "skipped", "error"] },
+    "delivery_allowed": { "type": "boolean" },
+    "created_at": { "type": "string" },
+    "summary": { "type": "object" },
+    "results": { "type": "array", "items": { "type": "object" } },
+    "hashes": { "type": "object" }
+  }
+}

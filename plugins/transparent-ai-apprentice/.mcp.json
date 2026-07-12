@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "transparent-ai-apprentice": {
+      "command": "node",
+      "args": ["./plugins/transparent-ai-apprentice/scripts/mcp-server.mjs"],
+      "note": "Local MCP server for creating teachable apprentice sessions, importing existing-tool demonstrations, and producing public traces plus disabled rule drafts."
+    },
+    "aicad-agent": {
+      "command": "python",
+      "args": [
+        "./plugins/transparent-ai-apprentice/integrations/aicad-agent-v1/plugin/aicad-agent/scripts/aicad_agent.py",
+        "mcp"
+      ],
+      "note": "Integrated deterministic 2D CAD and transactional SolidWorks 3D planning, validation, and artifact generation tools for the reviewed MingTu workflow."
+    }
+  }
+}

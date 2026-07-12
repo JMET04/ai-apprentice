@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String       @id @default(cuid())
+  name        String
+  email       String       @unique
+  createdAt   String
+  apprentices Apprentice[]
+}
+
+model Apprentice {
+  id          String         @id @default(cuid())
+  userId      String
+  name        String
+  description String
+  domain      String
+  createdAt   String
+  updatedAt   String
+  user        User           @relation(fields: [userId], references: [id])
+  tasks       Task[]
+  rules       Rule[]
+  corrections Correction[]
+  examples    TeachingExample[]
+  visualDemos VisualDemonstration[]
+  runs        ExecutionRun[]
+}
+
+model Task {
+  id             String         @id @default(cuid())
+  apprenticeId   String
+  name           String
+  goal           String
+  inputSchema    String
+  expectedOutput String
+  status         String         @default("active")
+  createdAt      String
+  updatedAt      String
+  apprentice     Apprentice     @relation(fields: [apprenticeId], references: [id])
+  workflows      Workflow[]
+  rules          Rule[]
+  corrections    Correction[]
+  examples       TeachingExample[]
+  visualDemos    VisualDemonstration[]
+  runs           ExecutionRun[]
+}
+
+model Workflow {
+  id        String         @id @default(cuid())
+  taskId    String
+  name      String
+  version   Int            @default(1)
+  nodes     String
+  edges     String
+  createdAt String
+  updatedAt String
+  task      Task           @relation(fields: [taskId], references: [id])
+  nodeRows  WorkflowNode[]
+}
+
+model WorkflowNode {
+  id               String   @id @default(cuid())
+  workflowId       String
+  type             String
+  label            String
+  description      String
+  inputFields      String
+  outputFields     String
+  validationRules  String
+  fallbackBehavior String
+  workflow         Workflow @relation(fields: [workflowId], references: [id])
+}
+
+model Rule {
+  id           String      @id @default(cuid())
+  apprenticeId String
+  taskId       String?
+  title        String
+  condition    String
+  action       String
+  source       String
+  confidence   Float       @default(0.7)
+  enabled      Boolean     @default(true)
+  createdAt    String
+  apprentice   Apprentice  @relation(fields: [apprenticeId], references: [id])
+  task         Task?       @relation(fields: [taskId], references: [id])
+}
+
+model Correction {
+  id            String        @id @default(cuid())
+  apprenticeId  String
+  taskId        String
+  runId         String?
+  userFeedback  String
+  errorType     String
+  extractedRule String
+  beforeOutput  String
+  afterOutput   String?
+  learningTrace String?
+  createdAt     String
+  apprentice    Apprentice    @relation(fields: [apprenticeId], references: [id])
+  task          Task          @relation(fields: [taskId], references: [id])
+  run           ExecutionRun? @relation(fields: [runId], references: [id])
+}
+
+model TeachingExample {
+  id            String     @id @default(cuid())
+  apprenticeId  String
+  taskId        String
+  input         String
+  expectedOutput String
+  extractedRule String?
+  learningTrace String?
+  createdAt     String
+  apprentice    Apprentice @relation(fields: [apprenticeId], references: [id])
+  task          Task       @relation(fields: [taskId], references: [id])
+}
+
+model VisualDemonstration {
+  id             String     @id @default(cuid())
+  apprenticeId   String
+  taskId         String
+  title          String
+  artifact       String
+  teacherNotes   String
+  extractedRule  String?
+  learningTrace  String?
+  createdAt      String
+  apprentice     Apprentice @relation(fields: [apprenticeId], references: [id])
+  task           Task       @relation(fields: [taskId], references: [id])
+}
+
+model ExecutionRun {
+  id           String      @id @default(cuid())
+  taskId       String
+  apprenticeId String
+  input        String
+  output       String
+  status       String      @default("completed")
+  trace        String
+  createdAt    String
+  task         Task        @relation(fields: [taskId], references: [id])
+  apprentice   Apprentice  @relation(fields: [apprenticeId], references: [id])
+  traceSteps   TraceStep[]
+  corrections  Correction[]
+}
+
+model TraceStep {
+  id               String       @id @default(cuid())
+  runId            String
+  nodeId           String
+  stepName         String
+  input            String
+  output           String
+  appliedRules     String
+  confidence       Float
+  needsHumanReview Boolean      @default(false)
+  validation       String
+  uncertainty      String
+  createdAt        String
+  run              ExecutionRun @relation(fields: [runId], references: [id])
+}

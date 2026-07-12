@@ -1,0 +1,42 @@
+{
+  "name": "MingTu AI v1",
+  "thesis": "像一张安静的工程审校台，因为老师需要长时间精确纠错并清楚知道系统尚未越过人工审核边界。",
+  "colors": {
+    "canvas": "#E9ECEF",
+    "workspace": "#D7DCE0",
+    "surface": "#F8F9FA",
+    "surfaceRaised": "#FFFFFF",
+    "ink": "#182126",
+    "muted": "#667178",
+    "border": "#C4CCD1",
+    "borderStrong": "#97A3AA",
+    "selection": "#1769A6",
+    "selectionSoft": "#E5F1F8",
+    "mask": "#D4463A",
+    "maskSoft": "#F9E9E7",
+    "warning": "#9A6500",
+    "warningSoft": "#FFF2D1",
+    "success": "#26734A",
+    "successSoft": "#EAF5EF",
+    "danger": "#A92F29"
+  },
+  "typography": {
+    "ui": "Noto Sans CJK SC, Source Han Sans SC, Microsoft YaHei UI, Microsoft YaHei, sans-serif",
+    "data": "Cascadia Mono, SFMono-Regular, Consolas, monospace",
+    "display": "Source Han Serif SC, Noto Serif CJK SC, SimSun, serif",
+    "scale": [11, 12, 13, 14, 16, 20, 28, 42]
+  },
+  "geometry": {
+    "radiusSmall": 3,
+    "radiusControl": 4,
+    "radiusPanel": 6,
+    "inspectorWidth": 344,
+    "appBarHeight": 54,
+    "toolBarHeight": 48
+  },
+  "motion": {
+    "feedback": 140,
+    "panel": 180,
+    "reducedMotion": true
+  }
+}

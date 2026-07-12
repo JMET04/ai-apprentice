@@ -1,0 +1,75 @@
+{
+  "schema": "aicad_agent_integration_validation_v1",
+  "generatedAt": "2026-07-12T02:52:06.202556+00:00",
+  "status": "pass",
+  "version": "1.2.0",
+  "testCount": 41,
+  "checks": [
+    {
+      "name": "integration_smoke",
+      "command": "-B tests/run_integration_tests.py",
+      "exitCode": 0,
+      "status": "pass",
+      "outputTail": "test_basic_2d_compile (__main__.IntegrationTests.test_basic_2d_compile) ... ok\ntest_contract_schema_and_semantics (__main__.IntegrationTests.test_contract_schema_and_semantics) ... ok\ntest_no_personal_paths_secrets_or_cache (__main__.IntegrationTests.test_no_personal_paths_secrets_or_cache) ... ok\ntest_packaging_qa_without_host (__main__.IntegrationTests.test_packaging_qa_without_host) ... ok\ntest_plugin_completeness_and_version (__main__.IntegrationTests.test_plugin_completeness_and_version) ... ok\ntest_solidworks_no_execute_has_no_host_requirement (__main__.IntegrationTests.test_solidworks_no_execute_has_no_host_requirement) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 3.574s\n\nOK"
+    },
+    {
+      "name": "packaged_unit_and_regression",
+      "command": "-B -m unittest discover -s plugin/aicad-agent/tests -p test_*.py -v",
+      "exitCode": 0,
+      "status": "pass",
+      "outputTail": "and_call) ... ok\ntest_mcp_returns_stable_error_instead_of_crashing (test_agent_plugin.AgentPluginTests.test_mcp_returns_stable_error_instead_of_crashing) ... ok\ntest_solidworks_doctor_finds_typed_host (test_agent_plugin.AgentPluginTests.test_solidworks_doctor_finds_typed_host) ... ok\ntest_validate_plan_does_not_write_artifacts (test_agent_plugin.AgentPluginTests.test_validate_plan_does_not_write_artifacts) ... ok\ntest_bundle_manifest_lisp_and_installer_are_production_version (test_engine.EngineTests.test_bundle_manifest_lisp_and_installer_are_production_version) ... ok\ntest_duplicate_geometry_is_rejected (test_engine.EngineTests.test_duplicate_geometry_is_rejected) ... ok\ntest_false_coincident_relation_is_rejected (test_engine.EngineTests.test_false_coincident_relation_is_rejected) ... ok\ntest_first_entity_must_anchor_at_origin (test_engine.EngineTests.test_first_entity_must_anchor_at_origin) ... ok\ntest_natural_cli_writes_plan_execution_and_result_contract (test_engine.EngineTests.test_natural_cli_writes_plan_execution_and_result_contract) ... ok\ntest_offline_circle_and_arc (test_engine.EngineTests.test_offline_circle_and_arc) ... ok\ntest_offline_plate_has_a_constrained_center_hole (test_engine.EngineTests.test_offline_plate_has_a_constrained_center_hole) ... ok\ntest_schema_1_rectangle_remains_backward_compatible (test_engine.EngineTests.test_schema_1_rectangle_remains_backward_compatible) ... ok\ntest_strict_ai_draft_is_reconstrained_locally (test_engine.EngineTests.test_strict_ai_draft_is_reconstrained_locally) ... ok\ntest_v2_export_contains_ascii_entities_anchor_proofs_and_valid_dxf (test_engine.EngineTests.test_v2_export_contains_ascii_entities_anchor_proofs_and_valid_dxf) ... ok\ntest_compiles_feature_graph_and_analytic_state (test_engine3d.Engine3DTests.test_compiles_feature_graph_and_analytic_state) ... ok\ntest_declared_constraint_must_match_geometry (test_engine3d.Engine3DTests.test_declared_constraint_must_match_geometry) ... ok\ntest_first_feature_must_be_dependency_free_base (test_engine3d.Engine3DTests.test_first_feature_must_be_dependency_free_base) ... ok\ntest_rejects_forward_dependency (test_engine3d.Engine3DTests.test_rejects_forward_dependency) ... ok\ntest_rejects_overlapping_hole_pattern (test_engine3d.Engine3DTests.test_rejects_overlapping_hole_pattern) ... ok\ntest_rejects_profile_outside_support (test_engine3d.Engine3DTests.test_rejects_profile_outside_support) ... ok\ntest_requires_exact_origin (test_engine3d.Engine3DTests.test_requires_exact_origin) ... ok\ntest_source_hash_is_canonical_and_sensitive (test_engine3d.Engine3DTests.test_source_hash_is_canonical_and_sensitive) ... ok\ntest_volume_is_derived_not_caller_supplied (test_engine3d.Engine3DTests.test_volume_is_derived_not_caller_supplied) ... ok\ntest_asymmetric_v_slot_is_rejected (test_packaging_dieline_rules.PackagingDielineRuleRegressionTests.test_asymmetric_v_slot_is_rejected) ... ok\ntest_current_exact_fillet_passes_tangency (test_packaging_dieline_rules.PackagingDielineRuleRegressionTests.test_current_exact_fillet_passes_tangency) ... ok\ntest_duplicate_entity_is_rejected (test_packaging_dieline_rules.PackagingDielineRuleRegressionTests.test_duplicate_entity_is_rejected) ... ok\ntest_endpoint_only_corner_is_rejected (test_packaging_dieline_rules.PackagingDielineRuleRegressionTests.test_endpoint_only_corner_is_rejected) ... ok\ntest_frame_and_semantic_delivery_rules_are_persistent (test_packaging_dieline_rules.PackagingDielineRuleRegressionTests.test_frame_and_semantic_delivery_rules_are_persistent) ... ok\ntest_native_sheet_rules_and_config_are_persistent (test_packaging_dieline_rules.PackagingDielineRuleRegressionTests.test_native_sheet_rules_and_config_are_persistent) ... ok\ntest_reference_frame_config_preserves_production_scale (test_packaging_dieline_rules.PackagingDielineRuleRegressionTests.test_reference_frame_config_preserves_production_scale) ... ok\n\n----------------------------------------------------------------------\nRan 35 tests in 0.567s\n\nOK"
+    },
+    {
+      "name": "adapter_preflight",
+      "command": "node adapters/transparent-ai-apprentice/aicad-handoff-adapter.mjs --request contracts/examples/packaging-request.json",
+      "exitCode": 0,
+      "status": "pass",
+      "outputTail": "{\"ok\":true,\"locks\":{\"reviewOnly\":true,\"accepted\":false,\"ruleEnabled\":false,\"packagingGated\":true,\"productionApprovalClaimed\":false}}"
+    },
+    {
+      "name": "mcp_capabilities",
+      "command": "plugin/aicad-agent/scripts/aicad_agent.py capabilities",
+      "exitCode": 0,
+      "status": "pass",
+      "outputTail": "{\"ok\": true, \"api_version\": \"1.2.0\", \"purpose\": \"Convert 2D/3D CAD intent into deterministic, origin-anchored, audited geometry and SolidWorks parts.\", \"entities\": [\"line\", \"circle\", \"arc\"], \"units\": [\"mm\", \"inch\"], \"constraints\": [\"horizontal\", \"vertical\", \"length\", \"parallel\", \"perpendicular\", \"start_coincident\", \"end_coincident\", \"start_offset\", \"radius\", \"diameter\", \"center_coincident\", \"center_offset\", \"start_angle\", \"end_angle\"], \"artifacts\": [\"plan.json\", \"aicad\", \"scr\", \"dxf\", \"audit.md\", \"manifest.json\"], \"generation\": {\"offline\": [\"rectangle\", \"circle\", \"arc\", \"rectangular plate with one centered hole\"], \"arbitrary_2d\": \"Submit a schema_version 2.0 plan with aicad_compile_plan.\", \"optional_provider\": \"openai\"}, \"invariants\": [\"drawing origin is [0,0]\", \"first entity anchor is origin\", \"every entity has purpose, reasoning, and mathematical constraints\", \"AutoCAD execution channel is ASCII and accepts only LINE/CIRCLE/ARC records\"], \"schema_path\": \"D:\\\\Transparent AI Apprentice MCP\\\\integration-handoffs\\\\aicad-agent-v1\\\\plugin\\\\aicad-agent\\\\runtime\\\\schema\\\\aicad-plan.schema.json\", \"solidworks_3d\": {\"features\": [\"base_extrude\", \"boss_extrude\", \"cut_extrude\"], \"profiles\": [\"center_rectangle\", \"circle\", \"circle_pattern\"], \"artifacts\": [\"SLDPRT\", \"STEP\", \"3d.audit.md\", \"solidworks-report.json\", \"3d.manifest.json\"], \"invariants\": [\"part origin is [0,0,0]\", \"each feature declares purpose, reasoning, dependencies, support, and mathematical constraints\", \"each sketch must be fully constrained before its feature is accepted\", \"feature error, body faults, body count, volume, bounding box, and persistent references are read back\", \"a failing feature transaction does not save a partial part\"], \"schema_path\": \"D:\\\\Transparent AI Apprentice MCP\\\\integration-handoffs\\\\aicad-agent-v1\\\\plugin\\\\aicad-agent\\\\runtime\\\\schema\\\\aicad-3d-plan.schema.json\"}}"
+    }
+  ],
+  "packagingRules": {
+    "status": "pass",
+    "count": 21,
+    "first": "PKG-G001",
+    "last": "PKG-G021"
+  },
+  "historicalHostEvidence": {
+    "executedThisRun": false,
+    "autocad2025": {
+      "status": null,
+      "mode": "historical_evidence",
+      "latestBinaryValidated": false
+    },
+    "solidworks2026": {
+      "status": "passed",
+      "reopenStatus": "passed",
+      "mode": "historical_evidence",
+      "latestBinaryValidated": false
+    },
+    "boundary": "Evidence predates the newest packaged LISP/host binary; no native host rerun was claimed."
+  },
+  "hostlessBehavior": {
+    "twoDimensionalPortableCompile": "passed",
+    "solidworksNoExecute": "passed",
+    "nativeArtifacts": "skipped_unavailable unless an explicit licensed host gate runs"
+  },
+  "manifestVerification": {
+    "status": "performed_after_manifest_generation",
+    "command": "python tests/verify_manifest.py"
+  },
+  "releaseBoundary": "Engineering candidate and teacher-review material only; not production or technical acceptance.",
+  "safety": {
+    "reviewOnly": true,
+    "accepted": false,
+    "ruleEnabled": false,
+    "packagingGated": true,
+    "productionApprovalClaimed": false
+  }
+}

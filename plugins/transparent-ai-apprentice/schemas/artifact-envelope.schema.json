@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://transparent-ai-apprentice.local/schemas/artifact-envelope.schema.json",
+  "title": "Transparent AI Apprentice Artifact Envelope",
+  "type": "object",
+  "required": ["artifact_id", "artifact_type", "schema_version", "units", "created_at", "source_refs", "context", "objects"],
+  "properties": {
+    "artifact_id": { "type": "string" },
+    "artifact_type": { "type": "string" },
+    "schema_version": { "const": "0.1" },
+    "units": { "type": "string" },
+    "created_at": { "type": "string" },
+    "source_refs": { "type": "array", "items": { "type": "string" } },
+    "context": { "type": "object" },
+    "objects": { "type": "array", "items": { "type": "object" } },
+    "relations": { "type": "array", "items": { "type": "object" } },
+    "topology": { "type": "object" },
+    "geometry": { "type": "object" }
+  }
+}

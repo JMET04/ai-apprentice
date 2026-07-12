@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://transparent-ai-apprentice.local/schemas/rule-package.schema.json",
+  "title": "Transparent AI Apprentice Rule Package",
+  "type": "object",
+  "required": ["rule_package_id", "dsl_version", "created_at", "rules", "hashes"],
+  "properties": {
+    "rule_package_id": { "type": "string" },
+    "dsl_version": { "const": "0.1" },
+    "created_at": { "type": "string" },
+    "rules": { "type": "array", "items": { "type": "object" } },
+    "hashes": { "type": "object" }
+  }
+}

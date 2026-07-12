@@ -1,0 +1,4 @@
+(load (strcat (getenv "AICAD_CASE_ROOT") "/autocad_case01_constraint_redraw.lsp"))
+(case01:draw)
+_.QUIT
+_Y

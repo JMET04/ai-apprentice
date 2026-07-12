@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mingtu.local/schemas/aicad-packaging-handoff.schema.json",
+  "title": "MingTu to AICAD packaging handoff",
+  "type": "object",
+  "required": [
+    "format",
+    "sessionId",
+    "targetPlugin",
+    "requirements",
+    "evidence",
+    "truthPriority",
+    "prohibitedInferences",
+    "requiredValidation",
+    "locks"
+  ],
+  "properties": {
+    "format": {
+      "const": "mingtu_aicad_packaging_handoff_v1"
+    },
+    "sessionId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "targetPlugin": {
+      "const": "aicad-agent"
+    },
+    "requirements": {
+      "type": "object"
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "solutionPlan",
+        "image2Sample",
+        "sampleSelfCheck",
+        "teacherMaskCorrection",
+        "image2LocalEdit"
+      ]
+    },
+    "truthPriority": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "string"
+      }
+    },
+    "prohibitedInferences": {
+      "type": "array",
+      "contains": {
+        "const": "measure_dimensions_from_image2_pixels"
+      }
+    },
+    "requiredValidation": {
+      "type": "array",
+      "minItems": 6,
+      "items": {
+        "type": "string"
+      }
+    },
+    "locks": {
+      "type": "object",
+      "properties": {
+        "reviewOnly": {
+          "const": true
+        },
+        "accepted": {
+          "const": false
+        },
+        "ruleEnabled": {
+          "const": false
+        },
+        "packagingGated": {
+          "const": true
+        }
+      },
+      "required": [
+        "reviewOnly",
+        "accepted",
+        "ruleEnabled",
+        "packagingGated"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

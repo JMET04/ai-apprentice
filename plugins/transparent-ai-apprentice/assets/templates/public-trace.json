@@ -1,0 +1,17 @@
+{
+  "format": "transparent_ai_public_trace_v1",
+  "traceId": "",
+  "steps": [
+    {
+      "step": "",
+      "inputObserved": "",
+      "ruleCandidates": [],
+      "actionProposed": "",
+      "confidence": "low",
+      "validation": "",
+      "teacherReviewPoint": "",
+      "memoryEffect": "none"
+    }
+  ]
+}
+

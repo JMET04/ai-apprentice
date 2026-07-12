@@ -1,0 +1,292 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mingtu.local/schemas/mingtu-aicad-result-v1.schema.json",
+  "title": "MingTu AICAD result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "handoffId",
+    "requestSha256",
+    "status",
+    "provenance",
+    "artifacts",
+    "validation",
+    "hostExecutions",
+    "errors",
+    "preventionRuleDrafts",
+    "safety"
+  ],
+  "$defs": {
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewOnly",
+        "accepted",
+        "ruleEnabled",
+        "packagingGated",
+        "productionApprovalClaimed"
+      ],
+      "properties": {
+        "reviewOnly": {
+          "const": true
+        },
+        "accepted": {
+          "const": false
+        },
+        "ruleEnabled": {
+          "const": false
+        },
+        "packagingGated": {
+          "const": true
+        },
+        "productionApprovalClaimed": {
+          "const": false
+        }
+      }
+    }
+  },
+  "properties": {
+    "format": {
+      "const": "mingtu_aicad_result_v1"
+    },
+    "handoffId": {
+      "type": "string"
+    },
+    "requestSha256": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{64}$"
+    },
+    "status": {
+      "enum": [
+        "pass",
+        "pass_with_host_skips",
+        "fail",
+        "blocked",
+        "needs_review"
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "producer",
+        "version",
+        "imagePixelsUsedAsDimensions"
+      ],
+      "properties": {
+        "producer": {
+          "const": "aicad-agent"
+        },
+        "version": {
+          "const": "1.2.0"
+        },
+        "imagePixelsUsedAsDimensions": {
+          "const": false
+        }
+      },
+      "additionalProperties": true
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "relativePath",
+          "required",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "plan",
+              "aicad",
+              "scr",
+              "dxf",
+              "dwg",
+              "pdf",
+              "png",
+              "audit",
+              "validation",
+              "manifest",
+              "swplan",
+              "sldprt",
+              "step"
+            ]
+          },
+          "relativePath": {
+            "type": "string",
+            "pattern": "^(?![A-Za-z]:|/|.*\\.\\.).+"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "generated",
+              "validated",
+              "skipped_unavailable",
+              "failed"
+            ]
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "required": [
+        "aicadDeterministicValidation",
+        "mainRuleDslValidation"
+      ],
+      "properties": {
+        "aicadDeterministicValidation": {
+          "type": "object"
+        },
+        "mainRuleDslValidation": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": true
+    },
+    "hostExecutions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "host",
+          "executedThisRun",
+          "mode",
+          "status"
+        ],
+        "properties": {
+          "host": {
+            "enum": [
+              "autocad",
+              "solidworks"
+            ]
+          },
+          "executedThisRun": {
+            "type": "boolean"
+          },
+          "mode": {
+            "enum": [
+              "real",
+              "offline_compile",
+              "historical_evidence",
+              "not_run"
+            ]
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "failed",
+              "unavailable",
+              "skipped"
+            ]
+          },
+          "version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "saveReopenStatus": {
+            "enum": [
+              "passed",
+              "failed",
+              "unavailable",
+              "not_run"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "stage",
+          "phenomenon",
+          "rootCause",
+          "remediation"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string"
+          },
+          "phenomenon": {
+            "type": "string"
+          },
+          "rootCause": {
+            "type": "string"
+          },
+          "remediation": {
+            "type": "string"
+          },
+          "preventionRuleDraftRef": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "preventionRuleDrafts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "trigger",
+          "assertion",
+          "lifecycle",
+          "safety"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "trigger": {
+            "type": "string"
+          },
+          "assertion": {
+            "type": "string"
+          },
+          "lifecycle": {
+            "const": "draft_disabled"
+          },
+          "safety": {
+            "$ref": "#/$defs/safety"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "safety": {
+      "$ref": "#/$defs/safety"
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mingtu.local/schemas/packaging-design-session.schema.json",
+  "title": "MingTu packaging design session",
+  "type": "object",
+  "required": ["format", "version", "id", "stage", "status", "requirements", "artifacts", "locks"],
+  "properties": {
+    "format": { "const": "mingtu_packaging_design_session_v1" },
+    "version": { "type": "string" },
+    "id": { "type": "string", "minLength": 1 },
+    "stage": {
+      "enum": [
+        "requirements_clarification",
+        "solution_planning",
+        "image2_sample_generation",
+        "sample_self_check",
+        "teacher_mask_correction",
+        "image2_local_edit",
+        "cad_handoff",
+        "final_teacher_review"
+      ]
+    },
+    "status": { "type": "string", "minLength": 1 },
+    "requirements": {
+      "type": "object",
+      "required": ["productType", "internalDimensions", "dimensionTruthSource"],
+      "properties": {
+        "productType": { "type": "string" },
+        "internalDimensions": {
+          "type": "object",
+          "required": ["length", "width", "height", "unit"],
+          "properties": {
+            "length": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+            "width": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+            "height": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+            "unit": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": true
+        },
+        "dimensionTruthSource": { "const": "teacher_or_engineering_data_only" }
+      },
+      "additionalProperties": true
+    },
+    "artifacts": { "type": "object" },
+    "locks": {
+      "type": "object",
+      "required": ["reviewOnly", "accepted", "ruleEnabled", "packagingGated"],
+      "properties": {
+        "reviewOnly": { "const": true },
+        "accepted": { "const": false },
+        "technologyAccepted": { "const": false },
+        "ruleEnabled": { "const": false },
+        "packagingGated": { "const": true },
+        "productionReleased": { "const": false }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

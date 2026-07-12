@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="明徒 AI：可教学、可纠错、可追踪的智能学徒系统。">
+  <title>明徒 AI · 看得见成长，教得会做事</title>
+  <link rel="stylesheet" href="./site.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="wordmark" href="#top" aria-label="明徒 AI 首页"><span><b>明</b><i></i><b>徒</b></span><strong>明徒 AI</strong></a>
+    <nav aria-label="主要导航">
+      <a href="#workflow">包装闭环</a>
+      <a href="#capabilities">当前能力</a>
+      <a href="#boundaries">安全边界</a>
+      <a href="#start">快速开始</a>
+    </nav>
+    <a class="repo-link" href="https://github.com/JMET04/mingtu-ai">GitHub</a>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <img src="./assets/mingtu-mask-workbench-desktop.png" alt="明徒 AI 老师蒙版纠错工作台，包装工程图上有红色框选和箭头标注">
+      <div class="hero-scrim" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <p class="eyebrow">TEACHABLE · CORRECTABLE · TRACEABLE</p>
+        <h1 id="hero-title">明徒 AI</h1>
+        <p class="tagline">看得见成长，教得会做事。</p>
+        <p class="lead">像带教新同事一样教会 AI：先问清需求，再执行、自查、纠错和复核，把正确方法沉淀成可审核、可复用的规则。</p>
+        <div class="hero-actions">
+          <a class="primary-action" href="#start">开始验证首版</a>
+          <a class="secondary-action" href="https://github.com/JMET04/mingtu-ai/releases/latest">查看 1.0.0</a>
+        </div>
+      </div>
+      <div class="hero-proof">
+        <span><b>8</b> 阶段包装闭环</span>
+        <span><b>5</b> 种蒙版标注</span>
+        <span><b>1.2.0</b> AICAD 集成</span>
+        <span><b>Review only</b> 默认人工复核</span>
+      </div>
+    </section>
+
+    <section class="positioning section-band">
+      <div class="section-inner positioning-grid">
+        <div>
+          <p class="section-label">不是一个只给答案的黑盒</p>
+          <h2>人负责教与确认，AI 负责执行与改进</h2>
+        </div>
+        <p>明徒 AI 展示目标、步骤、证据、采用规则、置信度和验证结果。用户可以用文字、示范、截图和蒙版指出错误；系统把纠错整理成默认停用的规则草稿，而不是自动扩大权限。</p>
+      </div>
+    </section>
+
+    <section id="workflow" class="workflow section-band">
+      <div class="section-inner">
+        <header class="section-heading">
+          <p class="section-label">PACKAGING LOOP</p>
+          <h2>从一句需求到可复核 CAD 的八个关口</h2>
+          <p>每一步都有明确前置证据。关键数据未确认、自查未通过或老师未纠错时，状态机不会向后跳。</p>
+        </header>
+        <ol class="workflow-list">
+          <li><span>01</span><div><h3>需求澄清</h3><p>产品、尺寸、重量、材料、运输、开合和制造约束。</p></div></li>
+          <li><span>02</span><div><h3>深度方案</h3><p>结构选择、参数来源、风险点和验证计划。</p></div></li>
+          <li><span>03</span><div><h3>Image2 中文样图</h3><p>统一工程版式的视觉候选，不把像素当尺寸。</p></div></li>
+          <li><span>04</span><div><h3>尺寸与形状自查</h3><p>单位、拓扑、冲突、闭合、制造和文字可读性。</p></div></li>
+          <li><span>05</span><div><h3>老师蒙版纠错</h3><p>画笔、圈选、框选、箭头、文字与结构化意见。</p></div></li>
+          <li><span>06</span><div><h3>Image2 局部修改</h3><p>只改指定区域，保留未标注内容，再次复核。</p></div></li>
+          <li><span>07</span><div><h3>AICAD 工程制图</h3><p>参数真值、相对路径、证据哈希和确定性几何。</p></div></li>
+          <li><span>08</span><div><h3>最终人工复核</h3><p>候选结果进入老师或工程师审核，不自动放行。</p></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="workbench section-band">
+      <div class="section-inner">
+        <header class="section-heading compact">
+          <p class="section-label">MINGTU REVIEW DESK</p>
+          <h2>把“这里不对”变成机器能继续处理的纠错证据</h2>
+          <p>归一化坐标、问题类型、影响步骤、空间关系、深度提示和老师意见会进入同一个审校包。</p>
+        </header>
+        <figure class="product-figure">
+          <img src="./assets/mingtu-mask-workbench-desktop.png" alt="桌面端明徒审校台，左侧为包装图纸画布，右侧为标注列表和纠错说明">
+          <figcaption><span>桌面</span> 画布优先的工程审校界面</figcaption>
+        </figure>
+        <div class="feature-strip" aria-label="蒙版工作台能力">
+          <span>自由画笔</span><span>圈选与框选</span><span>箭头与文字</span><span>撤销与重做</span><span>本地草稿</span><span>只读回放</span><span>键盘与触控</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="capabilities" class="capabilities section-band">
+      <div class="section-inner">
+        <header class="section-heading">
+          <p class="section-label">RELEASE SCOPE</p>
+          <h2>首版能力，按证据说话</h2>
+        </header>
+        <div class="capability-table" role="table" aria-label="明徒 AI 首版功能状态">
+          <div class="table-row table-head" role="row"><span>能力</span><span>状态</span><span>边界</span></div>
+          <div class="table-row" role="row"><strong>教学任务与结构化轨迹</strong><span class="status done">已实现</span><p>展示步骤、规则、证据与复核点</p></div>
+          <div class="table-row" role="row"><strong>纠错转规则草稿</strong><span class="status done">已实现</span><p>默认停用，老师审核后才能复用</p></div>
+          <div class="table-row" role="row"><strong>Image2 包装样图与局部修改</strong><span class="status review">需人工审核</span><p>依赖运行环境；视觉候选不是尺寸真值</p></div>
+          <div class="table-row" role="row"><strong>尺寸、形状与制造自查</strong><span class="status review">需工程复核</span><p>交付前筛查，不是技术验收</p></div>
+          <div class="table-row" role="row"><strong>AICAD 二维与三维候选</strong><span class="status review">需宿主复核</span><p>确定性离线验证已实现，真实宿主需现场检查</p></div>
+          <div class="table-row" role="row"><strong>自动量产放行</strong><span class="status blocked">不提供</span><p>始终属于有权限的人和组织流程</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cad section-band">
+      <div class="section-inner cad-grid">
+        <div class="cad-copy">
+          <p class="section-label">AICAD 1.2.0</p>
+          <h2>视觉方案到工程几何之间，有一条严格的证据边界</h2>
+          <p>确认后的尺寸、材料和纠错证据会复制到会话目录，使用相对路径和 SHA-256 生成严格请求。结果必须绑定本次请求和产物哈希，错误必须给出根因与修复建议。</p>
+          <dl>
+            <div><dt>21</dt><dd>包装规则 PKG-G001 至 PKG-G021</dd></div>
+            <div><dt>41</dt><dd>AICAD 核心与回归测试</dd></div>
+            <div><dt>87</dt><dd>集成清单文件哈希</dd></div>
+          </dl>
+        </div>
+        <figure class="cad-figure"><img src="./assets/aicad-packaging-preview.png" alt="AICAD 包装工程预览图"><figcaption>工程候选结果仍需真实 CAD 宿主与工程师复核</figcaption></figure>
+      </div>
+    </section>
+
+    <section id="boundaries" class="boundaries section-band">
+      <div class="section-inner boundaries-grid">
+        <header>
+          <p class="section-label">HUMAN REVIEW BOUNDARY</p>
+          <h2>四道锁，防止候选结果越权</h2>
+        </header>
+        <div class="lock-list">
+          <div><b>01</b><span><strong>检索不是授权</strong>RAG 只提供带来源的证据。</span></div>
+          <div><b>02</b><span><strong>图片不是尺寸</strong>Image2 像素不得反推工程参数。</span></div>
+          <div><b>03</b><span><strong>纠错不是启用</strong>规则草稿默认 `draft_disabled`。</span></div>
+          <div><b>04</b><span><strong>验证不是验收</strong>CAD 与自动检查不能解锁投产。</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="start" class="quickstart section-band">
+      <div class="section-inner quickstart-grid">
+        <div>
+          <p class="section-label">QUICK START</p>
+          <h2>用验证开始，而不是用承诺开始</h2>
+          <p>Node.js 22–24、npm 10+、Python 3 和 Windows PowerShell。</p>
+        </div>
+        <pre><code>npm ci
+npm run typecheck
+npm test
+npm run verify:plugin
+npm run smoke:packaging-workflow
+npm run smoke:mask-workbench
+npm run verify:aicad-integration
+npm run package:codex-plugin</code></pre>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wordmark footer-mark"><span><b>明</b><i></i><b>徒</b></span><strong>明徒 AI</strong></div>
+    <p>看得见成长，教得会做事。</p>
+    <nav aria-label="页脚导航"><a href="../README.md">README</a><a href="./manual-testing.md">人工测试</a><a href="./architecture.md">架构</a><a href="../SECURITY.md">安全</a></nav>
+    <small>MIT License · 1.0.0 · 默认 teacher-review-only</small>
+  </footer>
+</body>
+</html>

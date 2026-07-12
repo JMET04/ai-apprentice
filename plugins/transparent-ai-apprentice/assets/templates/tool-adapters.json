@@ -1,0 +1,111 @@
+{
+  "format": "transparent_ai_existing_tool_adapter_catalog_v1",
+  "principle": "Feasibility first: reuse existing demonstration tools before building custom software.",
+  "defaultMode": "review_only",
+  "adapters": [
+    {
+      "id": "existing-drawing-software",
+      "toolExamples": ["draw.io", "Excalidraw", "Figma", "PowerPoint", "whiteboard screenshots", "Mermaid"],
+      "bestFor": ["visual workflow teaching", "shape/diagram correction", "spatial intent demonstration"],
+      "acceptedInputs": ["exported image", "SVG", "diagram file", "screenshot", "teacher narration"],
+      "extractAs": ["visual cues", "shape constraints", "sequence steps", "counterexamples"],
+      "proofNeeded": ["artifact path or URL", "before/after state", "public trace", "disabled rule draft"],
+      "nativeIntegrationRequired": false
+    },
+    {
+      "id": "existing-diagram-as-code",
+      "toolExamples": ["Mermaid", "Markdown fenced diagrams", "PlantUML exports", "architecture docs"],
+      "bestFor": ["flow teaching", "decision tree review", "architecture or process demonstrations"],
+      "acceptedInputs": [".mmd file", ".mermaid file", "Markdown snippet", "exported SVG"],
+      "extractAs": ["nodes", "connectors", "ordered steps", "condition/action cues"],
+      "proofNeeded": ["diagram source path", "node/edge extraction", "public trace", "disabled rule draft"],
+      "nativeIntegrationRequired": false
+    },
+    {
+      "id": "existing-desktop-workflow",
+      "toolExamples": ["browser", "editor", "terminal", "domain application", "Jam", "browser recorder", "Playwright trace"],
+      "bestFor": ["task execution demonstration", "operator workflow capture", "error correction"],
+      "acceptedInputs": ["screen recording", "event log JSON", "screenshot series", "command log", "edited files"],
+      "extractAs": ["step sequence", "user event order", "validation checks", "tool-use policy", "failure boundaries"],
+      "proofNeeded": ["observed action summary", "changed artifact", "public trace", "disabled rule draft"],
+      "nativeIntegrationRequired": false
+    },
+    {
+      "id": "existing-screen-recording-event-log",
+      "toolExamples": ["Jam recordings", "browser devtools recorder", "Playwright trace export", "desktop macro logs"],
+      "bestFor": ["direct hands-on teaching", "UI workflow demonstrations", "teacher correction after watching an attempt"],
+      "acceptedInputs": ["recording URL", "user event JSON", "click/type/select/verify log", "screenshot timeline"],
+      "extractAs": ["ordered user events", "targets", "entered values", "validation checkpoints", "replay prompts"],
+      "proofNeeded": ["recording or event-log path", "ordered event extraction", "public trace", "disabled rule draft"],
+      "nativeIntegrationRequired": false
+    },
+    {
+      "id": "existing-structured-file",
+      "toolExamples": ["CSV", "JSON", "spreadsheet", "CAD export", "Markdown checklist"],
+      "bestFor": ["batch teaching", "parameter learning", "rule boundary review"],
+      "acceptedInputs": ["file path", "table rows", "schema", "teacher annotations"],
+      "extractAs": ["conditions", "actions", "counterexamples", "validation thresholds"],
+      "proofNeeded": ["source file path", "sample rows", "public trace", "review-only memory draft"],
+      "nativeIntegrationRequired": false
+    },
+    {
+      "id": "existing-low-token-workalong-observer",
+      "toolExamples": ["SolidWorks logs", "CAD rebuild logs", "CAM/CAE solver logs", "PowerShell watcher", "triggered screenshots", "browser overlay"],
+      "bestFor": ["learning beside the teacher while they work", "CAD/SolidWorks workflow teaching", "error recovery teaching", "token-efficient screen understanding"],
+      "acceptedInputs": ["log tail delta", "changed file timestamp", "triggered screenshot path", "teacher marker", "short voice or overlay answer", "compact event JSON"],
+      "extractAs": ["trigger reason", "state-change evidence", "teacher decision", "rule boundary", "counterexample", "validation checkpoint"],
+      "proofNeeded": ["log path or event path", "trigger reason", "screenshot path when useful", "teacher answer", "public trace", "disabled rule draft"],
+      "nativeIntegrationRequired": false
+    },
+    {
+      "id": "existing-browser-automation",
+      "toolExamples": ["Playwright", "browser devtools recorder", "Chrome debugging protocol", "web app test runners"],
+      "bestFor": ["browser app execution", "repeatable UI workflows", "form filling", "web validation"],
+      "acceptedInputs": ["URL", "DOM selector hints", "browser trace", "teacher overlay packet", "supervised action plan"],
+      "extractAs": ["reviewed selector candidates", "click/type/assert steps", "preflight checks", "execution receipt"],
+      "proofNeeded": ["dry-run trace", "target URL/title", "changed page state", "screenshot only after mismatch"],
+      "nativeIntegrationRequired": false
+    },
+    {
+      "id": "existing-cli-or-script",
+      "toolExamples": ["command line tools", "PowerShell cmdlets", "vendor batch processors", "build scripts", "export scripts"],
+      "bestFor": ["software with command interface", "batch execution", "file conversion", "repeatable non-visual actions"],
+      "acceptedInputs": ["command help output", "script path", "input file", "expected output file", "teacher constraints"],
+      "extractAs": ["dry-run command", "argument contract", "exit-code checks", "output-file verification"],
+      "proofNeeded": ["command preview", "non-destructive dry run", "exit code", "created or changed file evidence"],
+      "nativeIntegrationRequired": false
+    },
+    {
+      "id": "existing-application-api",
+      "toolExamples": ["documented local API", "COM automation", "macro recorder", "plugin SDK", "REST API"],
+      "bestFor": ["structured application control", "document generation", "model updates", "API-safe workflows"],
+      "acceptedInputs": ["API docs", "macro recording", "method names", "sample payload", "teacher review note"],
+      "extractAs": ["review-only API call plan", "preflight permissions", "rollback and save-copy requirements"],
+      "proofNeeded": ["dry-run or no-op call", "target document copy", "structured API response", "post-action verifier"],
+      "nativeIntegrationRequired": false
+    },
+    {
+      "id": "existing-file-import-export",
+      "toolExamples": ["CSV import", "JSON project file", "DXF/SVG import", "spreadsheet formulas", "configuration files"],
+      "bestFor": ["software that can be controlled by files", "drawing transfer", "parameter updates", "safe review before UI execution"],
+      "acceptedInputs": ["source file", "export file", "schema", "teacher overlay packet", "before/after file diff"],
+      "extractAs": ["file patch plan", "import/export instructions", "validation diff", "rollback file copy"],
+      "proofNeeded": ["save-copy path", "dry-run diff", "schema validation", "teacher-approved import step"],
+      "nativeIntegrationRequired": false
+    },
+    {
+      "id": "existing-windows-ui-automation",
+      "toolExamples": ["PowerShell runner", "SendKeys", "mouse_event", "SetCursorPos", "UI Automation tree when available"],
+      "bestFor": ["last-mile desktop UI execution", "apps without APIs", "teacher-reviewed click/drag/type/hotkey actions"],
+      "acceptedInputs": ["transparent overlay packet", "supervised action plan", "target window title", "preflight receipt"],
+      "extractAs": ["dry-run-first UI action plan", "active-window preflight", "execution receipt", "outcome verification"],
+      "proofNeeded": ["dry-run preflight", "teacher confirmation", "execution receipt", "metadata/log delta or triggered screenshot"],
+      "nativeIntegrationRequired": false
+    }
+  ],
+  "locks": {
+    "ruleEnabled": false,
+    "accepted": false,
+    "requiresTeacherConfirmation": true
+  }
+}

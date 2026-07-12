@@ -1,0 +1,40 @@
+{
+  "dsl_version": "0.1",
+  "rule_id": "generic.no_execution_without_teacher_approval",
+  "title": "No risky execution without teacher approval and rollback",
+  "domain": "system.execution",
+  "lifecycle": "active",
+  "severity": "blocking",
+  "owner": {
+    "teacher_id": "teacher.local",
+    "reviewer_id": "qa.local",
+    "approved_at": "2026-06-12T00:00:00+08:00"
+  },
+  "source": {
+    "type": "teacher_correction",
+    "evidence_refs": ["evidence://demo/execution-approval-correction"],
+    "natural_language": "Do not execute medium or high risk actions without teacher confirmation and rollback."
+  },
+  "scope": { "artifact_types": ["execution_plan"] },
+  "inputs_required": ["artifact.risk_level", "artifact.approval.teacher_confirmed", "artifact.rollback_point.exists"],
+  "constraint": {
+    "type": "policy_gate",
+    "validator": "execution_approval_gate",
+    "params": {
+      "require_teacher_confirmed": true,
+      "require_rollback_point": true,
+      "high_risk_levels": ["medium", "high"]
+    }
+  },
+  "failure": {
+    "message": "Teacher approval or rollback point is missing.",
+    "action": "block_execution",
+    "remediation_hint": "Collect teacher approval receipt and retained rollback point before execution."
+  },
+  "audit": {
+    "created_by": "ai",
+    "created_at": "2026-06-12T00:00:00+08:00",
+    "updated_at": "2026-06-12T00:00:00+08:00",
+    "rule_version": "0.1.0"
+  }
+}

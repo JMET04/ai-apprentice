@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://transparent-ai-apprentice.local/schemas/retrieval-evidence-packet.schema.json",
+  "title": "Retrieval Evidence Packet",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "retrieval_id",
+    "query",
+    "retriever",
+    "status",
+    "chunks",
+    "locks",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": { "const": "retrieval_evidence_packet_v1" },
+    "retrieval_id": { "type": "string", "minLength": 1 },
+    "query": { "type": "string", "minLength": 1 },
+    "retriever": {
+      "type": "object",
+      "required": ["kind", "version", "top_k"],
+      "properties": {
+        "kind": { "type": "string", "enum": ["local_keyword"] },
+        "version": { "type": "string" },
+        "top_k": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "status": { "type": "string", "enum": ["evidence_found", "no_results"] },
+    "chunks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["chunk_id", "source_id", "source_path", "locator", "score", "hash", "text"],
+        "properties": {
+          "chunk_id": { "type": "string" },
+          "source_id": { "type": "string" },
+          "source_path": { "type": "string" },
+          "locator": { "type": "string" },
+          "score": { "type": "number" },
+          "hash": { "type": "string" },
+          "text": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "locks": {
+      "type": "object",
+      "required": [
+        "evidence_only",
+        "can_enable_rules",
+        "can_execute_target_software",
+        "can_unlock_packaging",
+        "requires_teacher_review"
+      ],
+      "properties": {
+        "evidence_only": { "const": true },
+        "can_enable_rules": { "const": false },
+        "can_execute_target_software": { "const": false },
+        "can_unlock_packaging": { "const": false },
+        "requires_teacher_review": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "missing_evidence": { "type": "array", "items": { "type": "string" } },
+    "created_at": { "type": "string" }
+  },
+  "additionalProperties": false
+}

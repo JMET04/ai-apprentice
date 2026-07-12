@@ -1,0 +1,41 @@
+{
+  "schema": "aicad_historical_host_evidence_summary_v1",
+  "executedThisRun": false,
+  "warning": "Historical evidence only; it predates the newest packaged LISP/host binary and is not a validation of this build.",
+  "autocad": {
+    "mode": "historical_evidence",
+    "status": null,
+    "host": "AutoCAD 2025 CoreConsole",
+    "hostFileVersion": "25.0.58.0.0",
+    "dwgFormat": "AC1032",
+    "sourceEvidenceSha256": "b290e0dbc4f78705330f5f34eaad757a55d9344fff761756b63506b3086f757d",
+    "observedChecks": [
+      "plugin load",
+      "entity IDs",
+      "DWG save",
+      "save/reopen persistence",
+      "arc/XData"
+    ]
+  },
+  "solidworks": {
+    "mode": "historical_evidence",
+    "status": "passed",
+    "hostRevision": "34.0.0",
+    "sourceEvidenceSha256": "2056e22c5b7038a769a02046aeafca0a6de7ac39190c450833ed2a68feda2f50",
+    "reopenEvidenceSha256": "0fac8d60b1fe7aeceea081f631ee23a8c3d1bf0c0641fb0c6ad0ba637a789fa9",
+    "reopenStatus": "passed",
+    "observedChecks": [
+      "four feature transactions",
+      "fully constrained sketches",
+      "zero body faults",
+      "volume/bbox",
+      "SLDPRT reopen"
+    ]
+  },
+  "safety": {
+    "reviewOnly": true,
+    "accepted": false,
+    "ruleEnabled": false,
+    "packagingGated": true
+  }
+}

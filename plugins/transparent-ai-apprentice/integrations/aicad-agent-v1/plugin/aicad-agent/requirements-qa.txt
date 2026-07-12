@@ -1,0 +1,4 @@
+jsonschema>=4.18,<5
+ezdxf>=1.4,<2
+Pillow>=11,<12
+Shapely>=2.1,<3

@@ -1,0 +1,36 @@
+{
+  "dsl_version": "0.1",
+  "rule_id": "generic.required_evidence",
+  "title": "Artifacts must include source evidence references",
+  "domain": "generic.artifact",
+  "lifecycle": "active",
+  "severity": "blocking",
+  "owner": {
+    "teacher_id": "teacher.local",
+    "reviewer_id": "qa.local",
+    "approved_at": "2026-06-12T00:00:00+08:00"
+  },
+  "source": {
+    "type": "teacher_correction",
+    "evidence_refs": ["evidence://demo/source-ref-correction"],
+    "natural_language": "Any artifact used for delivery must point back to evidence."
+  },
+  "scope": { "artifact_types": ["packaging_dieline", "execution_plan"] },
+  "inputs_required": ["artifact.source_refs"],
+  "constraint": {
+    "type": "expression",
+    "language": "taa-expr-0.1",
+    "expr": "artifact.source_refs.count() > 0"
+  },
+  "failure": {
+    "message": "Artifact has no source evidence references.",
+    "action": "reject_delivery",
+    "remediation_hint": "Attach at least one source_refs entry."
+  },
+  "audit": {
+    "created_by": "ai",
+    "created_at": "2026-06-12T00:00:00+08:00",
+    "updated_at": "2026-06-12T00:00:00+08:00",
+    "rule_version": "0.1.0"
+  }
+}

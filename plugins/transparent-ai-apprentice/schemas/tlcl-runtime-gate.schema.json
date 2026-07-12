@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://transparent-ai-apprentice.local/schemas/tlcl-runtime-gate.schema.json",
+  "title": "Transparent AI Apprentice TLCL Runtime Gate",
+  "type": "object",
+  "required": [
+    "format",
+    "decision",
+    "routing",
+    "runtimePermission",
+    "escalationPacket",
+    "locks",
+    "evidence"
+  ],
+  "properties": {
+    "format": { "const": "transparent_ai_tlcl_runtime_gate_v1" },
+    "decision": {
+      "enum": ["medium_runtime_allowed", "escalate_to_senior_compile"]
+    },
+    "routing": {
+      "type": "object",
+      "required": ["compile_tier", "runtime_tier", "validation_authority", "approval_authority"],
+      "properties": {
+        "compile_tier": { "const": "senior_reasoning_compile" },
+        "runtime_tier": { "const": "medium_reasoning_runtime" },
+        "validation_authority": { "const": "deterministic_validator" },
+        "approval_authority": { "const": "human_teacher_review" }
+      }
+    },
+    "runtimePermission": {
+      "type": "object",
+      "required": [
+        "canPrepareReviewedDryRun",
+        "canExecuteTargetSoftware",
+        "canEnableRules",
+        "canWriteMemory",
+        "canClaimCompletion"
+      ],
+      "properties": {
+        "canPrepareReviewedDryRun": { "type": "boolean" },
+        "canExecuteTargetSoftware": { "const": false },
+        "canEnableRules": { "const": false },
+        "canWriteMemory": { "const": false },
+        "canClaimCompletion": { "const": false }
+      }
+    },
+    "escalationPacket": {
+      "type": "object",
+      "required": ["escalates_to", "triggers", "repairTasks"],
+      "properties": {
+        "escalates_to": { "const": "senior_reasoning_compile" },
+        "triggers": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "teacher_correction",
+              "validator_unknown",
+              "validator_error",
+              "blocking_failure",
+              "conflicting_rules",
+              "missing_evidence",
+              "high_risk_action",
+              "teacher_disagreement"
+            ]
+          }
+        },
+        "repairTasks": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "locks": {
+      "type": "object",
+      "required": ["reviewOnly", "noSoftwareExecution", "noRuleEnablement", "noMemoryWrite", "noPackagingUnlock", "noCompletionClaim"],
+      "properties": {
+        "reviewOnly": { "const": true },
+        "noSoftwareExecution": { "const": true },
+        "noRuleEnablement": { "const": true },
+        "noMemoryWrite": { "const": true },
+        "noPackagingUnlock": { "const": true },
+        "noCompletionClaim": { "const": true }
+      }
+    },
+    "evidence": { "type": "object" }
+  }
+}

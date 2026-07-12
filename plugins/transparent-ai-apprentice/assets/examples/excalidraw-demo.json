@@ -1,0 +1,55 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "transparent-ai-apprentice-fixture",
+  "elements": [
+    {
+      "id": "box-teacher",
+      "type": "rectangle",
+      "x": 40,
+      "y": 40,
+      "width": 160,
+      "height": 70
+    },
+    {
+      "id": "text-teacher",
+      "type": "text",
+      "x": 55,
+      "y": 62,
+      "width": 130,
+      "height": 25,
+      "text": "Teacher demonstrates"
+    },
+    {
+      "id": "arrow-curve",
+      "type": "arrow",
+      "x": 220,
+      "y": 75,
+      "width": 100,
+      "height": 20,
+      "startBinding": {
+        "elementId": "box-teacher"
+      },
+      "endBinding": {
+        "elementId": "box-rule"
+      }
+    },
+    {
+      "id": "box-rule",
+      "type": "rectangle",
+      "x": 340,
+      "y": 40,
+      "width": 150,
+      "height": 70
+    },
+    {
+      "id": "text-rule",
+      "type": "text",
+      "x": 355,
+      "y": 62,
+      "width": 120,
+      "height": 25,
+      "text": "Rule stays disabled"
+    }
+  ]
+}

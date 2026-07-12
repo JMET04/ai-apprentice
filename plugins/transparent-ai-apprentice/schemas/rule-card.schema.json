@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://transparent-ai-apprentice.local/schemas/rule-card.schema.json",
+  "title": "Transparent AI Apprentice Rule Card",
+  "type": "object",
+  "required": [
+    "dsl_version",
+    "rule_id",
+    "title",
+    "domain",
+    "lifecycle",
+    "severity",
+    "owner",
+    "source",
+    "scope",
+    "inputs_required",
+    "constraint",
+    "failure",
+    "audit"
+  ],
+  "properties": {
+    "dsl_version": { "const": "0.1" },
+    "rule_id": { "type": "string", "minLength": 3 },
+    "title": { "type": "string", "minLength": 1 },
+    "domain": { "type": "string", "minLength": 1 },
+    "lifecycle": { "enum": ["draft_disabled", "review_only", "active", "deprecated", "revoked"] },
+    "severity": { "enum": ["info", "warning", "blocking"] },
+    "owner": {
+      "type": "object",
+      "required": ["teacher_id", "reviewer_id", "approved_at"],
+      "properties": {
+        "teacher_id": { "type": "string" },
+        "reviewer_id": { "type": ["string", "null"] },
+        "approved_at": { "type": ["string", "null"] }
+      }
+    },
+    "source": {
+      "type": "object",
+      "required": ["type", "evidence_refs", "natural_language"],
+      "properties": {
+        "type": { "type": "string" },
+        "evidence_refs": { "type": "array", "items": { "type": "string" } },
+        "natural_language": { "type": "string" }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "required": ["artifact_types"],
+      "properties": {
+        "artifact_types": { "type": "array", "items": { "type": "string" } },
+        "applies_when": { "type": "object" }
+      }
+    },
+    "inputs_required": { "type": "array", "items": { "type": "string" } },
+    "constraint": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "enum": ["json_schema", "expression", "topology", "geometry", "policy_gate"] },
+        "language": { "type": "string" },
+        "expr": { "type": "string" },
+        "validator": { "type": "string" },
+        "params": { "type": "object" }
+      }
+    },
+    "failure": {
+      "type": "object",
+      "required": ["message", "action", "remediation_hint"],
+      "properties": {
+        "message": { "type": "string" },
+        "action": { "type": "string" },
+        "remediation_hint": { "type": "string" }
+      }
+    },
+    "audit": {
+      "type": "object",
+      "required": ["created_by", "created_at", "updated_at", "rule_version"],
+      "properties": {
+        "created_by": { "type": "string" },
+        "created_at": { "type": "string" },
+        "updated_at": { "type": "string" },
+        "rule_version": { "type": "string" }
+      }
+    }
+  }
+}

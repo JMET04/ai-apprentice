@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="明徒 AI 老师蒙版纠错工作台">
+  <title>明徒 AI · 老师蒙版纠错</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='3' fill='%23182126'/%3E%3Cpath d='M7 9h7v14H7zm11 0h7v4h-3v10h-4z' fill='%23fff'/%3E%3C/svg%3E">
+  <style>__INLINE_STYLES__</style>
+</head>
+<body>
+  <svg class="symbol-sprite" aria-hidden="true">
+    <symbol id="i-brush" viewBox="0 0 24 24"><path d="m14 4 6 6-9 9-7 1 1-7Z"/><path d="m12 6 6 6"/></symbol>
+    <symbol id="i-circle" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="8" ry="6"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 19 19 5M10 5h9v9"/></symbol>
+    <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 6V4h14v2M12 4v16M8 20h8"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 7 4 12l5 5"/><path d="M5 12h8a6 6 0 0 1 6 6"/></symbol>
+    <symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 7 5 5-5 5"/><path d="M19 12h-8a6 6 0 0 0-6 6"/></symbol>
+    <symbol id="i-fit" viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="m3 3 18 18M10.5 6.2A9.7 9.7 0 0 1 12 6c6 0 9.5 6 9.5 6a14 14 0 0 1-2.1 2.8M6.3 6.3C3.9 8 2.5 12 2.5 12s3.5 6 9.5 6c1 0 2-.2 2.8-.5"/><path d="M9.8 9.8a3 3 0 0 0 4.4 4.4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="m3 11 18-8-8 18-2-8-8-2Z"/><path d="m11 13 5-5"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 15v5h16v-5"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m9 6 9 6-9 6Z"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  </svg>
+
+  <div class="app-shell" id="appShell">
+    <header class="app-bar">
+      <div class="brand" aria-label="明徒 AI">
+        <span class="brand-mark"><b>明</b><i></i><b>徒</b></span>
+        <span><strong>明徒 AI</strong><small>老师蒙版纠错台</small></span>
+      </div>
+      <div class="document-context">
+        <span class="context-label">当前任务</span>
+        <strong id="taskTitle">__GOAL__</strong>
+        <span class="mono" id="taskId">__KIT_ID__</span>
+      </div>
+      <div class="app-actions">
+        <button class="quiet-button" id="restoreDraft"><svg><use href="#i-undo"/></svg><span>恢复草稿</span><b>2</b></button>
+        <button class="icon-button mobile-inspector-toggle" id="inspectorToggle" aria-label="打开标注检查器" data-tooltip="标注检查器"><svg><use href="#i-menu"/></svg></button>
+        <span class="review-lock"><i></i>仅供老师审校</span>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <div class="tool-rail" role="toolbar" aria-label="蒙版标注工具">
+        <div class="tool-group tool-modes">
+          <button class="tool-button active" data-tool="brush" aria-pressed="true" aria-label="自由画笔，快捷键 B" data-tooltip="自由画笔 · B"><svg><use href="#i-brush"/></svg><span>画笔</span></button>
+          <button class="tool-button" data-tool="ellipse" aria-pressed="false" aria-label="圈选，快捷键 O" data-tooltip="圈选 · O"><svg><use href="#i-circle"/></svg><span>圈选</span></button>
+          <button class="tool-button" data-tool="rect" aria-pressed="false" aria-label="框选，快捷键 R" data-tooltip="框选 · R"><svg><use href="#i-box"/></svg><span>框选</span></button>
+          <button class="tool-button" data-tool="arrow" aria-pressed="false" aria-label="箭头，快捷键 A" data-tooltip="箭头 · A"><svg><use href="#i-arrow"/></svg><span>箭头</span></button>
+          <button class="tool-button" data-tool="text" aria-pressed="false" aria-label="文字说明，快捷键 T" data-tooltip="文字说明 · T"><svg><use href="#i-text"/></svg><span>文字</span></button>
+        </div>
+        <span class="tool-separator" aria-hidden="true"></span>
+        <label class="color-control" data-tooltip="蒙版颜色"><span class="sr-only">蒙版颜色</span><input id="strokeColor" type="color" value="#D4463A"><i></i></label>
+        <label class="range-control"><span>粗细</span><input id="strokeWidth" type="range" min="2" max="24" value="6"><output id="widthOutput" class="mono">6 px</output></label>
+        <label class="text-control"><span>说明</span><input id="textInput" type="text" maxlength="40" value="此处结构需要重新确认" aria-label="要添加到图上的文字说明"></label>
+        <span class="tool-separator" aria-hidden="true"></span>
+        <div class="tool-group history-tools">
+          <button class="icon-button" id="undoButton" aria-label="撤销，快捷键 Ctrl Z" data-tooltip="撤销 · Ctrl Z"><svg><use href="#i-undo"/></svg></button>
+          <button class="icon-button" id="redoButton" aria-label="重做，快捷键 Ctrl Shift Z" data-tooltip="重做 · Ctrl ⇧ Z"><svg><use href="#i-redo"/></svg></button>
+        </div>
+        <button class="danger-button" id="clearButton"><svg><use href="#i-trash"/></svg><span>清空</span></button>
+      </div>
+
+      <div class="canvas-statusbar">
+        <span>工具 <strong id="toolState">自由画笔</strong></span>
+        <span>缩放 <strong id="zoomState" class="mono">100%</strong></span>
+        <span>蒙版 <strong id="maskState">无修改</strong></span>
+        <span class="dirty-state" id="dirtyState"><i></i>草稿已保存</span>
+        <span class="statusbar-spacer"></span>
+        <button id="toggleOverlay" class="status-button" aria-pressed="true"><svg><use href="#i-eye"/></svg><span>显示蒙版</span></button>
+        <button id="readonlyToggle" class="status-button" aria-pressed="false"><svg><use href="#i-play"/></svg><span>只读回放</span></button>
+        <button id="emptyToggle" class="status-button" aria-pressed="false"><svg><use href="#i-more"/></svg><span>无底图演示</span></button>
+      </div>
+
+      <section class="canvas-workarea" aria-label="包装图纸蒙版画布">
+        <div class="canvas-viewport" id="canvasViewport">
+          <div class="scene" id="scene">
+            <img id="baseImage" alt="__BACKDROP_NAME__">
+            <canvas id="maskCanvas" width="1344" height="756" aria-label="老师蒙版绘制层，支持触控和鼠标"></canvas>
+            <div class="readonly-banner" id="readonlyBanner" hidden><svg><use href="#i-play"/></svg><span>只读回放 · <b id="playbackIndex">1 / 1</b></span><button id="playbackNext">下一条</button></div>
+            <div class="empty-stage" id="emptyStage" hidden>
+              <svg><use href="#i-upload"/></svg>
+              <strong>尚未加载底图</strong>
+              <span>上传 Image2 样图、包装刀版图或工程索引图后再开始纠错。</span>
+              <label class="upload-button">选择本地图片<input id="imageUpload" type="file" accept="image/png,image/jpeg,image/webp"></label>
+            </div>
+          </div>
+        </div>
+        <div class="zoom-dock" aria-label="画布缩放">
+          <button class="icon-button" id="zoomOut" aria-label="缩小" data-tooltip="缩小"><svg><use href="#i-minus"/></svg></button>
+          <button class="zoom-value mono" id="zoomValue" aria-label="当前缩放">100%</button>
+          <button class="icon-button" id="zoomIn" aria-label="放大" data-tooltip="放大"><svg><use href="#i-plus"/></svg></button>
+          <button class="icon-button" id="fitButton" aria-label="适配画布" data-tooltip="适配画布"><svg><use href="#i-fit"/></svg></button>
+        </div>
+      </section>
+    </main>
+
+    <aside class="inspector" id="inspector" aria-label="纠错检查器">
+      <header class="inspector-header">
+        <div><span class="section-kicker">审校记录</span><h1>本次纠错</h1></div>
+        <button class="icon-button mobile-close" id="inspectorClose" aria-label="关闭检查器"><svg><use href="#i-close"/></svg></button>
+      </header>
+      <div class="summary-grid">
+        <div><span>标注</span><strong id="annotationCount" class="mono">0</strong></div>
+        <div><span>蒙版</span><strong id="summaryMask">空</strong></div>
+        <div><span>底图</span><strong id="summaryBase">Image2</strong></div>
+        <div><span>状态</span><strong id="summaryStatus">草稿</strong></div>
+      </div>
+      <div class="inspector-scroll">
+        <section class="inspector-section annotation-section">
+          <div class="section-title"><h2>标注列表</h2><span id="listHint">按创建时间排序</span></div>
+          <ol class="annotation-list" id="annotationList">
+            <li class="list-empty"><span>还没有标注</span><small>从画笔、圈选、框选、箭头或文字开始。</small></li>
+          </ol>
+        </section>
+        <section class="inspector-section correction-section">
+          <div class="section-title"><h2>纠错说明</h2><span>必填</span></div>
+          <label class="field"><span>问题类型</span><select id="issueType"><option>结构错误</option><option>尺寸错误</option><option>材料 / 缓冲错误</option><option>文字与排版错误</option><option>需要追问老师</option></select></label>
+          <label class="field"><span>影响步骤</span><select id="workflowStep"><option>Image2 样图复核</option><option>尺寸 / 形状自查</option><option>蒙版局部修改</option><option>CAD 工程图生成</option><option>规则草稿提取</option></select></label>
+          <label class="field"><span>空间关系</span><select id="spatialMode"><option value="screen_2d">二维图纸纠错</option><option value="plane_2d">二维平面关系</option><option value="perspective_grid">透视关系</option><option value="depth_axis_3d">三维深度关系</option></select></label>
+          <label class="field range-field"><span>深度提示</span><input id="depthHint" type="range" min="-1" max="1" step="0.05" value="0"><output id="depthOutput" class="mono">0.00</output></label>
+          <label class="field"><span>老师意见</span><textarea id="correctionNote" rows="5" placeholder="说明错误位置、判断依据和希望如何修改。">运输外箱上盖封口关系需要重新核对；请保留底部缓冲结构，只修改上盖搭接方向。</textarea></label>
+        </section>
+        <section class="inspector-section lock-section">
+          <div class="lock-heading"><i></i><strong>人工审校边界</strong></div>
+          <p>提交仅形成老师纠错证据，不代表技术验收、规则启用或包装投产。</p>
+          <div class="lock-facts"><span>未验收</span><span>规则未启用</span><span>包装仍锁定</span></div>
+        </section>
+      </div>
+      <footer class="submit-dock">
+        <div class="submit-status" id="submitStatus" role="status" aria-live="polite"><i></i><span>准备提交老师审校</span></div>
+        <button class="primary-button" id="submitButton"><svg><use href="#i-send"/></svg><span>提交纠错</span></button>
+        <button class="failure-demo" id="failureDemo">演示失败状态</button>
+      </footer>
+    </aside>
+  </div>
+
+  <dialog id="clearDialog" class="confirm-dialog" aria-labelledby="clearTitle">
+    <form method="dialog">
+      <span class="dialog-icon"><svg><use href="#i-trash"/></svg></span>
+      <h2 id="clearTitle">清空全部蒙版？</h2>
+      <p>将移除当前画布上的所有标注。操作完成后仍可立即撤销。</p>
+      <div class="dialog-actions"><button value="cancel">取消</button><button value="confirm" class="danger-confirm">清空蒙版</button></div>
+    </form>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <script>window.__MINGTU_OVERLAY_CONFIG__ = __OVERLAY_CONFIG__;</script>
+  <script>__INLINE_SCRIPT__</script>
+</body>
+</html>

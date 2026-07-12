@@ -1,0 +1,55 @@
+name: Productization CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  bounded-beta-gates:
+    name: Bounded Beta Gates
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build product runtime
+        run: npm run build
+
+      - name: Start product runtime
+        shell: powershell
+        run: |
+          Start-Process -FilePath npm.cmd -ArgumentList @('run','start:product','--','--hostname','127.0.0.1','--port','3000') -WindowStyle Hidden
+          $deadline = (Get-Date).AddSeconds(60)
+          $lastError = $null
+          do {
+            try {
+              $response = Invoke-RestMethod -Uri 'http://127.0.0.1:3000/api/health' -TimeoutSec 5
+              if ($response.responseMode -eq 'product_health_json_v1' -and $response.status -eq 'healthy') {
+                Write-Host "Product runtime is healthy at http://127.0.0.1:3000"
+                exit 0
+              }
+              $lastError = "Unexpected health payload: $($response | ConvertTo-Json -Compress)"
+            } catch {
+              $lastError = $_.Exception.Message
+            }
+            Start-Sleep -Seconds 2
+          } while ((Get-Date) -lt $deadline)
+          throw "Product runtime did not become healthy before productization gates: $lastError"
+
+      - name: Run productization gates
+        run: npm run ci:productization:gates

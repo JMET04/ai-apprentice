@@ -1,0 +1,36 @@
+name: Verify MingTu plugin
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-plugin:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Unit tests
+        run: npm test
+      - name: Plugin integrity
+        run: npm run verify:plugin
+      - name: Packaging workflow
+        run: npm run smoke:packaging-workflow
+      - name: Mask workbench browser
+        run: npm run smoke:mask-workbench
+      - name: GitHub docs page
+        run: npm run smoke:docs-page
+      - name: MCP surface
+        run: npm run smoke:plugin-tool-surface

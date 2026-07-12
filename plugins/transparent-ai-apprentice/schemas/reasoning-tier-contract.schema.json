@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://transparent-ai-apprentice.local/schemas/reasoning-tier-contract.schema.json",
+  "title": "Transparent AI Apprentice Reasoning Tier Contract",
+  "type": "object",
+  "required": ["format", "tiers", "routing_policy", "escalation_policy", "locks"],
+  "properties": {
+    "format": { "const": "transparent_ai_reasoning_tier_contract_v1" },
+    "tiers": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["id", "role", "allowed_work", "forbidden_work"],
+        "properties": {
+          "id": {
+            "enum": [
+              "senior_reasoning_compile",
+              "medium_reasoning_runtime",
+              "low_reasoning_tool",
+              "deterministic_validator",
+              "human_teacher_review"
+            ]
+          },
+          "role": { "type": "string" },
+          "allowed_work": { "type": "array", "items": { "type": "string" } },
+          "forbidden_work": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "routing_policy": {
+      "type": "object",
+      "required": ["default_runtime_tier", "compile_tier", "validation_authority"],
+      "properties": {
+        "default_runtime_tier": { "const": "medium_reasoning_runtime" },
+        "compile_tier": { "const": "senior_reasoning_compile" },
+        "validation_authority": { "const": "deterministic_validator" }
+      }
+    },
+    "escalation_policy": {
+      "type": "object",
+      "required": ["escalates_to", "triggers"],
+      "properties": {
+        "escalates_to": { "const": "senior_reasoning_compile" },
+        "triggers": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "teacher_correction",
+              "validator_unknown",
+              "validator_error",
+              "blocking_failure",
+              "conflicting_rules",
+              "missing_evidence",
+              "high_risk_action",
+              "teacher_disagreement"
+            ]
+          }
+        }
+      }
+    },
+    "locks": {
+      "type": "object",
+      "required": [
+        "modelMaySelfApprove",
+        "runtimeMayEnableRules",
+        "runtimeMayBypassValidator",
+        "runtimeMayBypassTeacherReview"
+      ],
+      "properties": {
+        "modelMaySelfApprove": { "const": false },
+        "runtimeMayEnableRules": { "const": false },
+        "runtimeMayBypassValidator": { "const": false },
+        "runtimeMayBypassTeacherReview": { "const": false }
+      }
+    }
+  }
+}

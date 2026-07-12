@@ -1,0 +1,26 @@
+{
+  "dimensioning": {
+    "counts": {
+      "linear": 10,
+      "radius": 1,
+      "total": 11
+    },
+    "native_entity_types": {
+      "radius": "AcDbRadialDimension"
+    },
+    "text_override_allowed": false
+  },
+  "title_block": {
+    "school": "STU",
+    "name": "明明",
+    "removed_reference_examples": [
+      "班级",
+      "专业",
+      "成绩",
+      "学号"
+    ]
+  },
+  "technical_requirements": {
+    "location": "inside frame"
+  }
+}

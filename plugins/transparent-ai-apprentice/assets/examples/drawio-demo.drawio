@@ -1,0 +1,19 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="demo" name="Teaching Demo">
+    <mxGraphModel>
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="teacher" value="Teacher draws rough intent" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="150" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="curve" value="preserve smooth curve" style="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=1;html=1;" edge="1" parent="1" source="teacher" target="draft">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="draft" value="Disabled rule draft" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="80" width="140" height="60" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

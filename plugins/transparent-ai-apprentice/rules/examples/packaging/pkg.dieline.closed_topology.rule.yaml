@@ -1,0 +1,40 @@
+{
+  "dsl_version": "0.1",
+  "rule_id": "pkg.dieline.connected_faces",
+  "title": "Packaging dieline faces must be connected",
+  "domain": "packaging.dieline",
+  "lifecycle": "active",
+  "severity": "blocking",
+  "owner": {
+    "teacher_id": "teacher.local",
+    "reviewer_id": "qa.local",
+    "approved_at": "2026-06-12T00:00:00+08:00"
+  },
+  "source": {
+    "type": "teacher_correction",
+    "evidence_refs": ["evidence://demo/topology-correction"],
+    "natural_language": "Main packaging faces must connect through adjacency relations."
+  },
+  "scope": { "artifact_types": ["packaging_dieline"] },
+  "inputs_required": ["artifact.objects[*].id", "artifact.objects[*].kind", "artifact.relations"],
+  "constraint": {
+    "type": "topology",
+    "validator": "connected_face_graph",
+    "params": {
+      "node_kind": "face",
+      "relation_type": "adjacent",
+      "ignore_kinds": ["glue_tab", "annotation"]
+    }
+  },
+  "failure": {
+    "message": "Packaging faces are not connected.",
+    "action": "reject_delivery",
+    "remediation_hint": "Add adjacency relations between the isolated face and the main face graph."
+  },
+  "audit": {
+    "created_by": "ai",
+    "created_at": "2026-06-12T00:00:00+08:00",
+    "updated_at": "2026-06-12T00:00:00+08:00",
+    "rule_version": "0.1.0"
+  }
+}

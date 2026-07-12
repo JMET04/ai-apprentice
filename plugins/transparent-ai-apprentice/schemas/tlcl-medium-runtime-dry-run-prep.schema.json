@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://transparent-ai-apprentice.local/schemas/tlcl-medium-runtime-dry-run-prep.schema.json",
+  "title": "Transparent AI Apprentice TLCL Medium Runtime Dry-Run Prep",
+  "type": "object",
+  "required": ["format", "status", "runtimeTier", "sourceEvidence", "dryRunPreparation", "locks"],
+  "properties": {
+    "format": { "const": "transparent_ai_tlcl_medium_runtime_dry_run_prep_v1" },
+    "status": {
+      "enum": [
+        "medium_runtime_dry_run_prep_ready_for_teacher_review",
+        "waiting_for_teacher_confirmed_route_evidence",
+        "blocked_escalate_to_senior_compile"
+      ]
+    },
+    "runtimeTier": { "const": "medium_reasoning_runtime" },
+    "sourceEvidence": {
+      "type": "object",
+      "properties": {
+        "providerRoleUsePlan": {
+          "type": "object",
+          "required": ["requiredForScopedProvider", "accepted", "providerRole", "providerRoleUsePlanHash", "nextGateSatisfied"],
+          "properties": {
+            "requiredForScopedProvider": { "type": "boolean" },
+            "accepted": { "type": "boolean" },
+            "providerRole": { "type": "string" },
+            "providerRoleUsePlanPath": { "type": "string" },
+            "providerRoleUsePlanHash": { "type": "string" },
+            "inheritedFromRuntimeGate": { "type": "boolean" },
+            "nextGateSatisfied": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "dryRunPreparation": {
+      "type": "object",
+      "required": [
+        "canPrepareDryRun",
+        "providerRoleUsePlanAccepted",
+        "providerRoleUsePlanHash",
+        "canExecuteTargetSoftware",
+        "routeCandidateCount"
+      ],
+      "properties": {
+        "canPrepareDryRun": { "type": "boolean" },
+        "providerRoleUsePlanAccepted": { "type": "boolean" },
+        "providerRole": { "type": "string" },
+        "providerRoleUsePlanHash": { "type": "string" },
+        "canExecuteTargetSoftware": { "const": false },
+        "routeCandidateCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "locks": {
+      "type": "object",
+      "required": [
+        "reviewOnly",
+        "mediumRuntimeOnly",
+        "noSoftwareExecution",
+        "noRuleEnablement",
+        "noMemoryWrite",
+        "noPackagingUnlock",
+        "noCompletionClaim"
+      ],
+      "properties": {
+        "reviewOnly": { "const": true },
+        "mediumRuntimeOnly": { "const": true },
+        "noSoftwareExecution": { "const": true },
+        "noRuleEnablement": { "const": true },
+        "noMemoryWrite": { "const": true },
+        "noPackagingUnlock": { "const": true },
+        "noCompletionClaim": { "const": true }
+      }
+    }
+  }
+}

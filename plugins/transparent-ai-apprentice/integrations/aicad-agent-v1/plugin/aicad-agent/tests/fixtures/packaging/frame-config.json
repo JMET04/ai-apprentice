@@ -1,0 +1,18 @@
+{
+  "reference_measurements_mm": {
+    "outer": [
+      420,
+      297
+    ],
+    "inner_margins": {
+      "left": 25,
+      "top": 5,
+      "right": 5,
+      "bottom": 5
+    }
+  },
+  "implementation": {
+    "model_space": "1:1 unchanged",
+    "locked_viewport_scale": "1:5"
+  }
+}

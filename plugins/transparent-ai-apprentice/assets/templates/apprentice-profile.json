@@ -1,0 +1,14 @@
+{
+  "format": "transparent_ai_apprentice_profile_v1",
+  "apprenticeName": "",
+  "domain": "",
+  "teacherGoal": "",
+  "knownSkills": [],
+  "knownLimits": [],
+  "memoryPolicy": {
+    "defaultRuleEnabled": false,
+    "requiresTeacherConfirmation": true,
+    "conflictBehavior": "ask_teacher"
+  }
+}
+

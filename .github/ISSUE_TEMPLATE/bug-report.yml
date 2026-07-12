@@ -1,0 +1,46 @@
+name: 缺陷报告
+description: 报告工作流、蒙版、规则学习、CAD 交接或安装问题。
+title: "[缺陷] "
+labels: [bug]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: 问题区域
+      options:
+        - 需求澄清与工作流
+        - Image2 样图或局部修改
+        - 蒙版纠错工作台
+        - AICAD 工程图交接
+        - 规则学习与追踪
+        - 安装、打包或运行环境
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 请写明输入、操作顺序和出现问题的阶段。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望结果
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际结果与证据
+      description: 可附公开轨迹、验证报告或脱敏截图，不要提交密钥和个人隐私。
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      placeholder: 1.0.0
+    validations:
+      required: true
+

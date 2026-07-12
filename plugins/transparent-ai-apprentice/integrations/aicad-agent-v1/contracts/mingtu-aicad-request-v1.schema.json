@@ -1,0 +1,460 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mingtu.local/schemas/mingtu-aicad-request-v1.schema.json",
+  "title": "Strict MingTu AICAD request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "handoffId",
+    "mode",
+    "project",
+    "product",
+    "materials",
+    "engineeringTruth",
+    "evidence",
+    "requestedArtifacts",
+    "hostPolicy",
+    "safety"
+  ],
+  "$defs": {
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "relativePath",
+        "sha256",
+        "mediaType"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+$"
+        },
+        "relativePath": {
+          "type": "string",
+          "pattern": "^(?![A-Za-z]:|/|.*\\.\\.).+"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{64}$"
+        },
+        "mediaType": {
+          "type": "string",
+          "minLength": 3
+        }
+      }
+    },
+    "visualArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "relativePath",
+        "sha256",
+        "mediaType",
+        "role",
+        "pixelMeasurementsAllowed"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+$"
+        },
+        "relativePath": {
+          "type": "string",
+          "pattern": "^(?![A-Za-z]:|/|.*\\.\\.).+"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{64}$"
+        },
+        "mediaType": {
+          "type": "string",
+          "minLength": 3
+        },
+        "role": {
+          "const": "visual_topology_only"
+        },
+        "pixelMeasurementsAllowed": {
+          "const": false
+        }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewOnly",
+        "accepted",
+        "ruleEnabled",
+        "packagingGated",
+        "productionApprovalClaimed"
+      ],
+      "properties": {
+        "reviewOnly": {
+          "const": true
+        },
+        "accepted": {
+          "const": false
+        },
+        "ruleEnabled": {
+          "const": false
+        },
+        "packagingGated": {
+          "const": true
+        },
+        "productionApprovalClaimed": {
+          "const": false
+        }
+      }
+    }
+  },
+  "properties": {
+    "format": {
+      "const": "mingtu_aicad_request_v1"
+    },
+    "handoffId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mode": {
+      "enum": [
+        "drawing_2d",
+        "packaging_dieline",
+        "part_3d",
+        "hybrid"
+      ]
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "productType",
+        "requestedUnits"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "productType": {
+          "type": "string",
+          "minLength": 1
+        },
+        "structureFamily": {
+          "type": "string"
+        },
+        "requestedUnits": {
+          "const": "mm"
+        }
+      }
+    },
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "dimensions"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "shape": {
+          "type": "string"
+        },
+        "weightKg": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "dimensions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "semantic",
+              "axes",
+              "values",
+              "unit",
+              "authority",
+              "sourceRef"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "semantic": {
+                "type": "string"
+              },
+              "axes": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 3,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "values": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 3,
+                "items": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                }
+              },
+              "unit": {
+                "const": "mm"
+              },
+              "authority": {
+                "enum": [
+                  "teacher_explicit",
+                  "approved_engineering",
+                  "trusted_catalog",
+                  "calculated"
+                ]
+              },
+              "sourceRef": {
+                "type": "string"
+              },
+              "sourcePointer": {
+                "type": "string"
+              },
+              "immutable": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "materials": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "name",
+          "authority"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "authority": {
+            "enum": [
+              "teacher_explicit",
+              "approved_engineering",
+              "trusted_catalog"
+            ]
+          },
+          "thickness": {
+            "type": "object",
+            "required": [
+              "value",
+              "unit"
+            ],
+            "properties": {
+              "value": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "unit": {
+                "const": "mm"
+              }
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "engineeringTruth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origin",
+        "sourcePrecedence",
+        "conflictPolicy",
+        "imagePixelsUsedAsDimensions"
+      ],
+      "properties": {
+        "origin": {
+          "enum": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "sourcePrecedence": {
+          "const": [
+            "teacher_explicit",
+            "approved_engineering",
+            "trusted_catalog",
+            "calculated",
+            "visual_semantics_only"
+          ]
+        },
+        "conflictPolicy": {
+          "const": "fail_closed_and_report"
+        },
+        "imagePixelsUsedAsDimensions": {
+          "const": false
+        },
+        "parameters": {
+          "type": "array"
+        },
+        "expectedTopology": {
+          "type": "object"
+        },
+        "expectedBBox": {
+          "type": "array"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "solutionPlan",
+        "image2Sample",
+        "selfChecks",
+        "teacherCorrectionPackets",
+        "localModificationResults"
+      ],
+      "properties": {
+        "solutionPlan": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "image2Sample": {
+          "$ref": "#/$defs/visualArtifactRef"
+        },
+        "selfChecks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifactRef"
+          }
+        },
+        "teacherCorrectionPackets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifactRef"
+          }
+        },
+        "localModificationResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifactRef"
+          }
+        }
+      }
+    },
+    "localModifications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "baseArtifactSha256",
+          "targetEntityIds",
+          "operation",
+          "requiredGlobalRevalidation"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "baseArtifactSha256": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
+          },
+          "targetEntityIds": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_]+$"
+            }
+          },
+          "operation": {
+            "enum": [
+              "add",
+              "replace",
+              "delete",
+              "transform",
+              "update_parameter"
+            ]
+          },
+          "requiredGlobalRevalidation": {
+            "const": true
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "requestedArtifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "plan",
+          "aicad",
+          "scr",
+          "dxf",
+          "dwg",
+          "pdf",
+          "png",
+          "audit",
+          "validation",
+          "manifest",
+          "sldprt",
+          "step"
+        ]
+      }
+    },
+    "hostPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "defaultHost",
+        "allowOptionalHosts"
+      ],
+      "properties": {
+        "defaultHost": {
+          "const": "none"
+        },
+        "allowOptionalHosts": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "autocad",
+              "solidworks"
+            ]
+          }
+        }
+      }
+    },
+    "safety": {
+      "$ref": "#/$defs/safety"
+    }
+  }
+}
