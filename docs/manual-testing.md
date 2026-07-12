@@ -7,7 +7,7 @@
 ## 测试前检查
 
 - 运行 `npm ci`、`npm run typecheck`、`npm test` 和 `npm run verify:plugin`。
-- 运行 `npm run smoke:packaging-workflow` 和 `npm run smoke:mask-workbench`。
+- 运行 `npm run smoke:image2-prompt-optimizer`、`npm run smoke:packaging-workflow` 和 `npm run smoke:mask-workbench`。
 - 运行 AICAD 清单、集成与交接烟测。
 - 准备一个真实产品的类型、长宽高、重量、材料偏好和运输条件。
 - 明确本轮只做老师审校，不作技术验收或生产放行。
@@ -22,22 +22,26 @@
 
 ## 场景二：方案与 Image2 样图
 
-补齐关键需求并生成中文样图。
+补齐关键需求、记录深度方案，先检查自动生成的 `image2-initial-prompt-guidance.json`，再生成中文样图。
 
 检查：
 
+- `route.domain=packaging`，`readyForGeneration=true`，且 `blockingUnknowns` 为空；
+- 提示词明确区分确认事实、保留项、修改项、禁止事项和人工复核边界；
+- 提示词中的尺寸与老师确认数据逐字一致，且声明像素不是尺寸真值；
+- 会话保存提示词指导包 SHA-256；篡改文件后，`record-sample` 必须因哈希不匹配而拒绝；
 - 中文标题、尺寸表和说明能正确阅读；
 - 版式接近统一工程说明页，而不是随中文长度任意重排；
 - 产品类型、结构方向和面板关系与方案一致；
 - 图片中不声称“已验收”或“可直接量产”。
 
-通过标准：样图可进入自查，但仍被标记为视觉候选。
+通过标准：提示词指导包通过阻塞项、来源和哈希校验后，样图才可进入自查，并且仍被标记为视觉候选。
 
 ## 场景三：尺寸与形状自查
 
 检查系统是否覆盖：尺寸完整性、单位一致性、面板拓扑、刀线与压线冲突、闭合/间隙、制造可行性和文字可读性。
 
-通过标准：七类检查都有证据；任何失败都会阻止进入蒙版提交或 CAD。
+通过标准：八类检查都有证据；任何失败都会阻止进入蒙版提交或 CAD。
 
 ## 场景四：蒙版工作台
 

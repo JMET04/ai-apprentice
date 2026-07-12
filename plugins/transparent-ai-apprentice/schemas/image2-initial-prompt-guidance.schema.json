@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mingtu.local/schemas/image2-initial-prompt-guidance.schema.json",
+  "title": "Image2 initial prompt guidance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "version",
+    "generatedAt",
+    "mode",
+    "route",
+    "request",
+    "prompt",
+    "negativePrompt",
+    "blockingUnknowns",
+    "readyForGeneration",
+    "validationChecklist",
+    "library",
+    "provenance",
+    "locks"
+  ],
+  "properties": {
+    "format": { "const": "mingtu_image2_initial_prompt_guidance_v1" },
+    "version": { "const": "1.0.0" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "mode": { "const": "initial_generation_guidance" },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domain", "existingCapabilityFirst", "generator"],
+      "properties": {
+        "domain": {
+          "enum": ["packaging", "cad_technical", "product_visual", "ecommerce", "ui_web", "architecture_interior", "industrial_design", "general_image"]
+        },
+        "existingCapabilityFirst": { "const": true },
+        "generator": { "const": "image2" }
+      }
+    },
+    "request": { "type": "object" },
+    "prompt": { "type": "string", "minLength": 80 },
+    "negativePrompt": { "type": "string", "minLength": 20 },
+    "blockingUnknowns": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "readyForGeneration": { "type": "boolean" },
+    "validationChecklist": {
+      "type": "array",
+      "minItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status", "evidence"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["pass", "blocked", "needs_review"] },
+          "evidence": { "type": "string" }
+        }
+      }
+    },
+    "library": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["optional", "available", "mode"],
+      "properties": {
+        "optional": { "const": true },
+        "available": { "type": "boolean" },
+        "mode": { "enum": ["bundled_fallback", "local_library_available"] },
+        "root": { "type": ["string", "null"] },
+        "suggestedQuery": { "type": "string" }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["skill", "sourceThreadId", "compiler"],
+      "properties": {
+        "skill": { "const": "image2-prompt-optimizer" },
+        "sourceThreadId": { "const": "019f09a9-90ab-76b2-aa1f-b7c9bddf93e8" },
+        "compiler": { "const": "compile-image2-initial-prompt.mjs" }
+      }
+    },
+    "locks": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["reviewOnly", "accepted", "technologyAccepted", "ruleEnabled", "packagingGated", "productionReleased"],
+      "properties": {
+        "reviewOnly": { "const": true },
+        "accepted": { "const": false },
+        "technologyAccepted": { "const": false },
+        "ruleEnabled": { "const": false },
+        "packagingGated": { "const": true },
+        "productionReleased": { "const": false }
+      }
+    }
+  }
+}

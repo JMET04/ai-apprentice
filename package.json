@@ -92,6 +92,7 @@
     "cleanup:smoke-records": "tsx scripts/cleanup-smoke-records.ts",
     "cleanup:runtime-artifacts": "tsx scripts/cleanup-runtime-artifacts.ts",
     "verify:plugin": "node plugins/transparent-ai-apprentice/scripts/verify-plugin.mjs",
+    "smoke:image2-prompt-optimizer": "node plugins/transparent-ai-apprentice/scripts/smoke-image2-prompt-optimizer.mjs",
     "smoke:packaging-workflow": "node plugins/transparent-ai-apprentice/scripts/smoke-packaging-design-workflow.mjs",
     "smoke:mask-workbench": "node plugins/transparent-ai-apprentice/scripts/smoke-mingtu-mask-workbench-browser.mjs",
     "smoke:docs-page": "node scripts/smoke-mingtu-docs-page.mjs",

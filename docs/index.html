@@ -60,7 +60,7 @@
         </header>
         <ol class="workflow-list">
           <li><span>01</span><div><h3>需求澄清</h3><p>产品、尺寸、重量、材料、运输、开合和制造约束。</p></div></li>
-          <li><span>02</span><div><h3>深度方案</h3><p>结构选择、参数来源、风险点和验证计划。</p></div></li>
+          <li><span>02</span><div><h3>方案与提示词编译</h3><p>结构、参数、风险和首次生成指导包。</p></div></li>
           <li><span>03</span><div><h3>Image2 中文样图</h3><p>统一工程版式的视觉候选，不把像素当尺寸。</p></div></li>
           <li><span>04</span><div><h3>尺寸与形状自查</h3><p>单位、拓扑、冲突、闭合、制造和文字可读性。</p></div></li>
           <li><span>05</span><div><h3>老师蒙版纠错</h3><p>画笔、圈选、框选、箭头、文字与结构化意见。</p></div></li>
@@ -123,6 +123,7 @@
           <div class="table-row table-head" role="row"><span>能力</span><span>状态</span><span>边界</span></div>
           <div class="table-row" role="row"><strong>教学任务与结构化轨迹</strong><span class="status done">已实现</span><p>展示步骤、规则、证据与复核点</p></div>
           <div class="table-row" role="row"><strong>纠错转规则草稿</strong><span class="status done">已实现</span><p>默认停用，老师审核后才能复用</p></div>
+          <div class="table-row" role="row"><strong>Image2 首次提示词优化</strong><span class="status done">已实现</span><p>确定性指导包；本机专业提示词库为可选增强</p></div>
           <div class="table-row" role="row"><strong>Image2 包装样图与局部修改</strong><span class="status review">需人工审核</span><p>依赖运行环境；视觉候选不是尺寸真值</p></div>
           <div class="table-row" role="row"><strong>尺寸、形状与制造自查</strong><span class="status review">需工程复核</span><p>交付前筛查，不是技术验收</p></div>
           <div class="table-row" role="row"><strong>AICAD 二维与三维候选</strong><span class="status review">需宿主复核</span><p>确定性离线验证已实现，真实宿主需现场检查</p></div>
@@ -173,6 +174,7 @@
 npm run typecheck
 npm test
 npm run verify:plugin
+npm run smoke:image2-prompt-optimizer
 npm run smoke:packaging-workflow
 npm run smoke:mask-workbench
 npm run verify:aicad-integration

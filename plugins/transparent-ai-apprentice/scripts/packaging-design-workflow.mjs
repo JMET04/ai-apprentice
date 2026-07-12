@@ -2,6 +2,7 @@
 import { createHash } from "node:crypto";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, join, relative, resolve, sep } from "node:path";
+import { compileInitialPrompt } from "./compile-image2-initial-prompt.mjs";
 
 const args = process.argv.slice(2);
 
@@ -110,7 +111,7 @@ function clarificationQuestions(missing) {
 function nextAction(stage) {
   const actions = {
     requirements_clarification: "向老师询问并补齐产品类型与长宽高，不能猜测关键工程尺寸。",
-    solution_planning: "形成公开、结构化的深度方案，说明模板选择、尺寸来源、结构约束、风险和 Image2 提示词。",
+    solution_planning: "形成公开、结构化的深度方案，并用 image2-prompt-optimizer 编译首次生成提示词指导包。",
     image2_sample_generation: "调用 Image2 生成一张样图并保存原始图像；此阶段禁止直接交付。",
     sample_self_check: "逐项检查尺寸标注和形状拓扑，写入自查报告；失败项也要如实保留并展示给老师。",
     teacher_mask_correction: "以自查后的样图为底图打开中文蒙版，让老师圈画和输入纠错，等待老师提交。",
@@ -226,6 +227,8 @@ function createSession() {
     artifacts: {
       requirements: requirementsFile ? resolve(requirementsFile) : sessionPath,
       solutionPlan: null,
+      initialPromptGuidance: null,
+      initialPromptGuidanceSha256: null,
       image2Sample: null,
       selfCheck: null,
       maskCorrection: null,
@@ -293,12 +296,78 @@ if (action === "update-requirements") {
   requireStage(session, "solution_planning");
   const artifact = requireArtifact("solution plan");
   session.artifacts.solutionPlan = artifact;
+  const promptGuidance = compileInitialPrompt({
+    task: session.requirements.request || `为${session.requirements.productType}生成第一版包装审校样图`,
+    domain: "packaging",
+    subject: session.requirements.productType,
+    productType: session.requirements.productType,
+    audience: "包装需求提出者、包装设计师与后续工程复核者",
+    outputType: "一张中文包装工程审校样图，以清晰正投影视图或平面展开结构为主",
+    locale: "zh-CN",
+    dimensions: session.requirements.internalDimensions,
+    confirmedFacts: {
+      productType: session.requirements.productType,
+      material: session.requirements.material,
+      thickness: session.requirements.thickness,
+      productWeight: session.requirements.productWeight,
+      transport: session.requirements.transport,
+      closure: session.requirements.closure,
+      printAndFinish: session.requirements.printAndFinish,
+      dimensionTruthSource: "teacher_or_engineering_data_only"
+    },
+    preserve: [
+      "老师确认的产品类型、长宽高、单位和结构方向",
+      "所有参考图中的真实产品识别特征，不擅自添加品牌"
+    ],
+    changes: [
+      "根据深度方案形成可供尺寸、形状和封口关系自查的第一版样图",
+      "为后续蒙版圈画保留清楚的结构面和标注空间"
+    ],
+    constraints: [
+      `方案证据文件：${basename(artifact)}`,
+      `要求输出格式：${(session.requirements.outputFormats || []).join(", ")}`
+    ],
+    referenceImages: session.requirements.references || []
+  });
+  if (!promptGuidance.readyForGeneration) {
+    fail(`Initial Image2 prompt guidance is blocked: ${promptGuidance.blockingUnknowns.join(", ")}`);
+  }
+  const promptGuidancePath = join(dirname(sessionPath), "image2-initial-prompt-guidance.json");
+  writeFileSync(promptGuidancePath, JSON.stringify(promptGuidance, null, 2), "utf8");
+  session.artifacts.initialPromptGuidance = promptGuidancePath;
+  session.artifacts.initialPromptGuidanceSha256 = sha256File(promptGuidancePath);
   session.stage = "image2_sample_generation";
   session.status = "ready_for_image2_sample";
   session.stageHistory.push({ stage: session.stage, at: now() });
-  saveSession(sessionPath, session, publicTrace("记录深度方案", basename(artifact), "调用 Image2 生成样图", "方案文件存在", "样图生成后不要直接交付"));
+  saveSession(sessionPath, session, publicTrace(
+    "记录深度方案并编译首次生成提示词",
+    basename(artifact),
+    "使用已验证的提示词指导包调用 Image2 生成样图",
+    `方案文件存在；提示词路由=${promptGuidance.route.domain}；检查项=${promptGuidance.validationChecklist.length}`,
+    "样图生成后不要直接交付"
+  ));
 } else if (action === "record-sample") {
   requireStage(session, "image2_sample_generation");
+  if (!session.artifacts.initialPromptGuidance || !existsSync(session.artifacts.initialPromptGuidance)) {
+    fail("A compiled Image2 initial prompt guidance packet is required before recording the first sample");
+  }
+  if (!session.artifacts.initialPromptGuidanceSha256 || sha256File(session.artifacts.initialPromptGuidance) !== session.artifacts.initialPromptGuidanceSha256) {
+    fail("Image2 initial prompt guidance hash mismatch");
+  }
+  const promptGuidance = readJson(session.artifacts.initialPromptGuidance, "Image2 initial prompt guidance");
+  if (promptGuidance.format !== "mingtu_image2_initial_prompt_guidance_v1") fail("Unsupported Image2 initial prompt guidance format");
+  if (promptGuidance.route?.domain !== "packaging" || promptGuidance.provenance?.skill !== "image2-prompt-optimizer" || promptGuidance.provenance?.sourceThreadId !== "019f09a9-90ab-76b2-aa1f-b7c9bddf93e8") {
+    fail("Image2 initial prompt guidance provenance or packaging route is invalid");
+  }
+  if (promptGuidance.readyForGeneration !== true || (promptGuidance.blockingUnknowns || []).length > 0) {
+    fail("Image2 initial prompt guidance still has blocking unknowns");
+  }
+  if ((promptGuidance.validationChecklist || []).some((check) => check.status === "blocked")) {
+    fail("Image2 initial prompt guidance has a blocked validation check");
+  }
+  for (const [key, expected] of Object.entries({ reviewOnly: true, accepted: false, technologyAccepted: false, ruleEnabled: false, packagingGated: true, productionReleased: false })) {
+    if (promptGuidance.locks?.[key] !== expected) fail(`Unsafe Image2 prompt guidance lock: ${key}`);
+  }
   const artifact = requireArtifact("Image2 sample");
   session.artifacts.image2Sample = artifact;
   session.stage = "sample_self_check";

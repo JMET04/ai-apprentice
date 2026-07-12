@@ -39,7 +39,22 @@ assert.match(skipped.stderr, /Stage skipping is blocked/);
 
 const plan = join(temp, "plan.json");
 writeFileSync(plan, JSON.stringify({ format: "mingtu_packaging_solution_plan_v1" }), "utf8");
-assert.equal(run(["--action", "record-plan", "--session", sessionPath, "--artifact", plan]).stage, "image2_sample_generation");
+const planned = run(["--action", "record-plan", "--session", sessionPath, "--artifact", plan]);
+assert.equal(planned.stage, "image2_sample_generation");
+assert.ok(planned.artifacts.initialPromptGuidance);
+assert.match(planned.artifacts.initialPromptGuidanceSha256, /^[a-f0-9]{64}$/);
+const initialPromptGuidance = JSON.parse(readFileSync(planned.artifacts.initialPromptGuidance, "utf8"));
+assert.equal(initialPromptGuidance.format, "mingtu_image2_initial_prompt_guidance_v1");
+assert.equal(initialPromptGuidance.readyForGeneration, true);
+assert.equal(initialPromptGuidance.route.domain, "packaging");
+assert.match(initialPromptGuidance.prompt, /200 × 120 × 60 mm/);
+assert.equal(initialPromptGuidance.provenance.sourceThreadId, "019f09a9-90ab-76b2-aa1f-b7c9bddf93e8");
+const originalPromptGuidance = readFileSync(planned.artifacts.initialPromptGuidance, "utf8");
+writeFileSync(planned.artifacts.initialPromptGuidance, `${originalPromptGuidance}\n`, "utf8");
+const tamperedPrompt = spawnSync(process.execPath, [workflow, "--action", "record-sample", "--session", sessionPath, "--artifact", sample], { cwd: root, encoding: "utf8" });
+assert.notEqual(tamperedPrompt.status, 0);
+assert.match(tamperedPrompt.stderr, /initial prompt guidance hash mismatch/);
+writeFileSync(planned.artifacts.initialPromptGuidance, originalPromptGuidance, "utf8");
 assert.equal(run(["--action", "record-sample", "--session", sessionPath, "--artifact", sample]).stage, "sample_self_check");
 
 const session = JSON.parse(readFileSync(sessionPath, "utf8"));
@@ -93,4 +108,4 @@ writeFileSync(cadResult, JSON.stringify({
 }), "utf8");
 assert.equal(run(["--action", "record-cad-result", "--session", sessionPath, "--artifact", cadResult]).stage, "final_teacher_review");
 
-console.log(JSON.stringify({ ok: true, checks: 20, finalStage: "final_teacher_review", sessionPath }, null, 2));
+console.log(JSON.stringify({ ok: true, checks: 29, finalStage: "final_teacher_review", sessionPath }, null, 2));

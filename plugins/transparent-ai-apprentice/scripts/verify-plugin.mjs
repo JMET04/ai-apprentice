@@ -12,11 +12,17 @@ const requiredFiles = [
   "TLCL_OVERALL_DIRECTION.md",
   "FULL_TARGET_DIRECTION_AND_TASK_LIST.md",
   "skills/teachable-apprentice/SKILL.md",
+  "skills/image2-prompt-optimizer/SKILL.md",
+  "skills/image2-prompt-optimizer/references/initial-generation-contract.md",
   "skills/packaging-design-apprentice/SKILL.md",
+  "schemas/image2-initial-prompt-guidance.schema.json",
   "schemas/packaging-design-session.schema.json",
   "schemas/aicad-packaging-handoff.schema.json",
   "scripts/packaging-design-workflow.mjs",
   "scripts/smoke-packaging-design-workflow.mjs",
+  "scripts/compile-image2-initial-prompt.mjs",
+  "scripts/search-image2-prompt-library.py",
+  "scripts/smoke-image2-prompt-optimizer.mjs",
   "schemas/mingtu-aicad-request-v1.schema.json",
   "schemas/mingtu-aicad-result-v1.schema.json",
   "scripts/aicad-handoff-adapter.mjs",
@@ -888,6 +894,17 @@ const tlclOverallDirectionText = readFileSync(join(pluginRoot, "TLCL_OVERALL_DIR
 const fullTargetDirectionTaskListText = readFileSync(join(pluginRoot, "FULL_TARGET_DIRECTION_AND_TASK_LIST.md"), "utf8");
 const frameworkText = readFileSync(join(pluginRoot, "TRANSPARENT_AI_APPRENTICE_FRAMEWORK_AND_LOGIC.md"), "utf8");
 const skillText = readFileSync(join(pluginRoot, "skills", "teachable-apprentice", "SKILL.md"), "utf8");
+const image2PromptOptimizerSkillText = readFileSync(join(pluginRoot, "skills", "image2-prompt-optimizer", "SKILL.md"), "utf8");
+const image2InitialGenerationContractText = readFileSync(
+  join(pluginRoot, "skills", "image2-prompt-optimizer", "references", "initial-generation-contract.md"),
+  "utf8"
+);
+const image2InitialPromptCompilerText = readFileSync(join(pluginRoot, "scripts", "compile-image2-initial-prompt.mjs"), "utf8");
+const image2PromptLibrarySearchText = readFileSync(join(pluginRoot, "scripts", "search-image2-prompt-library.py"), "utf8");
+const image2PromptOptimizerSmokeText = readFileSync(join(pluginRoot, "scripts", "smoke-image2-prompt-optimizer.mjs"), "utf8");
+const packagingDesignSkillText = readFileSync(join(pluginRoot, "skills", "packaging-design-apprentice", "SKILL.md"), "utf8");
+const packagingDesignWorkflowText = readFileSync(join(pluginRoot, "scripts", "packaging-design-workflow.mjs"), "utf8");
+const packagingDesignWorkflowSmokeText = readFileSync(join(pluginRoot, "scripts", "smoke-packaging-design-workflow.mjs"), "utf8");
 const mcpServerText = readFileSync(join(pluginRoot, "scripts", "mcp-server.mjs"), "utf8");
 const originalGoalLowTokenCompactEvidenceRunnerText = readFileSync(
   join(pluginRoot, "scripts", "run-original-goal-low-token-compact-evidence-request.mjs"),
@@ -4171,6 +4188,44 @@ const checks = [
       skillText.includes("enabled`: default `false`") &&
       skillText.includes("requiresTeacherConfirmation`: default `true`"),
     evidence: "Rule draft defaults are locked"
+  },
+  {
+    name: "Image2 prompt optimizer is a packaged first-generation skill",
+    pass:
+      image2PromptOptimizerSkillText.includes("image2-prompt-optimizer") &&
+      image2PromptOptimizerSkillText.includes("019f09a9-90ab-76b2-aa1f-b7c9bddf93e8") &&
+      image2PromptOptimizerSkillText.includes("compile-image2-initial-prompt.mjs") &&
+      image2PromptOptimizerSkillText.includes("search-image2-prompt-library.py") &&
+      image2PromptOptimizerSkillText.includes("readyForGeneration=false") &&
+      image2InitialGenerationContractText.toLowerCase().includes("confirmed facts and assumptions are separated") &&
+      image2InitialGenerationContractText.toLowerCase().includes("pixels are not dimension truth"),
+    evidence: "The source-thread optimizer is discoverable, portable, and linked to its first-generation contract"
+  },
+  {
+    name: "Image2 initial prompt compiler works without the external library",
+    pass:
+      image2InitialPromptCompilerText.includes("mingtu_image2_initial_prompt_guidance_v1") &&
+      image2InitialPromptCompilerText.includes("bundled_fallback") &&
+      image2InitialPromptCompilerText.includes("existingCapabilityFirst: true") &&
+      image2InitialPromptCompilerText.includes("sourceThreadId: \"019f09a9-90ab-76b2-aa1f-b7c9bddf93e8\"") &&
+      image2InitialPromptCompilerText.includes("IMAGE2_PROMPT_LIBRARY") &&
+      image2PromptLibrarySearchText.includes("prompt_library.sqlite") &&
+      image2PromptOptimizerSmokeText.includes("mingtu_image2_prompt_optimizer_smoke_v1") &&
+      packageText.includes("smoke:image2-prompt-optimizer"),
+    evidence: "Bundled deterministic guidance is the baseline; the 125k-entry local SQLite library is optional enhancement"
+  },
+  {
+    name: "Packaging workflow enforces optimized guidance before first Image2 sample",
+    pass:
+      packagingDesignSkillText.includes("image2-prompt-optimizer") &&
+      packagingDesignSkillText.includes("image2-initial-prompt-guidance.json") &&
+      packagingDesignWorkflowText.includes("compileInitialPrompt") &&
+      packagingDesignWorkflowText.includes("A compiled Image2 initial prompt guidance packet is required") &&
+      packagingDesignWorkflowText.includes("Image2 initial prompt guidance hash mismatch") &&
+      packagingDesignWorkflowText.includes("Unsafe Image2 prompt guidance lock") &&
+      packagingDesignWorkflowSmokeText.includes("checks: 29") &&
+      packagingDesignWorkflowSmokeText.includes("initialPromptGuidance.provenance.sourceThreadId"),
+    evidence: "record-plan compiles the prompt packet and record-sample fails closed when the packet is missing, blocked, or unsafe"
   },
   {
     name: "Physical-world spatial grounding pack bridges Unity evidence into overlay review without authority claims",

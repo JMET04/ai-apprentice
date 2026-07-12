@@ -6,6 +6,17 @@ Human demonstrates -> Codex executes -> human corrects -> plugin extracts rule d
 
 The plugin keeps private chain-of-thought hidden. It exposes only public structured traces: steps, observed inputs, proposed action, rule candidates, confidence, validation, and human review points.
 
+## Image2 First-Generation Prompt Optimizer
+
+The packaged `image2-prompt-optimizer` skill runs before a first Image2 generation. It routes to existing capabilities, separates confirmed facts from assumptions, compiles `mingtu_image2_initial_prompt_guidance_v1`, and blocks packaging generation when product type or authoritative dimensions are missing.
+
+```bash
+node plugins/transparent-ai-apprentice/scripts/compile-image2-initial-prompt.mjs --input request.json --output prompt-guidance.json
+npm run smoke:image2-prompt-optimizer
+```
+
+The optional `IMAGE2_PROMPT_LIBRARY` can search the local 125,399-entry catalog for patterns. The large external database is not bundled and is never required: the plugin includes a deterministic fallback compiler and its own first-generation contract. Prompt retrieval is evidence only and cannot approve dimensions, skip teacher review, enable rules, or unlock packaging.
+
 ## Maintainer Health Index
 
 Start plugin maintenance with the health index before adding another route or smoke script:

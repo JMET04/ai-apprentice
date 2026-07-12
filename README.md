@@ -16,7 +16,7 @@
 
 ```mermaid
 flowchart LR
-  A[需求澄清] --> B[深度方案]
+  A[需求澄清] --> B[深度方案与首次提示词编译]
   B --> C[Image2 中文样图]
   C --> D[尺寸与形状自查]
   D --> E[老师蒙版纠错]
@@ -40,6 +40,7 @@ flowchart LR
 | 文字、示范、截图与案例教学 | 已实现 | 教学输入会形成可复核的结构化证据 |
 | 纠错转规则草稿 | 已实现 | 新规则默认停用，必须由老师审核 |
 | 知识资料与 RAG 证据包 | 已实现，需人工判断 | 检索结果带来源，但不具备自动授权能力 |
+| Image2 首次生成提示词优化 | 已实现 | 先路由现有能力，再编译可验证指导包；本机 12.5 万条提示词库为可选增强 |
 | 包装需求澄清与方案规划 | 已实现 | 八阶段状态机禁止跳过关键步骤 |
 | Image2 中文包装样图 | 已实现，需人工复核 | 依赖运行环境提供 Image2；图片用于视觉方案，不是工程尺寸真值 |
 | 尺寸、形状和制造自查 | 已实现，需工程复核 | 自动检查是交付前筛查，不是技术验收 |
@@ -57,11 +58,11 @@ flowchart LR
 
 ### 2. 深度方案
 
-根据需求选择包装结构，列出参数来源、结构关系、风险点、制造假设和验证计划。方案是后续 Image2 与 CAD 共用的约束来源。
+根据需求选择包装结构，列出参数来源、结构关系、风险点、制造假设和验证计划。随后由 `image2-prompt-optimizer` 编译 `mingtu_image2_initial_prompt_guidance_v1`，把确认事实、保留项、修改项、版式、负面约束和检查项分开记录。
 
 ### 3. Image2 中文样图
 
-按统一的中文工程版式生成视觉候选图。中文文字、尺寸表和布局在提示词中单独约束，避免简单翻译造成排版重排。
+只有提示词指导包 `readyForGeneration=true` 时才按统一的中文工程版式生成视觉候选图。中文文字、尺寸表和布局单独约束，避免简单翻译造成排版重排。
 
 ### 4. 样图自查
 
@@ -101,6 +102,7 @@ npm run verify:plugin
 验证首版关键闭环：
 
 ```powershell
+npm run smoke:image2-prompt-optimizer
 npm run smoke:packaging-workflow
 npm run smoke:mask-workbench
 npm run verify:aicad-manifest
@@ -143,6 +145,8 @@ plugins/transparent-ai-apprentice/
 
 核心入口：
 
+- [`image2-prompt-optimizer/SKILL.md`](plugins/transparent-ai-apprentice/skills/image2-prompt-optimizer/SKILL.md)：首次生成前的能力路由与提示词优化。
+- [`compile-image2-initial-prompt.mjs`](plugins/transparent-ai-apprentice/scripts/compile-image2-initial-prompt.mjs)：生成可验证的 Image2 首次提示词指导包。
 - [`packaging-design-workflow.mjs`](plugins/transparent-ai-apprentice/scripts/packaging-design-workflow.mjs)：八阶段包装状态机。
 - [`create-transparent-sketch-overlay-kit.mjs`](plugins/transparent-ai-apprentice/scripts/create-transparent-sketch-overlay-kit.mjs)：生成独立中文蒙版工作台。
 - [`aicad-handoff-adapter.mjs`](plugins/transparent-ai-apprentice/scripts/aicad-handoff-adapter.mjs)：明徒与 AICAD 的兼容及离线编译桥。
@@ -151,8 +155,8 @@ plugins/transparent-ai-apprentice/
 
 ## 人工测试建议
 
-1. 用一个真实产品提出包装需求，故意漏掉重量或材料厚度，确认系统继续追问且不能提前进入 CAD。
-2. 生成中文 Image2 样图，检查中文、尺寸表、结构分区和整体版式。
+1. 用一个真实产品提出包装需求，故意漏掉尺寸，确认首次提示词指导包保持 `readyForGeneration=false`。
+2. 补齐尺寸并记录方案，检查自动生成的 `image2-initial-prompt-guidance.json` 后再生成中文 Image2 样图。
 3. 在审校台分别使用五种标注工具，测试撤销、重做、刷新恢复草稿、手机触控和只读回放。
 4. 提交一条“只改上盖搭接方向，保留底部缓冲”的局部修改，确认未标注区域不被重绘。
 5. 篡改 AICAD 请求或结果哈希，确认交接被拒绝。
@@ -174,8 +178,9 @@ plugins/transparent-ai-apprentice/
 
 首版发布门槛包括：
 
-- 插件完整性检查：349 项。
-- 包装状态机烟测：20 项，最终进入 `final_teacher_review`。
+- 插件完整性检查：352 项。
+- Image2 首次提示词优化器：18 项。
+- 包装状态机烟测：29 项，包含提示词包篡改拦截并最终进入 `final_teacher_review`。
 - 蒙版工作台真实 Chromium 烟测：7 项，覆盖桌面、手机和交互状态。
 - AICAD 集成测试：6 项；适配器烟测：10 项；集成清单：87 个文件哈希。
 - AICAD 上游包：1.2.0，41 项核心与回归测试；真实宿主证据按历史证据标记，不伪装成本次执行。
