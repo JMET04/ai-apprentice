@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 
 const root = resolve(import.meta.dirname, "..");
 const workflow = join(root, "scripts", "packaging-design-workflow.mjs");
-const temp = mkdtempSync(join(tmpdir(), "mingtu-packaging-workflow-"));
+const smokeParent = resolve(root, "..", "..", ".ta-smoke");
+mkdirSync(smokeParent, { recursive: true });
+const temp = mkdtempSync(join(smokeParent, "mingtu-packaging-workflow-"));
 
 function run(argumentsList, expected = 0) {
-  const result = spawnSync(process.execPath, [workflow, ...argumentsList], { cwd: root, encoding: "utf8" });
+  const result = spawnSync(process.execPath, [workflow, ...argumentsList], { cwd: root, encoding: "utf8", env: { ...process.env, TEMP: smokeParent, TMP: smokeParent } });
   assert.equal(result.status, expected, result.stderr || result.stdout);
   return result.stdout ? JSON.parse(result.stdout) : JSON.parse(result.stderr);
 }

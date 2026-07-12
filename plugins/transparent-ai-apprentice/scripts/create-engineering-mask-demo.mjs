@@ -18,10 +18,9 @@ const outputDir = argValue("--output-dir", join(repoRoot, ".transparent-apprenti
 if (!existsSync(backdrop)) throw new Error(`Engineering demo backdrop is missing: ${backdrop}`);
 
 const result = spawnSync(process.execPath, [
-  join(__dirname, "create-transparent-sketch-overlay-kit.mjs"),
+  join(__dirname, "create-engineering-software-mask-workbench.mjs"),
   "--goal", "只修改工程对象 D04，不重画其他已确认内容",
   "--software", "AICAD / AutoCAD 工程图审校",
-  "--content-type", "engineering",
   "--demo-preset", "engineering_dimension_change",
   "--backdrop", backdrop,
   "--output-dir", outputDir

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -36,6 +36,8 @@ const requiredAdvancedNames = [
   "create_real_case_pilot_intake",
   "create_packaging_design_workflow",
   "create_transparent_sketch_overlay_kit",
+  "create_office_text_mask_workbench",
+  "create_engineering_software_mask_workbench",
   "validate_multimodal_surgical_mask_correction",
   "apply_surgical_office_text_edit",
   "resolve_learned_rule_conflicts"
@@ -250,16 +252,71 @@ const surgicalRoot = join(repoRoot, ".ta-smoke", "mcp-tool-surface-fast", "surgi
 mkdirSync(surgicalRoot, { recursive: true });
 const advancedEnv = { TRANSPARENT_AI_APPRENTICE_EXPOSE_ADVANCED_TOOLS: "1" };
 
-const engineeringKitResult = await withServer(advancedEnv, async (server) =>
+const originalImageKitResult = await withServer(advancedEnv, async (server) =>
   parseToolJson(
     await server.rpc(
       "tools/call",
       {
         name: "create_transparent_sketch_overlay_kit",
         arguments: {
+          goal: "Review the existing engineering image with the original overlay.",
+          software: "Image2 / AICAD",
+          backdrop: join(pluginRoot, "assets", "examples", "engineering-object-index.png"),
+          outputDir: join(surgicalRoot, "original-image-mask")
+        }
+      },
+      20000
+    )
+  )
+);
+const originalImageHtml = readFileSync(originalImageKitResult.browserOverlay, "utf8");
+check(
+  "Original engineering-image overlay remains the restored standalone workbench",
+  originalImageKitResult.ok === true &&
+    originalImageKitResult.format === "transparent_ai_transparent_sketch_overlay_kit_result_v1" &&
+    !originalImageHtml.includes("data-content-type=") &&
+    !originalImageHtml.includes('id="nativeLocator"') &&
+    !originalImageHtml.includes('id="objectId"'),
+  `overlay=${originalImageKitResult.browserOverlay}`
+);
+
+const officeMaskResult = await withServer(advancedEnv, async (server) =>
+  parseToolJson(
+    await server.rpc(
+      "tools/call",
+      {
+        name: "create_office_text_mask_workbench",
+        arguments: {
+          goal: "Replace only paragraph 2 text.",
+          software: "Microsoft Word",
+          demoPreset: "office_text_replace",
+          outputDir: join(surgicalRoot, "office-text-mask")
+        }
+      },
+      20000
+    )
+  )
+);
+const officeMaskHtml = readFileSync(officeMaskResult.browserOverlay, "utf8");
+check(
+  "Standalone Office text mask is callable through its own MCP tool",
+  officeMaskResult.format === "mingtu_office_text_mask_workbench_result_v1" &&
+    officeMaskResult.dedicatedMaskType === "text" &&
+    officeMaskHtml.includes('id="nativeLocator"') &&
+    !officeMaskHtml.includes('id="objectId"') &&
+    !officeMaskHtml.includes("data-content-type="),
+  `overlay=${officeMaskResult.browserOverlay}`
+);
+
+const engineeringKitResult = await withServer(advancedEnv, async (server) =>
+  parseToolJson(
+    await server.rpc(
+      "tools/call",
+      {
+        name: "create_engineering_software_mask_workbench",
+        arguments: {
           goal: "Only change engineering dimension D04 to 450 mm and preserve every other entity.",
           software: "AICAD / AutoCAD",
-          contentType: "engineering",
           demoPreset: "engineering_dimension_change",
           backdrop: join(pluginRoot, "assets", "examples", "engineering-object-index.png"),
           outputDir: join(surgicalRoot, "engineering-mask")
@@ -270,9 +327,10 @@ const engineeringKitResult = await withServer(advancedEnv, async (server) =>
   )
 );
 check(
-  "Advanced engineering mask tool creates a surgical D04 demonstration through MCP",
+  "Standalone engineering-software mask creates a surgical D04 demonstration through MCP",
   engineeringKitResult.ok === true &&
-    engineeringKitResult.contentType === "engineering" &&
+    engineeringKitResult.format === "mingtu_engineering_software_mask_workbench_result_v1" &&
+    engineeringKitResult.dedicatedMaskType === "engineering" &&
     engineeringKitResult.demoPreset === "engineering_dimension_change" &&
     engineeringKitResult.enforcesSurgicalEditAndOutsideMaskPreservation === true &&
     engineeringKitResult.reviewLocks?.softwareActionsExecuted === false,

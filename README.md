@@ -45,7 +45,9 @@ flowchart LR
 | 包装需求澄清与方案规划 | 已实现 | 八阶段状态机禁止跳过关键步骤 |
 | Image2 中文包装样图 | 已实现，需人工复核 | 依赖运行环境提供 Image2；图片用于视觉方案，不是工程尺寸真值 |
 | 尺寸、形状和制造自查 | 已实现，需工程复核 | 自动检查是交付前筛查，不是技术验收 |
-| 文字、图片与工程对象精准蒙版 | 已实现 | 修改区、保护区和参考关系分开记录，默认禁止因局部问题整体重生成 |
+| 原工程图片蒙版 | 已恢复并保持独立 | 延续原有画笔、圈选、框选、箭头和文字纠错，不加入内容类型切换 |
+| Word / Excel 文字蒙版 | 已实现，独立入口 | 绑定段落或单元格、原文和替换文字，不与图片蒙版混用 |
+| 工程软件对象蒙版 | 已实现，独立入口 | 绑定对象编号、参数、保护区和参考关系，不替换原工程图片蒙版 |
 | Word / Excel 原生点改 | 已实现 | Word 绑定段落，Excel 绑定单元格；源文件不覆盖，其他 OOXML 部件逐项验哈希 |
 | Image2 局部修改交接 | 已实现，需人工复核 | 只修改选中区域，外部差异超限即拒绝结果 |
 | 规则差异决策与问题标记 | 已实现 | 按上下文、具体性、老师例外和风险做决定，不静默丢弃规则 |
@@ -73,13 +75,13 @@ flowchart LR
 
 ### 5. 老师蒙版纠错
 
-明徒审校台先选择文字、图片或工程内容，再用自由画笔、圈选、框选、箭头和文字标出修改区、保护区或参考关系。文字模式绑定 Word `paragraph:N` 或 Excel `工作表!单元格`；工程模式绑定对象编号、动作、目标值、单位和约束。它同时提供撤销、重做、缩放、草稿恢复、只读回放、键盘和触控。
+蒙版分成三个独立入口。原工程图片审校台保持原版界面与行为；办公文字蒙版只处理 Word / Excel 原生文字，绑定 `paragraph:N` 或 `工作表!单元格`；工程软件蒙版只处理软件截图上的对象编号、动作、目标值、单位、保护区和参考关系。三套页面互不提供内容类型切换。
 
 纠错会导出 `mingtu_multimodal_surgical_mask_correction_v1` 兼容数据包，包含精确变更边界、禁止改动区域、原生对象定位器、前后对比要求和安全锁。Word / Excel 点改会生成独立输出和差异报告，证明源文件未覆盖且只有目标 OOXML 部件变化。
 
 ### 6. Image2 局部修改
 
-局部修改只针对 `change` 区域；`protect` 区域和所有未标注内容必须保持。图片检查蒙版外像素/感知差异，Office 检查未选中包部件，工程图检查未选中实体、参数、约束和拓扑。局部修改不可行时先停下，整体重生成只能作为单独候选交给老师选择，不能覆盖当前可行结果。
+各专用工作台都只修改明确目标：图片由原工程图片蒙版继续交给 Image2 局部修改；Office 检查未选中包部件；工程软件检查未选中实体、参数、约束和拓扑。局部修改不可行时先停下，整体重生成只能作为单独候选交给老师选择，不能覆盖当前可行结果。
 
 ### 7. AICAD 工程制图
 
@@ -139,6 +141,8 @@ plugins/transparent-ai-apprentice/
 ├─ .codex-plugin/             插件清单与中文入口
 ├─ .mcp.json                  明徒 MCP 与 AICAD MCP 服务
 ├─ assets/mask-workbench/     老师蒙版纠错台模板、样式和交互
+├─ assets/text-mask-workbench/ Word / Excel 文字修改蒙版
+├─ assets/engineering-software-mask-workbench/ 工程软件对象蒙版
 ├─ integrations/aicad-agent-v1/
 │  └─ plugin/aicad-agent/     完整 AICAD 1.2.0 集成
 ├─ schemas/                   包装会话、AICAD 请求与结果协议
@@ -151,7 +155,9 @@ plugins/transparent-ai-apprentice/
 - [`image2-prompt-optimizer/SKILL.md`](plugins/transparent-ai-apprentice/skills/image2-prompt-optimizer/SKILL.md)：首次生成前的能力路由与提示词优化。
 - [`compile-image2-initial-prompt.mjs`](plugins/transparent-ai-apprentice/scripts/compile-image2-initial-prompt.mjs)：生成可验证的 Image2 首次提示词指导包。
 - [`packaging-design-workflow.mjs`](plugins/transparent-ai-apprentice/scripts/packaging-design-workflow.mjs)：八阶段包装状态机。
-- [`create-transparent-sketch-overlay-kit.mjs`](plugins/transparent-ai-apprentice/scripts/create-transparent-sketch-overlay-kit.mjs)：生成独立中文蒙版工作台。
+- [`create-transparent-sketch-overlay-kit.mjs`](plugins/transparent-ai-apprentice/scripts/create-transparent-sketch-overlay-kit.mjs)：生成恢复后的原工程图片蒙版。
+- [`create-office-text-mask-workbench.mjs`](plugins/transparent-ai-apprentice/scripts/create-office-text-mask-workbench.mjs)：生成独立 Word / Excel 文字蒙版。
+- [`create-engineering-software-mask-workbench.mjs`](plugins/transparent-ai-apprentice/scripts/create-engineering-software-mask-workbench.mjs)：生成独立工程软件对象蒙版。
 - [`aicad-handoff-adapter.mjs`](plugins/transparent-ai-apprentice/scripts/aicad-handoff-adapter.mjs)：明徒与 AICAD 的兼容及离线编译桥。
 - [`mingtu-aicad-request-v1.schema.json`](plugins/transparent-ai-apprentice/schemas/mingtu-aicad-request-v1.schema.json)：严格 CAD 请求协议。
 - [`mingtu-aicad-result-v1.schema.json`](plugins/transparent-ai-apprentice/schemas/mingtu-aicad-result-v1.schema.json)：绑定请求和产物哈希的结果协议。
@@ -160,7 +166,7 @@ plugins/transparent-ai-apprentice/
 
 1. 用一个真实产品提出包装需求，故意漏掉尺寸，确认首次提示词指导包保持 `readyForGeneration=false`。
 2. 补齐尺寸并记录方案，检查自动生成的 `image2-initial-prompt-guidance.json` 后再生成中文 Image2 样图。
-3. 在审校台分别使用五种标注工具，测试撤销、重做、刷新恢复草稿、手机触控和只读回放。
+3. 在原工程图片审校台使用五种标注工具，确认没有文字或工程软件模式切换；再分别打开文字蒙版和工程软件蒙版。
 4. 提交一条“只改上盖搭接方向，保留底部缓冲”的局部修改，确认未标注区域不被重绘。
 5. 篡改 AICAD 请求或结果哈希，确认交接被拒绝。
 6. 在真实 CAD 宿主中打开输出，检查尺寸、闭合、刀线/压线、材料和保存重开。
@@ -185,7 +191,7 @@ plugins/transparent-ai-apprentice/
 - 自然沟通回归：36 项，覆盖中英文场景识别、语气纠偏、客服腔、空泛安慰、假装真人和依赖边界。
 - Image2 首次提示词优化器：18 项。
 - 包装状态机烟测：29 项，包含提示词包篡改拦截并最终进入 `final_teacher_review`。
-- 多模态蒙版工作台真实 Chromium 烟测：12 项，覆盖文字文档、图片、工程对象、修改/保护/参考区域、桌面和手机。
+- 原工程图片蒙版真实 Chromium 烟测：7 项；两个新增独立工作台：8 项；MCP 独立入口：12 项。
 - Word / Excel 原生点改：12 项；规则冲突决策：7 项。
 - AICAD 集成测试：6 项；适配器烟测：10 项；集成清单：87 个文件哈希。
 - AICAD 上游包：1.2.0，41 项核心与回归测试；真实宿主证据按历史证据标记，不伪装成本次执行。

@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 
 const root = resolve(import.meta.dirname, "..");
 const compiler = join(root, "scripts", "compile-image2-initial-prompt.mjs");
-const temp = mkdtempSync(join(tmpdir(), "image2-prompt-optimizer-"));
+const smokeParent = resolve(root, "..", "..", ".ta-smoke");
+mkdirSync(smokeParent, { recursive: true });
+const temp = mkdtempSync(join(smokeParent, "image2-prompt-optimizer-"));
 
 function compile(input, name) {
   const inputPath = join(temp, `${name}-input.json`);
@@ -15,7 +16,8 @@ function compile(input, name) {
   writeFileSync(inputPath, JSON.stringify(input), "utf8");
   const result = spawnSync(process.execPath, [compiler, "--input", inputPath, "--output", outputPath, "--library-root", join(temp, "missing-library")], {
     cwd: root,
-    encoding: "utf8"
+    encoding: "utf8",
+    env: { ...process.env, TEMP: smokeParent, TMP: smokeParent }
   });
   assert.equal(result.status, 0, result.stderr || result.stdout);
   return JSON.parse(readFileSync(outputPath, "utf8"));

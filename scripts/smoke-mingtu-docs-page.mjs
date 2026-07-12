@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 import { existsSync, mkdirSync } from "node:fs";
-import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { chromium } from "playwright";
 
 const pagePath = resolve("docs", "index.html");
-const output = join(tmpdir(), "mingtu-docs-page-smoke", String(Date.now()));
+const output = join(resolve(".ta-smoke"), "mingtu-docs-page-smoke", String(Date.now()));
 mkdirSync(output, { recursive: true });
+process.env.TEMP = output;
+process.env.TMP = output;
 const executablePath = [
   process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,
   "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",

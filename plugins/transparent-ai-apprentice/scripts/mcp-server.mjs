@@ -8152,7 +8152,7 @@ const tools = [
   },
   {
     name: "create_transparent_sketch_overlay_kit",
-    description: "Create a multimodal surgical mask workbench for precise text, image, or engineering-object corrections, with change/protect/reference regions plus 2D, perspective, and 3D hints.",
+    description: "Create the original transparent drawing overlay kit for teacher sketches over engineering images, including 2D planes, perspective cues, and 3D depth hints.",
     inputSchema: {
       type: "object",
       properties: {
@@ -8161,10 +8161,36 @@ const tools = [
         software: { type: "string", description: "Target software or app." },
         app: { type: "string", description: "Alias for software." },
         mode: { type: "string", description: "screen_2d, plane_2d, perspective_grid, depth_axis_3d, or 2d_3d." },
-        contentType: { type: "string", enum: ["text", "image", "engineering"], description: "Content being corrected with the mask." },
-        demoPreset: { type: "string", enum: ["engineering_dimension_change"], description: "Optional seeded review-only demonstration preset." },
         backdrop: { type: "string", description: "Optional local PNG/JPEG/WebP image to preload as the correction backdrop." },
         outputDir: { type: "string", description: "Optional output directory for the generated overlay kit." }
+      }
+    }
+  },
+  {
+    name: "create_office_text_mask_workbench",
+    description: "Create a standalone Word and Excel text mask workbench with native paragraph or cell locators, exact source text, replacement text, protection regions, and no whole-document rewrite.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        goal: { type: "string", description: "The exact Word or Excel text correction to teach." },
+        software: { type: "string", description: "Word, Excel, or another office editor." },
+        demoPreset: { type: "string", enum: ["office_text_replace"], description: "Optional paragraph replacement demonstration." },
+        backdrop: { type: "string", description: "Optional PNG/JPEG/WebP document screenshot." },
+        outputDir: { type: "string", description: "Optional output directory for the standalone text workbench." }
+      }
+    }
+  },
+  {
+    name: "create_engineering_software_mask_workbench",
+    description: "Create a standalone engineering-software object mask workbench for exact entity ids, dimensions, constraints, protection regions, and reference relations without replacing the original engineering-image overlay.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        goal: { type: "string", description: "The exact engineering-software object correction to teach." },
+        software: { type: "string", description: "CAD, modeling, drawing, or engineering software." },
+        demoPreset: { type: "string", enum: ["engineering_dimension_change"], description: "Optional D04 dimension-change demonstration." },
+        backdrop: { type: "string", description: "Optional engineering-software screenshot." },
+        outputDir: { type: "string", description: "Optional output directory for the standalone engineering-software workbench." }
       }
     }
   },
@@ -33370,11 +33396,29 @@ async function callTool(name, input = {}) {
     if (input.software) args.push("--software", input.software);
     if (input.app) args.push("--app", input.app);
     if (input.mode) args.push("--mode", input.mode);
-    if (input.contentType) args.push("--content-type", input.contentType);
-    if (input.demoPreset) args.push("--demo-preset", input.demoPreset);
     if (input.backdrop) args.push("--backdrop", input.backdrop);
     if (input.outputDir) args.push("--output-dir", input.outputDir);
     return textContent(runNodeScript("create-transparent-sketch-overlay-kit.mjs", args));
+  }
+
+  if (name === "create_office_text_mask_workbench") {
+    const args = [];
+    if (input.goal) args.push("--goal", input.goal);
+    if (input.software) args.push("--software", input.software);
+    if (input.demoPreset) args.push("--demo-preset", input.demoPreset);
+    if (input.backdrop) args.push("--backdrop", input.backdrop);
+    if (input.outputDir) args.push("--output-dir", input.outputDir);
+    return textContent(runNodeScript("create-office-text-mask-workbench.mjs", args));
+  }
+
+  if (name === "create_engineering_software_mask_workbench") {
+    const args = [];
+    if (input.goal) args.push("--goal", input.goal);
+    if (input.software) args.push("--software", input.software);
+    if (input.demoPreset) args.push("--demo-preset", input.demoPreset);
+    if (input.backdrop) args.push("--backdrop", input.backdrop);
+    if (input.outputDir) args.push("--output-dir", input.outputDir);
+    return textContent(runNodeScript("create-engineering-software-mask-workbench.mjs", args));
   }
 
   if (name === "validate_multimodal_surgical_mask_correction") {

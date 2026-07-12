@@ -538,6 +538,11 @@ const requiredFiles = [
   "scripts/compact-universal-observation-learning-events.mjs",
   "scripts/create-transparent-sketch-overlay-kit.mjs",
   "scripts/create-engineering-mask-demo.mjs",
+  "scripts/create-office-text-mask-demo.mjs",
+  "scripts/create-office-text-mask-workbench.mjs",
+  "scripts/create-engineering-software-mask-workbench.mjs",
+  "scripts/create-precise-content-mask-workbench.mjs",
+  "scripts/smoke-independent-mask-workbenches.mjs",
   "scripts/validate-multimodal-surgical-mask-correction.mjs",
   "scripts/surgical-office-text-edit.py",
   "scripts/smoke-surgical-office-text-edit.mjs",
@@ -549,6 +554,10 @@ const requiredFiles = [
   "assets/mask-workbench/design-tokens.json",
   "assets/examples/engineering-object-index.png",
   "schemas/multimodal-surgical-mask-correction.schema.json",
+  "assets/text-mask-workbench/index.template.html",
+  "assets/text-mask-workbench/app.js",
+  "assets/engineering-software-mask-workbench/index.template.html",
+  "assets/engineering-software-mask-workbench/app.js",
   "scripts/create-physical-world-spatial-grounding-pack.mjs",
   "scripts/smoke-physical-world-spatial-grounding-pack.mjs",
   "scripts/create-current-goal-shortest-teacher-evidence-pack.mjs",
@@ -3422,6 +3431,12 @@ const currentGoalNextTeacherConfirmationCockpitReceiptValidationSmokeText = read
 );
 const transparentOverlayText = readFileSync(join(pluginRoot, "scripts", "create-transparent-sketch-overlay-kit.mjs"), "utf8");
 const engineeringMaskDemoText = readFileSync(join(pluginRoot, "scripts", "create-engineering-mask-demo.mjs"), "utf8");
+const officeTextMaskTemplateText = readFileSync(join(pluginRoot, "assets", "text-mask-workbench", "index.template.html"), "utf8");
+const officeTextMaskScriptText = readFileSync(join(pluginRoot, "assets", "text-mask-workbench", "app.js"), "utf8");
+const engineeringSoftwareMaskTemplateText = readFileSync(join(pluginRoot, "assets", "engineering-software-mask-workbench", "index.template.html"), "utf8");
+const engineeringSoftwareMaskScriptText = readFileSync(join(pluginRoot, "assets", "engineering-software-mask-workbench", "app.js"), "utf8");
+const preciseContentMaskGeneratorText = readFileSync(join(pluginRoot, "scripts", "create-precise-content-mask-workbench.mjs"), "utf8");
+const independentMaskSmokeText = readFileSync(join(pluginRoot, "scripts", "smoke-independent-mask-workbenches.mjs"), "utf8");
 const multimodalSurgicalMaskSchemaText = readFileSync(join(pluginRoot, "schemas", "multimodal-surgical-mask-correction.schema.json"), "utf8");
 const multimodalSurgicalMaskValidationText = readFileSync(join(pluginRoot, "scripts", "validate-multimodal-surgical-mask-correction.mjs"), "utf8");
 const surgicalOfficeTextEditText = readFileSync(join(pluginRoot, "scripts", "surgical-office-text-edit.py"), "utf8");
@@ -8750,33 +8765,41 @@ const checks = [
     evidence: "Transparent overlay exports spatial sketch packets from the actual browser page, and default teach_apprentice can create the kit from natural 2D/3D sketch requests while keeping arbitrary software execution teacher-review-only"
   },
   {
-    name: "Multimodal surgical mask supports precise text image and engineering corrections without full redraw",
+    name: "Original engineering-image mask stays unchanged while Office and engineering-software masks are standalone",
     pass:
-      maskWorkbenchTemplateText.includes('data-content-type="text"') &&
-      maskWorkbenchTemplateText.includes('data-content-type="image"') &&
-      maskWorkbenchTemplateText.includes('data-content-type="engineering"') &&
-      maskWorkbenchTemplateText.includes('id="maskRole"') &&
-      maskWorkbenchTemplateText.includes('id="editScopePolicy"') &&
-      maskWorkbenchTemplateText.includes('id="engineeringObjectId"') &&
-      maskWorkbenchScriptText.includes("mingtu_multimodal_surgical_mask_correction_v1") &&
-      maskWorkbenchScriptText.includes("mingtu_surgical_edit_contract_v1") &&
-      maskWorkbenchScriptText.includes("changeOnlyInsideSelectedTargets: true") &&
-      maskWorkbenchScriptText.includes("rejectIfUnmarkedContentChanged: true") &&
-      maskWorkbenchScriptText.includes("replace_whole_artifact_for_local_issue_without_teacher_request") &&
+      !maskWorkbenchTemplateText.includes('data-content-type=') &&
+      !maskWorkbenchTemplateText.includes('id="nativeLocator"') &&
+      !maskWorkbenchTemplateText.includes('id="objectId"') &&
+      officeTextMaskTemplateText.includes("Word / Excel 文字修改蒙版") &&
+      officeTextMaskTemplateText.includes('id="nativeLocator"') &&
+      !officeTextMaskTemplateText.includes('data-content-type=') &&
+      !officeTextMaskTemplateText.includes('id="objectId"') &&
+      engineeringSoftwareMaskTemplateText.includes("工程软件对象修改蒙版") &&
+      engineeringSoftwareMaskTemplateText.includes('id="objectId"') &&
+      !engineeringSoftwareMaskTemplateText.includes('data-content-type=') &&
+      !engineeringSoftwareMaskTemplateText.includes('id="nativeLocator"') &&
+      officeTextMaskScriptText.includes("surfaceKind:'office_native_text'") &&
+      engineeringSoftwareMaskScriptText.includes("surfaceKind:'engineering_native_object'") &&
+      preciseContentMaskGeneratorText.includes("text-mask-workbench") &&
+      preciseContentMaskGeneratorText.includes("engineering-software-mask-workbench") &&
+      preciseContentMaskGeneratorText.includes("mingtu_office_text_mask_workbench_result_v1") &&
+      preciseContentMaskGeneratorText.includes("mingtu_engineering_software_mask_workbench_result_v1") &&
       multimodalSurgicalMaskSchemaText.includes("preserveAllUnmarkedContent") &&
       multimodalSurgicalMaskValidationText.includes("Every mask preserves content outside its boundary") &&
       engineeringMaskDemoText.includes("engineering_dimension_change") &&
       engineeringMaskDemoText.includes("wholeDrawingRegenerationAllowed: false") &&
+      independentMaskSmokeText.includes("Text and engineering software workbenches are separate generated artifacts") &&
+      mcpServerText.includes("create_office_text_mask_workbench") &&
+      mcpServerText.includes("create_engineering_software_mask_workbench") &&
       mcpServerText.includes("validate_multimodal_surgical_mask_correction") &&
-      mcpServerText.includes("contentType") &&
       packageText.includes("demo:engineering-mask"),
-    evidence: "One workbench now binds change/protect/reference masks to text, image, or engineering targets and rejects unrelated changes or silent full regeneration"
+    evidence: "The restored image overlay has no content switch; Office text and engineering-software corrections use separate assets, result formats, scripts, MCP tools, and browser regression"
   },
   {
     name: "Word and Excel text masks can execute native one-target edits with untouched-part proof",
     pass:
-      maskWorkbenchTemplateText.includes('id="textDocumentType"') &&
-      maskWorkbenchTemplateText.includes('id="textLocator"') &&
+      officeTextMaskTemplateText.includes('id="officeType"') &&
+      officeTextMaskTemplateText.includes('id="nativeLocator"') &&
       surgicalOfficeTextEditText.includes("paragraph:N") &&
       surgicalOfficeTextEditText.includes("SheetName!A1") &&
       surgicalOfficeTextEditText.includes("onlyExpectedNativePartChanged") &&

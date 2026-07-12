@@ -1,0 +1,29 @@
+{
+  "name": "MingTu Separate Surgical Masks v1",
+  "principle": "蒙版只表达修改范围、保护范围与参考关系；实际修改必须落到原生文字或原生工程对象。",
+  "colors": {
+    "canvas": "#E8ECEE",
+    "workspace": "#D3D9DD",
+    "surface": "#F8F9FA",
+    "raised": "#FFFFFF",
+    "ink": "#182126",
+    "muted": "#647178",
+    "border": "#C2CBD0",
+    "borderStrong": "#94A1A8",
+    "modify": "#D4473B",
+    "modifySoft": "#F9E9E7",
+    "protect": "#2D7A50",
+    "protectSoft": "#EAF5EF",
+    "reference": "#1769A6",
+    "referenceSoft": "#E5F1F8",
+    "warning": "#946200",
+    "warningSoft": "#FFF2D1"
+  },
+  "typography": {
+    "ui": "Noto Sans CJK SC, Source Han Sans SC, Microsoft YaHei UI, Microsoft YaHei, sans-serif",
+    "mono": "Cascadia Mono, SFMono-Regular, Consolas, monospace",
+    "document": "Source Han Serif SC, Noto Serif CJK SC, SimSun, serif"
+  },
+  "geometry": { "radius": 4, "panelRadius": 6, "appBar": 54, "toolbar": 46, "inspectorDesktop": 352 },
+  "motion": { "feedbackMs": 140, "panelMs": 180, "reducedMotion": true }
+}

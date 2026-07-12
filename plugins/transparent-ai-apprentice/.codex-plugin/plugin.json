@@ -8,9 +8,9 @@
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
-    "displayName": "\u660e\u5f92 AI",
-    "shortDescription": "\u770b\u5f97\u89c1\u6210\u957f\uff0c\u6559\u5f97\u4f1a\u505a\u4e8b\u3002",
-    "longDescription": "\u660e\u5f92 AI \u628a Codex \u53d8\u6210\u53ef\u5e26\u6559\u3001\u53ef\u7ea0\u9519\u3001\u53ef\u8ffd\u8e2a\u7684\u667a\u80fd\u5b66\u5f92\u3002\u5b83\u4f1a\u7528\u81ea\u7136\u3001\u76f4\u63a5\u3001\u4f53\u8d34\u4f46\u4e0d\u5047\u88c5\u771f\u4eba\u7684\u65b9\u5f0f\u6f84\u6e05\u548c\u7ea0\u9519\u3002\u6587\u5b57\u3001\u56fe\u7247\u548c\u5de5\u7a0b\u56fe\u5171\u7528\u5c40\u90e8\u4fee\u6539\u8499\u7248\uff1a\u4fee\u6539\u533a\u3001\u4fdd\u62a4\u533a\u548c\u53c2\u8003\u5173\u7cfb\u88ab\u5206\u522b\u8bb0\u5f55\uff0c\u672a\u6807\u6ce8\u5185\u5bb9\u9ed8\u8ba4\u4e0d\u53d8\u3002Word \u6bb5\u843d\u548c Excel \u5355\u5143\u683c\u53ef\u901a\u8fc7\u539f\u751f\u5b9a\u4f4d\u5668\u5b9a\u70b9\u4fee\u6539\uff0c\u5e76\u9a8c\u8bc1\u5176\u4ed6 Office \u90e8\u4ef6\u672a\u6539\u53d8\u3002\u5b66\u4f1a\u7684\u89c4\u5219\u51fa\u73b0\u5dee\u5f02\u65f6\u4f1a\u6309\u4e0a\u4e0b\u6587\u3001\u5177\u4f53\u6027\u548c\u8001\u5e08\u4f8b\u5916\u505a\u51b3\u7b56\uff0c\u5e76\u663e\u5f0f\u6807\u8bb0\u7591\u70b9\u3002Image2 \u4e0e AICAD \u6d41\u7a0b\u4ecd\u4fdd\u7559\u8bc1\u636e\u548c\u4eba\u5de5\u5ba1\u6838\u8fb9\u754c\u3002",
+    "displayName": "明徒 AI",
+    "shortDescription": "看得见成长，教得会做事。",
+    "longDescription": "明徒 AI 把 Codex 变成可带教、可纠错、可追踪的智能学徒。原有工程图片蒙版保持独立，继续用于图片上的画笔、圈选、框选、箭头和文字纠错。Word/Excel 文字修改与工程软件对象修改分别使用两套独立局部修改蒙版工作台，不在原蒙版中切换：文字版绑定段落或单元格定位器并验证未选中 Office 部件不变；工程软件版绑定对象编号、参数、约束、保护区和参考关系。学会的规则出现差异时会按上下文、具体性和老师例外做决策，并显式标记疑点。Image2 与 AICAD 流程仍保留证据和人工审核边界。",
     "developerName": "MingTu AI",
     "category": "Productivity",
     "capabilities": [
@@ -22,16 +22,18 @@
       "warm human communication",
       "Image2 initial prompt optimizer",
       "Image2 mask correction",
-      "text image and engineering surgical masks",
+      "original engineering image mask",
+      "standalone Office text mask",
+      "standalone engineering software object mask",
       "native Word paragraph and Excel cell targeted edits",
       "visible context-aware rule conflict decisions",
       "reviewed packaging-to-CAD workflow",
       "AICAD deterministic 2D and SolidWorks 3D"
     ],
     "defaultPrompt": [
-      "\u5e2e\u6211\u8bbe\u8ba1\u5305\u88c5\uff1a\u5148\u4f18\u5316\u9996\u6b21\u751f\u6210\u63d0\u793a\u8bcd\uff0c\u518d\u751f\u6210\u6837\u56fe\u8ba9\u6211\u7ea0\u9519\u3002",
-      "\u6211\u6765\u6f14\u793a\u4e00\u904d\uff0c\u4f60\u628a\u65b9\u6cd5\u5b66\u4f1a\u5e76\u8bb0\u6210\u5f85\u5ba1\u6838\u89c4\u5219\u3002",
-      "\u7ea0\u6b63\u4e0a\u6b21\u7ed3\u679c\uff1a\u6211\u4f1a\u5728\u56fe\u4e0a\u6807\u6ce8\uff0c\u4e5f\u4f1a\u8865\u5145\u6587\u5b57\u8bf4\u660e\u3002"
+      "帮我设计包装：先优化首次生成提示词，再生成样图让我纠错。",
+      "我来演示一遍，你把方法学会并记成待审核规则。",
+      "纠正上次结果：我会在图上标注，也会补充文字说明。"
     ]
   }
 }

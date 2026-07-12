@@ -21,9 +21,9 @@
 
 每个阶段保存输入、输出、验证和锁定状态。下一阶段只能在前置证据完整时执行。
 
-## 多模态精准纠错协议
+## 三套独立精准纠错入口
 
-蒙版工作台在浏览器内保存归一化坐标，不记录连续桌面视频。它支持文字、图片和工程对象，并把标注区分为修改、保护和参考。输出同时兼容 `mingtu_multimodal_surgical_mask_correction_v1`、`mingtu_teacher_mask_correction_v1` 和 `transparent_ai_sketch_overlay_packet_v1`。
+原工程图片蒙版保持原来的 `mask-workbench` 页面和 `create_transparent_sketch_overlay_kit` 入口，不加入文字或工程软件模式。Word / Excel 文字使用独立的 `text-mask-workbench` 和 `create_office_text_mask_workbench`；工程软件对象使用独立的 `engineering-software-mask-workbench` 和 `create_engineering_software_mask_workbench`。三个页面没有内容类型切换，共享的只有底层审校锁和可验证局部修改协议。
 
 `mingtu_surgical_edit_contract_v1` 默认只允许改变选中目标；图片检查蒙版外差异，Word / Excel 检查未选中 OOXML 部件，工程图检查未选中实体、参数、约束与拓扑。Word 使用段落定位器，Excel 使用工作表和单元格地址。涉及尺寸、角度、容差、材料和工艺的细节必须绑定数据、公式、约束或明确规则；缺少来源会阻止执行。整体重生成只能是单独保留的候选，不能覆盖当前可行版本。
 
