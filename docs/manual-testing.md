@@ -1,4 +1,4 @@
-# 明徒 AI 1.0 人工测试手册
+# AI 学徒 1.0 人工测试手册
 
 ## 测试原则
 
@@ -6,7 +6,7 @@
 
 ## 测试前检查
 
-- 运行 `npm ci`、`npm run typecheck`、`npm test` 和 `npm run verify:plugin`。
+- 运行 `npm ci`、`npm run typecheck`、`npm test` 和 `npm run verify:plugin`。npm 单命令默认通过 `run-with-workspace-temp.mjs` 使用项目盘临时目录。
 - 运行 `npm run smoke:image2-prompt-optimizer`、`npm run smoke:packaging-workflow` 和 `npm run smoke:mask-workbench`。
 - 运行 AICAD 清单、集成与交接烟测。
 - 准备一个真实产品的类型、长宽高、重量、材料偏好和运输条件。
@@ -67,11 +67,31 @@
 
 通过标准：两个页面路径、配置格式和导出格式不同；文字示例只修改 `paragraph:2`，工程软件示例只修改 `D04`，其他内容分别进入保护证明。
 
+## 场景四 A-1：真实提交、审核与结果回放
+
+运行 `npm run serve:mask-corrections`，再打开两个新增工作台并绘制至少一个修改区。提交后检查 `.transparent-apprentice/mask-corrections/store.json`：任务必须是 `pending_teacher_review`，包含 packet 哈希、事件和关闭的安全锁。停止服务后再次提交，页面必须显示“提交失败”和“待重试队列”，不能显示已保存。
+
+自动门禁：`npm run smoke:mask-correction-service` 与 `npm run smoke:mask-submission-browser`。
+
 ## 场景四 B：Word / Excel 原生点改
 
 Word 使用 `paragraph:2` 将唯一出现的“周五”替换为“周一”；Excel 使用 `进度表!B2` 将“待处理”替换为“已完成”。运行 `npm run smoke:office-surgical-edit`。
 
 通过标准：源 DOCX/XLSX 哈希不变；输出为新文件；Word 只有 `word/document.xml` 变化，Excel 只有目标工作表 XML 变化；原文不匹配时必须阻止修改而不是猜测。报告应把检查范围缩小到目标段落或单元格。
+
+继续测试 Word `table:1/row:1/cell:1/paragraph:1` 跨两个富文本 run 的替换，以及 Excel 合并区域锚点和共享富文本。非锚点合并单元格、公式单元格、原文不匹配和覆盖源文件必须失败关闭。
+
+## 场景四 B-1：AICAD 对象定点执行
+
+将工程对象蒙版任务审核为 `approved_for_separate_execution`，运行统一 MCP 工具 `manage_mask_correction` 的 `execute_aicad` 动作，或运行 `aicad-object-mask-adapter.mjs`。检查 D04 从 420 改为 450 mm、D08/D10 对象哈希不变、源计划未改、回滚副本哈希一致，并确认 `.aicad/.scr/.dxf/.audit.md/.manifest.json` 均存在。
+
+自动门禁：`npm run smoke:aicad-object-mask-adapter`。
+
+## 场景四 B-2：失败矩阵与性能
+
+- `npm run smoke:product-failure-matrix` 必须让 29 个危险场景全部按预期阻止。
+- `npm run benchmark:product` 必须记录 MCP 冷启动、30 工具高级面、蒙版页面、5000 段 Word、大并发、长序列、内存和 AICAD 编译指标。
+- 性能报告写入 `.ta-smoke/product-performance/performance-report.json`，失败矩阵写入 `.ta-smoke/product-failure-matrix/failure-matrix-report.json`。
 
 ## 场景四 C：规则差异决策
 
@@ -111,3 +131,20 @@ Word 使用 `paragraph:2` 将唯一出现的“周五”替换为“周一”；
 ## 结果记录
 
 每个问题至少记录：场景、复现步骤、预期、实际结果、截图/文件、严重级别、是否阻塞下一阶段和老师建议。涉及客户图纸时不要上传公开 Issue。
+
+## 场景八：宿主原生右键选区与连续纠错
+
+1. 在 Word 中选中一段文字并右键，确认原菜单没有被吞掉，桌面助手显示同一文档、原文和 COM Range。输入第一版意见并交给当前 Agent，确认只生成局部预览，未直接修改文件。
+2. 不关闭 Word，再补充第二版意见。检查选区 JSON 中 teacherInstructionRevision 递增，teacherInstructionHistory 同时保留两版意见，宿主文档保持打开。
+3. 默认勾选后台准备且不勾选屏幕控制。检查动作记录为 preparationMode=background、screenControlPolicy=disabled。只有老师主动勾选后，下一版才能记录 explicit_opt_in。
+4. 在 AutoCAD 2025 中先选实体，再按 Ctrl 选择边或面并右键。实体回退必须标识为 autocad_entity；真实子对象必须带 FullSubentityPath、SubentityType 和索引，不得把普通拾取点伪称为面。
+5. 用 manage_native_selection.create_workbench 打开包装/Office/工程工作台，在桌面和手机宽度检查菜单、信标、差异预览与安全锁。三类提交都必须真实进入老师审核队列，不能只显示成功文案。
+6. 老师选择 approved_for_separate_execution 后，分别调用 execute_word_live 或 execute_autocad_live。修改前必须重新匹配文档和原生目标；执行后文件保持打开且不自动保存，结果状态必须等待老师验收。
+
+自动门禁：npm run smoke:native-selection-agent-plugin、npm run smoke:word-native-selection-live、npm run smoke:aicad-managed-selection-bridge、npm run smoke:native-selection-workbench-v2。
+
+通过标准：所有推理仍由宿主 Agent 完成；没有独立模型 API、API Key 或桌面模型进程；精确选区、修订历史、后台模式、屏幕控制授权、预览、审核和撤销都有证据。
+
+真实 AutoCAD 2025 数据层烟测：npm run smoke:aicad-managed-runtime。该命令验证 Core Console 中的 LINE 实体、句柄定位、命令触发来源、几何快照、从 100 到 450 的真实线长事务，以及 3DSOLID 指定面的原生偏移事务；桌面 COM 调度、右键菜单与 Ctrl 子对象捕获仍按人工测试手册复核。
+
+真实 AutoCAD 桌面 COM 调度烟测：先运行 `npm run smoke:aicad-managed-runtime`，再运行 `npm run smoke:aicad-managed-desktop-live`。后者隐藏启动测试图纸、通过已安装插件执行原生 LINE 修改、不保存关闭，并验证未使用屏幕控制；运行前不得已有 AutoCAD 进程。

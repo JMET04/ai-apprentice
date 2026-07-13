@@ -31,6 +31,17 @@ function startServer(extraEnv = {}) {
   child.stderr.on("data", (chunk) => {
     stderr += chunk;
   });
+  child.once("exit", (code, signal) => {
+    if (pending.size === 0) return;
+    const detail = stderr.trim();
+    const error = new Error(
+      `MCP server exited before completing ${pending.size} request(s); code=${code ?? "null"}; signal=${signal ?? "none"}${
+        detail ? `; stderr=${detail}` : ""
+      }`
+    );
+    for (const request of pending.values()) request.reject(error);
+    pending.clear();
+  });
   child.stdout.on("data", (chunk) => {
     stdoutBuffer += chunk;
     const lines = stdoutBuffer.split(/\r?\n/);
@@ -56,8 +67,10 @@ function startServer(extraEnv = {}) {
   }
 
   async function stop() {
+    if (child.exitCode !== null || child.signalCode !== null) return;
+    const exited = new Promise((resolve) => child.once("exit", resolve));
     child.kill();
-    await new Promise((resolve) => child.once("exit", resolve));
+    await exited;
   }
 
   return { rpc, stop, stderr };
@@ -2979,6 +2992,74 @@ function writeOriginalGoalFinalCompletionGateEvidence(label) {
     allSoftwareCoverageComplete: false,
     locks: { reviewOnly: true, nativeUniversalExecution: false, goalComplete: false }
   });
+  const realLocalReadinessPackage = write("readiness/real-local-all-software-low-token-readiness-package.json", {
+    ok: true,
+    format: "transparent_ai_real_local_all_software_low_token_readiness_package_v1",
+    status: "waiting_for_teacher_review_before_registration_or_learning_memory",
+    counts: {
+      realLocalCandidates: 4,
+      cadOrSolidWorksCandidates: 1,
+      nonCadSolidWorksCandidates: 3,
+      nonCadSolidWorksLedgerRows: 3,
+      logSourceDiscoveryRows: 4,
+      logSourceDiscoveryMissingRows: 0
+    },
+    scopeEvidence: {
+      scopeClaim: "real_local_bounded_all_software_not_cad_solidworks_only",
+      realLocalCandidateRows: 4,
+      allRowsHaveCurrentSourceRoute: true,
+      boundedNotComplete: true
+    },
+    boundaries: {
+      allRowsHaveCurrentSourceRoute: true,
+      broadAllInstalledSoftwareComplete: false
+    },
+    locks: { reviewOnly: true, nativeUniversalExecution: false, goalComplete: false }
+  });
+  const teacherMethodContractReceiptValidation = write(
+    "teacher-method/teacher-method-execution-learning-contract-receipt-validation.json",
+    {
+      ok: true,
+      format: "transparent_ai_teacher_method_execution_learning_contract_receipt_validation_v1",
+      status: "teacher_method_contract_confirmed_waiting_for_reuse_result_proof",
+      readyForReuseResultProof: true,
+      blockers: [],
+      counts: { contractRouteRows: 4, receiptRouteRows: 4, confirmedMatchingRows: 4, blockers: 0 },
+      locks: {
+        reviewOnly: true,
+        validationDoesNotExecuteTargetSoftware: true,
+        validationDoesNotWriteMemory: true,
+        nativeUniversalExecution: false,
+        goalComplete: false
+      }
+    }
+  );
+  const teacherMethodReuseResultProofValidation = write(
+    "teacher-method/teacher-method-reuse-result-proof-validation.json",
+    {
+      ok: true,
+      format: "transparent_ai_teacher_method_reuse_result_proof_validation_v1",
+      status: "teacher_method_reuse_result_confirmed_ready_for_medium_runtime_reuse_gate",
+      readyForMediumRuntimeReuseGate: true,
+      repairRequired: false,
+      blockers: [],
+      proofSummary: {
+        teacherReviewedBeforeAfter: true,
+        teacherObservedImprovement: true,
+        ambiguityReducedOrAccuracyImproved: true,
+        improvementSummary: "The reviewed teacher method reduced ambiguity in the reuse run.",
+        remainingMismatchOrCorrection: ""
+      },
+      locks: {
+        reviewOnly: true,
+        validationDoesNotExecuteTargetSoftware: true,
+        validationDoesNotWriteMemory: true,
+        mediumRuntimeReuseEnabled: false,
+        nativeUniversalExecution: false,
+        goalComplete: false
+      }
+    }
+  );
   const unattendedAudit = write("unattended/all-software-unattended-learning-audit.json", {
     ok: true,
     format: "transparent_ai_all_software_unattended_learning_audit_v1",
@@ -3080,6 +3161,9 @@ function writeOriginalGoalFinalCompletionGateEvidence(label) {
   return {
     completionBlockerMatrix,
     lowTokenCoverageGate,
+    realLocalReadinessPackage,
+    teacherMethodContractReceiptValidation,
+    teacherMethodReuseResultProofValidation,
     unattendedAudit,
     sketchImplementationAudit,
     spatialIntentReceiptValidation,
@@ -13468,6 +13552,8 @@ async function callDefaultLearnedWorkAndStop() {
 }
 
 const teacherFacingNames = [
+  "manage_native_selection",
+  "manage_mask_correction",
   "teach_apprentice",
   "show_teaching_card",
   "run_apprentice_profile",
@@ -13476,7 +13562,7 @@ const teacherFacingNames = [
 ];
 
 const defaultList = await listTools();
-const advancedList = await listTools({ TRANSPARENT_AI_APPRENTICE_EXPOSE_ADVANCED_TOOLS: "1" });
+const advancedList = await listTools({ TRANSPARENT_AI_APPRENTICE_TOOL_MODE: "full" });
 const teachResult = await callDefaultTeachApprentice();
 const starterKitResult = await callDefaultStarterKit();
 const voiceKitResult = await callDefaultVoiceTeachingKit();
@@ -17838,9 +17924,9 @@ const checks = [
     evidence: `tools=${defaultNames.join(",")}`
   },
   {
-    name: "Advanced MCP surface remains available for agents",
+    name: "Full maintainer MCP surface remains available for deep regression",
     pass:
-      advancedList.mode === "advanced" &&
+      advancedList.mode === "full" &&
       advancedNames.length >= 300 &&
       advancedNames.includes("teach_apprentice") &&
       advancedNames.includes("continue_teaching") &&
@@ -33585,7 +33671,7 @@ const checks = [
   },
   {
     name: "Tool list documents how to enable advanced mode",
-    pass: defaultList.advancedToolsAvailableWithEnv === "TRANSPARENT_AI_APPRENTICE_EXPOSE_ADVANCED_TOOLS=1",
+    pass: defaultList.advancedToolsAvailableWithEnv === "TRANSPARENT_AI_APPRENTICE_TOOL_MODE=advanced",
     evidence: defaultList.advancedToolsAvailableWithEnv
   },
   {
@@ -34120,6 +34206,9 @@ const result = {
   checks
 };
 
+const resultPath = join(repoRoot, ".ta-smoke", "mcp-tool-surface-full-result.json");
+mkdirSync(dirname(resultPath), { recursive: true });
+writeFileSync(resultPath, `${JSON.stringify(result, null, 2)}\n`, "utf8");
 console.log(JSON.stringify(result, null, 2));
 if (result.status !== "passed") {
   process.exit(1);

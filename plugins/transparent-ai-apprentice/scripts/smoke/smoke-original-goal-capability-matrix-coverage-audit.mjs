@@ -15,7 +15,7 @@ function hasAll(text, tokens) {
 }
 
 const files = {
-  readme: read("README.md"),
+  readme: `${read("README.md")}\n${read("docs/internal-deep-route-catalog.md")}`,
   framework: read("TRANSPARENT_AI_APPRENTICE_FRAMEWORK_AND_LOGIC.md"),
   ragDirection: read("KNOWLEDGE_AUGMENTED_RAG_RESEARCH_DIRECTION.md"),
   mcpServer: read("scripts/mcp-server.mjs"),
@@ -144,6 +144,7 @@ const result = {
   capabilities,
   auditedSurfaces: [
     "README.md",
+    "docs/internal-deep-route-catalog.md",
     "TRANSPARENT_AI_APPRENTICE_FRAMEWORK_AND_LOGIC.md",
     "KNOWLEDGE_AUGMENTED_RAG_RESEARCH_DIRECTION.md",
     "scripts/mcp-server.mjs",

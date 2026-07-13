@@ -145,7 +145,7 @@ const consoleId = `${new Date().toISOString().replace(/[:.]/g, "-")}-${slug(goal
 const consoleDir = join(outputRoot, consoleId);
 mkdirSync(consoleDir, { recursive: true });
 
-const pluginReadme = read("README.md");
+const pluginReadme = `${read("README.md")}\n${read("docs/internal-deep-route-catalog.md")}`;
 const rootReadme = existsSync(join(repoRoot, "README.md")) ? readFileSync(join(repoRoot, "README.md"), "utf8") : "";
 const packageJsonText = existsSync(join(repoRoot, "package.json")) ? readFileSync(join(repoRoot, "package.json"), "utf8") : "";
 const mcpServerText = read("scripts/mcp-server.mjs");

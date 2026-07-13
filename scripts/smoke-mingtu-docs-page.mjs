@@ -43,7 +43,7 @@ try {
     await page.screenshot({ path: screenshot, fullPage: true });
     checks.push({
       name: `${viewport.name} docs page is complete and does not overflow`,
-      pass: metrics.bodyWidth <= metrics.viewportWidth + 1 && metrics.heroBottom < metrics.viewportHeight && metrics.brokenImages.length === 0 && metrics.parentRelativeLinks.length === 0 && metrics.h1 === "明徒 AI" && metrics.workflowItems === 8 && metrics.capabilityRows >= 7 && errors.length === 0,
+      pass: metrics.bodyWidth <= metrics.viewportWidth + 1 && metrics.heroBottom < metrics.viewportHeight && metrics.brokenImages.length === 0 && metrics.parentRelativeLinks.length === 0 && metrics.h1 === "AI 学徒" && metrics.workflowItems === 8 && metrics.capabilityRows >= 7 && errors.length === 0,
       evidence: { screenshot, metrics, errors }
     });
     await page.close();

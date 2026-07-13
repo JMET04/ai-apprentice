@@ -30,10 +30,10 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
       <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-line bg-white/92 px-4 py-5 backdrop-blur lg:block">
         <Link href="/" className="mb-8 flex items-center gap-3">
           <span className="grid size-10 place-items-center rounded-lg bg-apprentice-dark text-sm font-black text-white">
-            明
+            AI
           </span>
           <span>
-            <span className="block text-sm font-extrabold text-ink">明徒 AI</span>
+            <span className="block text-sm font-extrabold text-ink">AI 学徒</span>
             <span className="block text-xs text-slate-500">看得见成长，教得会做事</span>
           </span>
         </Link>
@@ -73,7 +73,7 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <p className="text-xs font-bold uppercase text-apprentice-teal">人类教学 {"->"} 学徒改进</p>
-              <h1 className="text-lg font-extrabold text-ink">明徒 AI 教学闭环</h1>
+              <h1 className="text-lg font-extrabold text-ink">AI 学徒教学闭环</h1>
             </div>
             <Link
               href="/public-beta"

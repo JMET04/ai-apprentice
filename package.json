@@ -8,6 +8,15 @@
   },
   "private": true,
   "description": "AI Apprentice is a teachable, correctable, and traceable assistant with reviewed Image2-to-AICAD packaging workflows.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JMET04/mingtu-ai.git"
+  },
+  "homepage": "https://github.com/JMET04/mingtu-ai#readme",
+  "bugs": {
+    "url": "https://github.com/JMET04/mingtu-ai/issues"
+  },
   "scripts": {
     "dev": "node scripts/run-with-workspace-temp.mjs -- next dev",
     "build": "node scripts/run-with-workspace-temp.mjs -- next build",

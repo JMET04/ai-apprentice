@@ -18,4 +18,4 @@
 
 ## 当前边界
 
-明徒 AI 首版是老师审核驱动的工程候选。`accepted=false`、`ruleEnabled=false` 和 `packagingGated=true` 是默认状态；自动化结果不改变这些状态。
+AI 学徒首版是老师审核驱动的工程候选。`accepted=false`、`ruleEnabled=false` 和 `packagingGated=true` 是默认状态；自动化结果不改变这些状态。

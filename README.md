@@ -1,16 +1,16 @@
 <div align="center">
 
-# 明徒 AI
+# AI 学徒
 
-**看得见成长，教得会做事。**
+**通过示范、纠错和审核，逐步学会做事。**
 
 可教学、可纠错、可追踪的智能学徒系统
 
 </div>
 
-![明徒 AI 老师蒙版纠错工作台](docs/assets/mingtu-mask-workbench-desktop.png)
+![AI 学徒老师蒙版纠错工作台](docs/assets/mingtu-mask-workbench-desktop.png)
 
-明徒 AI（MingTu AI）让用户像带教新同事一样培养 AI。它会先问清需求、规划方案，再执行和自查；用户可以通过文字、示范、截图或图上蒙版纠正结果。每次执行都会留下结构化步骤、证据、规则、置信度和人工复核点，纠错只会形成默认停用的规则草稿，不会悄悄变成自动权限。
+AI 学徒（AI Apprentice）让用户像带教新同事一样培养 AI。它会先问清需求、规划方案，再执行和自查；用户可以通过文字、示范、截图或图上蒙版纠正结果。每次执行都会留下结构化步骤、证据、规则、置信度和人工复核点，纠错只会形成默认停用的规则草稿，不会悄悄变成自动权限。
 
 首版重点打通了完整的包装设计教学闭环：
 
@@ -27,9 +27,9 @@ flowchart LR
   I -. 老师审核后复用 .-> A
 ```
 
-## 为什么叫明徒
+## 为什么叫 AI 学徒
 
-“明徒”同时表达两层含义：让智能学徒的学习和执行过程清楚可见，也保留“老师带徒弟”的产品关系。产品不是普通聊天机器人，也不是只给结果的黑盒自动化工具；它的核心是人能教、能改、能复核，AI 能把正确方法逐步沉淀下来。
+这个名字直接描述产品功能：它不是普通聊天机器人，也不是只给结果的黑盒自动化工具，而是一个能够被人教学、纠错和复核，并逐步沉淀正确方法的 AI 工作助手。
 
 ## 当前能力
 
@@ -48,9 +48,11 @@ flowchart LR
 | 原工程图片蒙版 | 已恢复并保持独立 | 延续原有画笔、圈选、框选、箭头和文字纠错，不加入内容类型切换 |
 | Word / Excel 文字蒙版 | 已实现，独立入口 | 绑定段落或单元格、原文和替换文字，不与图片蒙版混用 |
 | 工程软件对象蒙版 | 已实现，独立入口 | 绑定对象编号、参数、保护区和参考关系，不替换原工程图片蒙版 |
-| Word / Excel 原生点改 | 已实现 | Word 绑定段落，Excel 绑定单元格；源文件不覆盖，其他 OOXML 部件逐项验哈希 |
+| 蒙版任务提交与回放 | 已实现 | 提交进入持久任务、审核、重试和结果回放；离线时进入本地待重试队列，不显示假成功 |
+| Word / Excel 原生点改 | 已实现 | 支持 Word 段落、表格单元格和跨 run 富文本；支持 Excel 合并锚点与共享富文本；源文件不覆盖，其他 OOXML 部件逐项验哈希 |
 | Image2 局部修改交接 | 已实现，需人工复核 | 只修改选中区域，外部差异超限即拒绝结果 |
 | 规则差异决策与问题标记 | 已实现 | 按上下文、具体性、老师例外和风险做决定，不静默丢弃规则 |
+| AICAD 对象定点修改 | 已实现，需工程复核 | 首个适配器可把审核后的 D04 原生约束从 420 改为 450 mm，生成 AICAD/SCR/DXF，并验证 D08/D10 不变和精确回滚 |
 | AICAD 确定性二维工程图 | 已实现，需工程复核 | 严格请求/结果协议、哈希绑定和离线几何验证 |
 | SolidWorks 三维候选模型 | 已实现，需真实宿主复核 | 保留历史宿主证据；本次发布不声称完成现场验收 |
 | 自动技术验收或量产放行 | 不提供 | 必须由有权限的老师、工程师或组织流程完成 |
@@ -79,6 +81,8 @@ flowchart LR
 
 纠错会导出 `mingtu_multimodal_surgical_mask_correction_v1` 兼容数据包，包含精确变更边界、禁止改动区域、原生对象定位器、前后对比要求和安全锁。Word / Excel 点改会生成独立输出和差异报告，证明源文件未覆盖且只有目标 OOXML 部件变化。
 
+两个新增工作台的提交按钮已接入 `mask-correction-service.mjs`。服务保存任务、数据包哈希、审核决定、重试次数、执行结果和事件历史；服务不可用时页面明确报告失败，并把任务放入浏览器待重试队列。
+
 ### 6. Image2 局部修改
 
 各专用工作台都只修改明确目标：图片由原工程图片蒙版继续交给 Image2 局部修改；Office 检查未选中包部件；工程软件检查未选中实体、参数、约束和拓扑。局部修改不可行时先停下，整体重生成只能作为单独候选交给老师选择，不能覆盖当前可行结果。
@@ -88,6 +92,20 @@ flowchart LR
 确认后的尺寸、材料和纠错证据会复制到会话内的交接目录，使用相对路径、媒体类型和 SHA-256 哈希生成 `mingtu_aicad_request_v1`。AICAD 1.2.0 使用确定性几何生成二维候选工程图，并可准备受控的 AutoCAD 或 SolidWorks 宿主流程。
 
 CAD 回收会核对会话与请求绑定、生产者版本、请求哈希、输出路径范围和产物哈希。错误必须包含根因与修复建议；预防规则仍保持 `draft_disabled`。
+
+首个对象适配器 `aicad-object-mask-adapter.mjs` 已能消费审核通过的工程蒙版任务，局部修改 AICAD 原生约束计划并生成 `.aicad`、AutoCAD `.scr`、`.dxf`、审计报告和清单。每次修改先复制回滚点，完成后逐对象比较哈希，只有老师指定的对象可以变化。
+
+## 产品化验证
+
+- `npm run smoke:mask-correction-service`：持久提交、审核、重试与结果回放。
+- `npm run smoke:mask-submission-browser`：真实浏览器提交与离线待重试队列。
+- `npm run smoke:aicad-object-mask-adapter`：AICAD 对象修改、编译、验证与回滚。
+- `npm run smoke:multiround-learning`：第一次失败、老师纠正、第二次正确、跨会话记忆和禁用。
+- `npm run smoke:office-surgical-edit`：普通与复杂 Word/Excel 原生点改。
+- `npm run smoke:product-failure-matrix`：29 个真实 Office、CAD、蒙版和包装图失败场景。
+- `npm run benchmark:product`：冷启动、页面、大文件、并发、长序列、内存和 AICAD 性能基线。
+
+默认 MCP 只显示 7 个老师入口，高级模式显示 30 个任务型入口；388 个底层维护工具只在 `TRANSPARENT_AI_APPRENTICE_TOOL_MODE=full` 时列出。
 
 ### 8. 最终人工复核
 
@@ -139,7 +157,7 @@ npm run dev
 ```text
 plugins/transparent-ai-apprentice/
 ├─ .codex-plugin/             插件清单与中文入口
-├─ .mcp.json                  明徒 MCP 与 AICAD MCP 服务
+├─ .mcp.json                  AI 学徒 MCP 与 AICAD MCP 服务
 ├─ assets/mask-workbench/     老师蒙版纠错台模板、样式和交互
 ├─ assets/text-mask-workbench/ Word / Excel 文字修改蒙版
 ├─ assets/engineering-software-mask-workbench/ 工程软件对象蒙版
@@ -158,7 +176,7 @@ plugins/transparent-ai-apprentice/
 - [`create-transparent-sketch-overlay-kit.mjs`](plugins/transparent-ai-apprentice/scripts/create-transparent-sketch-overlay-kit.mjs)：生成恢复后的原工程图片蒙版。
 - [`create-office-text-mask-workbench.mjs`](plugins/transparent-ai-apprentice/scripts/create-office-text-mask-workbench.mjs)：生成独立 Word / Excel 文字蒙版。
 - [`create-engineering-software-mask-workbench.mjs`](plugins/transparent-ai-apprentice/scripts/create-engineering-software-mask-workbench.mjs)：生成独立工程软件对象蒙版。
-- [`aicad-handoff-adapter.mjs`](plugins/transparent-ai-apprentice/scripts/aicad-handoff-adapter.mjs)：明徒与 AICAD 的兼容及离线编译桥。
+- [`aicad-handoff-adapter.mjs`](plugins/transparent-ai-apprentice/scripts/aicad-handoff-adapter.mjs)：AI 学徒与 AICAD 的兼容及离线编译桥。
 - [`mingtu-aicad-request-v1.schema.json`](plugins/transparent-ai-apprentice/schemas/mingtu-aicad-request-v1.schema.json)：严格 CAD 请求协议。
 - [`mingtu-aicad-result-v1.schema.json`](plugins/transparent-ai-apprentice/schemas/mingtu-aicad-result-v1.schema.json)：绑定请求和产物哈希的结果协议。
 
@@ -187,13 +205,14 @@ plugins/transparent-ai-apprentice/
 
 首版发布门槛包括：
 
-- 插件完整性检查：358 项。
+- 插件完整性检查：363 项。
 - 自然沟通回归：36 项，覆盖中英文场景识别、语气纠偏、客服腔、空泛安慰、假装真人和依赖边界。
 - Image2 首次提示词优化器：18 项。
 - 包装状态机烟测：29 项，包含提示词包篡改拦截并最终进入 `final_teacher_review`。
-- 原工程图片蒙版真实 Chromium 烟测：7 项；两个新增独立工作台：8 项；MCP 独立入口：12 项。
-- Word / Excel 原生点改：12 项；规则冲突决策：7 项。
-- AICAD 集成测试：6 项；适配器烟测：10 项；集成清单：87 个文件哈希。
+- 原工程图片蒙版真实 Chromium 烟测：7 项；两个新增独立工作台：8 项；真实提交浏览器烟测：10 项；MCP 三层入口：14 项。
+- 蒙版任务服务：13 项；多轮学习收敛：12 项；Word / Excel 原生点改：20 项；规则冲突决策：7 项。
+- AICAD 集成测试：6 项；既有适配器烟测：10 项；首个对象修改适配器：14 项；集成清单：87 个文件哈希。
+- 真实产物失败矩阵：29 项；性能基准：8 项，覆盖冷启动、页面、大文件、并发、长序列、内存和 AICAD 编译。
 - AICAD 上游包：1.2.0，41 项核心与回归测试；真实宿主证据按历史证据标记，不伪装成本次执行。
 
 这些结果证明实现和锁定边界可重复验证，但不替代真实用户测试、工程复核或生产验收。
@@ -212,4 +231,4 @@ plugins/transparent-ai-apprentice/
 
 当前首版：`1.0.0`。
 
-明徒 AI 以 MIT License 发布。第三方或集成组件继续遵循其各自目录中的许可证与再分发说明。
+AI 学徒以 MIT License 发布。第三方或集成组件继续遵循其各自目录中的许可证与再分发说明。

@@ -48,7 +48,7 @@ mkdirSync(refreshDir, { recursive: true });
 
 const fullTargetText = readText("FULL_TARGET_DIRECTION_AND_TASK_LIST.md");
 const tlclDirectionText = readText("TLCL_OVERALL_DIRECTION.md");
-const readmeText = readText("README.md");
+const readmeText = `${readText("README.md")}\n${readText("docs/internal-deep-route-catalog.md")}`;
 
 const marketResponsePolicy = {
   format: "transparent_ai_tlcl_market_response_policy_v1",
@@ -171,7 +171,11 @@ const chain = [
     "TLCL"
   ]),
   fileStatus("TLCL_OVERALL_DIRECTION.md", ["Teachable Logic Contract Layer", "Medium Reasoning Runtime", "Claude, GPT, Gemini"]),
-  fileStatus("README.md", ["Overall Direction: TLCL", "RAG is scoped as an evidence layer", "create-tlcl-status-refresh"])
+  fileStatus("docs/internal-deep-route-catalog.md", [
+    "Overall Direction: TLCL",
+    "RAG is scoped as an evidence layer",
+    "create-tlcl-status-refresh"
+  ])
 ];
 
 const requiredConcepts = [

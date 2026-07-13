@@ -11914,7 +11914,7 @@ const checks = [
       originalGoalFinalCompletionGateSmokeText.includes("hasPerspective=false") &&
       originalGoalFinalCompletionGateSmokeText.includes("has3DDepth=false") &&
       originalGoalFinalCompletionGateSmokeText.includes(
-        "MCP advanced mode exposes and runs final completion gate with retained rollback evidence"
+        "MCP full maintainer mode exposes and runs final completion gate with retained rollback evidence"
       ) &&
       originalGoalFinalCompletionGateSmokeText.includes(
         "Default teach_apprentice routes final completion gate without claiming completion"

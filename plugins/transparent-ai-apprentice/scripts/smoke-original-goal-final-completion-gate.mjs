@@ -66,7 +66,7 @@ function startServer(extraEnv = {}) {
 }
 
 async function callAdvancedFinalCompletionGate() {
-  const server = startServer({ TRANSPARENT_AI_APPRENTICE_EXPOSE_ADVANCED_TOOLS: "1" });
+  const server = startServer({ TRANSPARENT_AI_APPRENTICE_TOOL_MODE: "full" });
   try {
     await server.rpc("initialize", {});
     server.rpc("notifications/initialized", {}).catch(() => {});
@@ -989,8 +989,8 @@ const checks = [
     readyGateResult.htmlPath
   ),
   check(
-    "MCP advanced mode exposes and runs final completion gate with retained rollback evidence",
-    mcpReadyGateResult.list.mode === "advanced" &&
+    "MCP full maintainer mode exposes and runs final completion gate with retained rollback evidence",
+    mcpReadyGateResult.list.mode === "full" &&
       advancedNames.includes("validate_original_goal_final_completion_gate") &&
       mcpReadyGateResult.result.format === "transparent_ai_original_goal_final_completion_gate_result_v1" &&
       mcpReadyGateResult.result.status === "ready_for_goal_completion_claim_after_teacher_acceptance" &&
