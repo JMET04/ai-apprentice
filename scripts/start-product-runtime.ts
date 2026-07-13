@@ -8,7 +8,7 @@ const nextBin = path.join(process.cwd(), "node_modules", "next", "dist", "bin", 
 const standaloneDir = path.join(process.cwd(), ".next", "standalone");
 const standaloneServer = path.join(standaloneDir, "server.js");
 const demoDatabaseUrl = `file:${path.join(process.cwd(), "prisma", "dev.db").replace(/\\/g, "/")}`;
-const databaseUrl = process.env.DATABASE_URL ?? demoDatabaseUrl;
+const databaseUrl = normalizeDatabaseUrl(process.env.DATABASE_URL);
 const productArtifactsDir = path.join(process.cwd(), "artifacts", "productization");
 const productRuntimeDir =
   getArg("--runtime-dir") ??
@@ -22,6 +22,20 @@ function getArg(name: string) {
   }
 
   return process.argv[index + 1] ?? null;
+}
+
+function normalizeDatabaseUrl(value: string | undefined) {
+  if (!value) {
+    return demoDatabaseUrl;
+  }
+
+  const relativeSqlitePath = value.match(/^file:(\.\.?[\\/].+)$/)?.[1];
+  if (!relativeSqlitePath) {
+    return value;
+  }
+
+  const absolutePath = path.resolve(process.cwd(), "prisma", relativeSqlitePath);
+  return `file:${absolutePath.replace(/\\/g, "/")}`;
 }
 
 function copyIfExists(from: string, to: string) {
