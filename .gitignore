@@ -6,6 +6,8 @@ __pycache__/
 dist/
 coverage/
 artifacts/
+!plugins/transparent-ai-apprentice/scripts/artifacts/
+!plugins/transparent-ai-apprentice/scripts/artifacts/*.mjs
 .transparent-apprentice/
 .ta/
 .ta-smoke/

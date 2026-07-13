@@ -20,6 +20,8 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
+      - name: Generate Prisma client
+        run: npm run db:generate
       - name: Typecheck
         run: npm run typecheck
       - name: Unit tests
