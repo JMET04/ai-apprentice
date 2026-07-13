@@ -292,7 +292,8 @@ function main() {
     valid.status === "recorded_needs_gate_verification" &&
       valid.copiedReceiptPath !== null &&
       valid.humanAcceptanceGate.status === "blocked_needs_human_review" &&
-      valid.humanAcceptanceGate.latestEvidenceKind === "automated_browser_smoke" &&
+      ["automated_browser_smoke", "not_saved_yet"].includes(valid.humanAcceptanceGate.latestEvidenceKind) &&
+      valid.humanAcceptanceGate.latestHumanReviewed === false &&
       locked(valid),
     `status=${valid.status}; copied=${Boolean(valid.copiedReceiptPath)}; gate=${valid.humanAcceptanceGate.status}; evidence=${valid.humanAcceptanceGate.latestEvidenceKind}`
   );
