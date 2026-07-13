@@ -47,17 +47,44 @@ jobs:
           do {
             try {
               $response = Invoke-RestMethod -Uri 'http://127.0.0.1:3000/api/health' -TimeoutSec 5
-              if ($response.responseMode -eq 'product_health_json_v1' -and $response.status -eq 'healthy') {
-                Write-Host "Product runtime is healthy at http://127.0.0.1:3000"
-                exit 0
-              }
-              $lastError = "Unexpected health payload: $($response | ConvertTo-Json -Compress)"
             } catch {
-              $lastError = $_.Exception.Message
+              if ($_.Exception.Response) {
+                $reader = New-Object IO.StreamReader($_.Exception.Response.GetResponseStream())
+                $response = $reader.ReadToEnd() | ConvertFrom-Json
+              } else {
+                $lastError = $_.Exception.Message
+                Start-Sleep -Seconds 2
+                continue
+              }
             }
+            $requiredChecks = @($response.checks | Where-Object { $_.name -in @('Database reachable', 'Stable product task exists') })
+            if (
+              $response.responseMode -eq 'product_health_json_v1' -and
+              $requiredChecks.Count -eq 2 -and
+              @($requiredChecks | Where-Object { $_.status -ne 'pass' }).Count -eq 0
+            ) {
+              Write-Host "Product runtime is ready for productization gates at http://127.0.0.1:3000"
+              exit 0
+            }
+            $lastError = "Runtime prerequisites are not ready: $($response | ConvertTo-Json -Compress)"
             Start-Sleep -Seconds 2
           } while ((Get-Date) -lt $deadline)
-          throw "Product runtime did not become healthy before productization gates: $lastError"
+          throw "Product runtime did not become ready before productization gates: $lastError"
 
       - name: Run productization gates
         run: npm run ci:productization:gates
+
+      - name: Verify final product health
+        shell: powershell
+        run: |
+          try {
+            $response = Invoke-RestMethod -Uri 'http://127.0.0.1:3000/api/health' -TimeoutSec 10
+          } catch {
+            if (-not $_.Exception.Response) { throw }
+            $reader = New-Object IO.StreamReader($_.Exception.Response.GetResponseStream())
+            $response = $reader.ReadToEnd() | ConvertFrom-Json
+          }
+          if ($response.responseMode -ne 'product_health_json_v1' -or $response.status -ne 'healthy') {
+            throw "Product runtime is not healthy after productization gates: $($response | ConvertTo-Json -Compress)"
+          }
+          Write-Host "Product runtime is healthy after productization gates ($($response.passed)/$($response.total))."
