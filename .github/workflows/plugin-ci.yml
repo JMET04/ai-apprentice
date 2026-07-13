@@ -9,6 +9,11 @@ on:
 permissions:
   contents: read
 
+env:
+  DATABASE_URL: file:./dev.db
+  AI_PROVIDER: mock
+  AI_PROVIDER_MANUAL_ACCEPTED: "false"
+
 jobs:
   verify-plugin:
     runs-on: windows-latest
@@ -20,8 +25,8 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
-      - name: Generate Prisma client
-        run: npm run db:generate
+      - name: Prepare demo database
+        run: npm run setup:demo
       - name: Typecheck
         run: npm run typecheck
       - name: Unit tests
