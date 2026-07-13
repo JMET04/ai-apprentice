@@ -220,16 +220,21 @@ push(
 
 push(
   checks,
-  "Productization CI workflow is present and waits for runtime health",
+  "Core Product CI workflow is present and checks runtime safety boundaries",
   exists(".github/workflows/productization-ci.yml", 500) &&
+    workflow.includes("name: Core Product CI") &&
     workflow.includes("node-version: \"22\"") &&
     workflow.includes("npm run build") &&
+    workflow.includes("npm run typecheck") &&
+    workflow.includes("npm test") &&
+    workflow.includes("npm run verify:manual-acceptance-classification") &&
+    workflow.includes("npm run verify:real-model-adapter-contract") &&
     workflow.includes("start:product") &&
     workflow.includes("http://127.0.0.1:3000/api/health") &&
     workflow.includes("product_health_json_v1") &&
-    workflow.includes("npm run ci:productization:gates") &&
-    !workflow.includes("AI_PROVIDER"),
-  `workflow=${exists(".github/workflows/productization-ci.yml", 500)}; node22=${workflow.includes("node-version: \"22\"")}; health=${workflow.includes("product_health_json_v1")}; gates=${workflow.includes("npm run ci:productization:gates")}`
+    workflow.includes("Packaging boundary remains locked") &&
+    !workflow.includes("npm run ci:productization:gates"),
+  `workflow=${exists(".github/workflows/productization-ci.yml", 500)}; core=${workflow.includes("name: Core Product CI")}; node22=${workflow.includes("node-version: \"22\"")}; health=${workflow.includes("product_health_json_v1")}; classification=${workflow.includes("npm run verify:manual-acceptance-classification")}; adapterLocks=${workflow.includes("npm run verify:real-model-adapter-contract")}; productizationGates=${workflow.includes("npm run ci:productization:gates")}`
 );
 
 push(

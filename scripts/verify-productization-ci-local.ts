@@ -142,8 +142,10 @@ function main() {
   push(
     checks,
     "Local productization CI scripts are self-contained and bounded",
-    packageJson?.scripts?.["ci:productization"] === "tsx scripts/run-productization-ci.ts" &&
-      packageJson.scripts?.["verify:productization-ci-local"] === "tsx scripts/verify-productization-ci-local.ts" &&
+    packageJson?.scripts?.["ci:productization"]?.endsWith("tsx scripts/run-productization-ci.ts") === true &&
+      packageJson.scripts?.["verify:productization-ci-local"]?.endsWith(
+        "tsx scripts/verify-productization-ci-local.ts"
+      ) === true &&
       scriptHasProductizationGates(gatesScript),
     `ci=${packageJson?.scripts?.["ci:productization"] ?? "missing"}; verify=${
       packageJson?.scripts?.["verify:productization-ci-local"] ?? "missing"
@@ -185,15 +187,23 @@ function main() {
 
   push(
     checks,
-    "GitHub workflow uses explicit runtime health wait and internal gates",
-    workflowText.includes("Invoke-RestMethod") &&
+    "GitHub workflow verifies reproducible core runtime and safety boundaries",
+    workflowText.includes("name: Core Product CI") &&
+      workflowText.includes("Invoke-RestMethod") &&
       workflowText.includes("http://127.0.0.1:3000/api/health") &&
       workflowText.includes("product_health_json_v1") &&
-      workflowText.includes("npm run ci:productization:gates") &&
+      workflowText.includes("npm run typecheck") &&
+      workflowText.includes("npm test") &&
+      workflowText.includes("npm run verify:manual-acceptance-classification") &&
+      workflowText.includes("npm run verify:real-model-adapter-contract") &&
+      workflowText.includes("Packaging boundary remains locked") &&
+      !workflowText.includes("npm run ci:productization:gates") &&
       !workflowText.includes("run: npm run ci:productization\n"),
-    `healthWait=${workflowText.includes("Invoke-RestMethod")}; gates=${workflowText.includes(
-      "npm run ci:productization:gates"
-    )}; outer=${workflowText.includes("run: npm run ci:productization\n")}`
+    `coreWorkflow=${workflowText.includes("name: Core Product CI")}; healthWait=${workflowText.includes(
+      "Invoke-RestMethod"
+    )}; classification=${workflowText.includes("npm run verify:manual-acceptance-classification")}; adapterLocks=${workflowText.includes(
+      "npm run verify:real-model-adapter-contract"
+    )}; productizationGates=${workflowText.includes("npm run ci:productization:gates")}`
   );
 
   const receiptChecks = receipt?.checks ?? [];

@@ -1,4 +1,4 @@
-name: Productization CI
+name: Core Product CI
 
 on:
   push:
@@ -14,8 +14,8 @@ env:
   AI_PROVIDER_MANUAL_ACCEPTED: "false"
 
 jobs:
-  bounded-beta-gates:
-    name: Bounded Beta Gates
+  core-product:
+    name: Core Product
     runs-on: windows-latest
     timeout-minutes: 30
 
@@ -34,6 +34,18 @@ jobs:
 
       - name: Prepare demo database
         run: npm run setup:demo
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Verify manual acceptance classification locks
+        run: npm run verify:manual-acceptance-classification
+
+      - name: Verify real-model adapter contract locks
+        run: npm run verify:real-model-adapter-contract
 
       - name: Build product runtime
         run: npm run build
@@ -57,34 +69,48 @@ jobs:
                 continue
               }
             }
-            $requiredChecks = @($response.checks | Where-Object { $_.name -in @('Database reachable', 'Stable product task exists') })
+            $requiredChecks = @($response.checks | Where-Object {
+              $_.name -in @(
+                'Database reachable',
+                'Stable product task exists',
+                'Real model adapter contract remains locked and verified',
+                'AI service boundary is mock',
+                'Packaging boundary remains locked'
+              )
+            })
             if (
               $response.responseMode -eq 'product_health_json_v1' -and
-              $requiredChecks.Count -eq 2 -and
+              $requiredChecks.Count -eq 5 -and
               @($requiredChecks | Where-Object { $_.status -ne 'pass' }).Count -eq 0
             ) {
-              Write-Host "Product runtime is ready for productization gates at http://127.0.0.1:3000"
+              Write-Host "Core product runtime is ready at http://127.0.0.1:3000"
               exit 0
             }
             $lastError = "Runtime prerequisites are not ready: $($response | ConvertTo-Json -Compress)"
             Start-Sleep -Seconds 2
           } while ((Get-Date) -lt $deadline)
-          throw "Product runtime did not become ready before productization gates: $lastError"
+          throw "Core product runtime did not become ready: $lastError"
 
-      - name: Run productization gates
-        run: npm run ci:productization:gates
-
-      - name: Verify final product health
+      - name: Verify runtime routes and locked boundaries
         shell: powershell
         run: |
-          try {
-            $response = Invoke-RestMethod -Uri 'http://127.0.0.1:3000/api/health' -TimeoutSec 10
-          } catch {
-            if (-not $_.Exception.Response) { throw }
-            $reader = New-Object IO.StreamReader($_.Exception.Response.GetResponseStream())
-            $response = $reader.ReadToEnd() | ConvertFrom-Json
+          $baseUrl = 'http://127.0.0.1:3000'
+          foreach ($route in @('/', '/manual-test', '/handoff', '/api/product-readiness', '/api/ai-service-status')) {
+            $routeResponse = Invoke-WebRequest -Uri "$baseUrl$route" -TimeoutSec 10 -UseBasicParsing
+            if ($routeResponse.StatusCode -ne 200) {
+              throw "Route $route returned $($routeResponse.StatusCode)."
+            }
           }
-          if ($response.responseMode -ne 'product_health_json_v1' -or $response.status -ne 'healthy') {
-            throw "Product runtime is not healthy after productization gates: $($response | ConvertTo-Json -Compress)"
+
+          $ai = Invoke-RestMethod -Uri "$baseUrl/api/ai-service-status" -TimeoutSec 10
+          if (
+            $ai.responseMode -ne 'ai_service_runtime_status_json_v1' -or
+            $ai.activeProvider -ne 'mock' -or
+            $ai.realModelReady -ne $false -or
+            $ai.safetyBoundary.accepted -ne $false -or
+            $ai.safetyBoundary.packagingGated -ne $true
+          ) {
+            throw "AI service boundary is not safely locked: $($ai | ConvertTo-Json -Compress)"
           }
-          Write-Host "Product runtime is healthy after productization gates ($($response.passed)/$($response.total))."
+
+          Write-Host 'Core routes are reachable and AI acceptance/packaging boundaries remain locked.'

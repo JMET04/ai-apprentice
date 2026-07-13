@@ -508,7 +508,7 @@ This source package is prepared for GitHub upload and bounded public-beta testin
 
 - Application source, scripts, Prisma schema/seed setup, plugin source, and product docs.
 - Public-beta packet and productization evidence under \`artifacts/productization/\`.
-- GitHub Actions Productization CI workflow under \`.github/workflows/productization-ci.yml\`; it builds, starts, and health-checks the product runtime before productization gates.
+- GitHub Actions Core Product CI workflow under \`.github/workflows/productization-ci.yml\`; it typechecks, tests, builds, starts, and checks the reproducible runtime and locked safety boundaries without manufacturing human-review evidence.
 - \`.env.example\` for local configuration.
 
 ## What is intentionally excluded
@@ -517,9 +517,9 @@ This source package is prepared for GitHub upload and bounded public-beta testin
 
 ## After Extracting Or Uploading To GitHub
 
-Before running commands, confirm Node \`>=22 <25\` and npm \`>=10\`; this matches \`package.json#engines\` and the Productization CI Node 22 workflow.
+Before running commands, confirm Node \`>=22 <25\` and npm \`>=10\`; this matches \`package.json#engines\` and the Core Product CI Node 22 workflow.
 
-1. Run \`npm run verify:new-repo-bootstrap\` before \`npm install\`; it is dependency-free and checks the source-only handoff boundary, first-read docs, Productization CI workflow, and release locks.
+1. Run \`npm run verify:new-repo-bootstrap\` before \`npm install\`; it is dependency-free and checks the source-only handoff boundary, first-read docs, Core Product CI workflow, and release locks.
 2. Run \`npm install\`.
 3. Create \`.env\` from \`.env.example\`: run \`node -e "require('node:fs').copyFileSync('.env.example','.env')"\` from any shell, or \`Copy-Item .env.example .env\` in PowerShell, or \`cp .env.example .env\` in bash.
 4. Run \`npm run typecheck\`.
@@ -553,9 +553,9 @@ Before running commands, confirm Node \`>=22 <25\` and npm \`>=10\`; this matche
 32. Run \`npm run build:real-model-trial-receipt-template\` and \`npm run verify:real-model-trial-receipt\`; process a filled copy with \`npm run intake:real-model-trial-return -- --receipt <path>\`, then run \`npm run verify:real-model-trial-return-intake\` before relying on real-provider trial evidence.
 33. Run \`npm run verify:public-beta\`.
 34. Run \`npm run build:product-delivery-index\` and \`npm run verify:product-delivery-index\` after the GitHub source package verifier passes to create the outer handoff pointer to the verified archive, including its \`package.json#scripts\` command contract and archive SHA-256.
-35. Run \`npm run ci:productization\` as the self-contained local gate before handing off a checkout; it builds, starts or reuses the selected host/port, waits for \`/api/health\`, runs the bounded productization gates against the same base URL, refreshes both live human-acceptance and public-beta tester preflights, validates the durable local CI receipt, stages the GitHub source package, verifies takeover-entry consistency against staged docs, rebuilds/verifies the final GitHub source package with that receipt, runs the dependency-free new-repository bootstrap check, then builds/verifies the product delivery index. GitHub Actions runs \`ci:productization:gates\` only after \`/api/health\` is healthy.
+35. Run \`npm run ci:productization\` as the evidence-aware local gate before handing off a checkout that already contains the required review receipts; it builds, starts or reuses the selected host/port, runs the bounded productization gates, refreshes preflights, validates the durable local CI receipt, and rebuilds the handoff packages. GitHub Actions intentionally runs only reproducible Core Product CI checks and never manufactures human-review evidence.
 36. When refreshing the GitHub upload zip separately from the full local CI, run \`npm run verify:productization-ci-local\`, \`npm run build:first-real-tester-launch\`, \`npm run verify:first-real-tester-launch\`, \`npm run build:first-real-tester-dispatch-packet\`, \`npm run verify:first-real-tester-dispatch-packet\`, \`npm run build:first-real-tester-send-bundle\`, \`npm run verify:first-real-tester-send-bundle\`, \`npm run build:first-real-tester-contact-readiness\`, \`npm run verify:first-real-tester-contact-readiness\`, \`npm run build:first-real-tester-send-execution-brief\`, \`npm run verify:first-real-tester-send-execution-brief\`, \`npm run build:first-real-tester-send-receipt-template\`, \`npm run verify:first-real-tester-send-receipt-template\`, \`npm run build:first-real-tester-final-go-no-go\`, \`npm run verify:first-real-tester-final-go-no-go\`, \`npm run build:first-real-tester-return-workbench\`, \`npm run verify:first-real-tester-return-workbench\`, \`npm run build:first-real-tester-return-gate\`, \`npm run verify:first-real-tester-return-gate\`, \`npm run package:github-source\`, \`npm run verify:product-takeover-entry\`, \`npm run package:github-source\`, \`npm run verify:github-source\`, \`npm run verify:new-repo-bootstrap -- --root artifacts/github-source-package/transparent-ai-apprentice-mcp\`, \`npm run build:product-delivery-index\`, and \`npm run verify:product-delivery-index\`; confirm the archive SHA-256 remains in the source verification and delivery index.
-37. After uploading to GitHub, confirm the Productization CI workflow passes, including the \`/api/health\` product runtime check, before inviting a tester from that checkout.
+37. After uploading to GitHub, confirm the Core Product CI workflow passes, including its runtime route and locked-boundary checks, before inviting a tester from that checkout.
 ## Release Boundary
 
 - The current public-beta packet is ready for bounded core-loop testing.
@@ -999,8 +999,8 @@ ${violations.join("\n")}`);
     },
     uploadChecklist: [
       "Extract the zip or upload its contents to a new GitHub repository root.",
-      "Run npm run verify:new-repo-bootstrap before npm install; it is dependency-free and checks the source-only handoff boundary, first-read docs, Productization CI workflow, and release locks.",
-      "Confirm Node >=22 <25 and npm >=10; these must match package.json#engines and the Productization CI Node 22 workflow.",
+      "Run npm run verify:new-repo-bootstrap before npm install; it is dependency-free and checks the source-only handoff boundary, first-read docs, Core Product CI workflow, and release locks.",
+      "Confirm Node >=22 <25 and npm >=10; these must match package.json#engines and the Core Product CI Node 22 workflow.",
       `Keep .env out of GitHub; create it from .env.example after checkout with node -e "require('node:fs').copyFileSync('.env.example','.env')" from any shell, or Copy-Item .env.example .env in PowerShell, or cp .env.example .env in bash.`,
       "Run npm install.",
       "Run npm run typecheck.",
@@ -1042,7 +1042,7 @@ ${violations.join("\n")}`);
       "Run npm run build:product-delivery-index and npm run verify:product-delivery-index after the GitHub source package verifier passes to create the outer handoff pointer to the verified archive, including its package.json#scripts command contract and archive SHA-256.",
       "Run npm run ci:productization as the self-contained local productization gate before handing off a checkout; it starts or reuses the product server, confirms /api/health, runs the bounded productization gates against the selected base URL, refreshes the live human-acceptance and public-beta tester preflights, verifies the local CI receipt, stages the GitHub source package, verifies takeover-entry consistency against staged docs, rebuilds/verifies the final GitHub source package with that receipt, runs the dependency-free new-repository bootstrap check, then builds/verifies the product delivery index.",
       "Run npm run verify:productization-ci-local, npm run build:first-real-tester-send-bundle, npm run verify:first-real-tester-send-bundle, npm run build:first-real-tester-contact-readiness, npm run verify:first-real-tester-contact-readiness, npm run build:first-real-tester-send-execution-brief, npm run verify:first-real-tester-send-execution-brief, npm run build:first-real-tester-send-receipt-template, npm run verify:first-real-tester-send-receipt-template, npm run build:first-real-tester-final-go-no-go, npm run verify:first-real-tester-final-go-no-go, npm run package:github-source, npm run verify:product-takeover-entry, npm run verify:project-takeover-assessment, npm run package:github-source, npm run verify:github-source, npm run verify:new-repo-bootstrap -- --root artifacts/github-source-package/transparent-ai-apprentice-mcp, npm run build:product-delivery-index, and npm run verify:product-delivery-index only when refreshing those handoff artifacts separately from local ci:productization; confirm the archive SHA-256 remains in the source verification and delivery index.",
-      "Confirm the Productization CI workflow passes in GitHub Actions, including the /api/health product runtime check and ci:productization:gates, before inviting a tester from that checkout."
+      "Confirm the Core Product CI workflow passes in GitHub Actions, including runtime route and locked-boundary checks, before inviting a tester from that checkout."
     ]
   };
 
