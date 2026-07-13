@@ -10,7 +10,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "..", "..", "..");
 const smokeParent = join(repoRoot, ".ta-smoke");
 mkdirSync(smokeParent, { recursive: true });
-const root = mkdtempSync(join(smokeParent, "mingtu-office-surgical-edit-"));
+const root = mkdtempSync(join(smokeParent, "ai-apprentice-office-surgical-edit-"));
 const editor = join(__dirname, "surgical-office-text-edit.py");
 const checks = [];
 
@@ -49,15 +49,15 @@ function request(contentType, locator, sourceText, replacementText, targetId) {
   };
   return {
     format: "transparent_ai_sketch_overlay_packet_v1",
-    workbenchFormat: "mingtu_teacher_mask_correction_v1",
-    modificationFormat: "mingtu_multimodal_surgical_mask_correction_v1",
+    workbenchFormat: "transparent_ai_apprentice_teacher_mask_correction_v1",
+    modificationFormat: "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1",
     activeContentType: "text",
     supportedContentTypes: ["text", "image", "engineering"],
     modificationTargets: [target],
     changeTargets: [target],
     preservationRegions: [],
     surgicalEditContract: {
-      format: "mingtu_surgical_edit_contract_v1",
+      format: "transparent_ai_apprentice_surgical_edit_contract_v1",
       policy: "surgical_only",
       selectedChangeTargetIds: [targetId],
       explicitProtectionRegionIds: [],
@@ -165,7 +165,7 @@ check("Mismatched source text blocks instead of guessing or rewriting", blocked.
 
 const failed = checks.filter((item) => !item.pass);
 console.log(JSON.stringify({
-  format: "mingtu_surgical_office_text_edit_smoke_v1",
+  format: "transparent_ai_apprentice_surgical_office_text_edit_smoke_v1",
   status: failed.length ? "failed" : "passed",
   root,
   passed: checks.length - failed.length,

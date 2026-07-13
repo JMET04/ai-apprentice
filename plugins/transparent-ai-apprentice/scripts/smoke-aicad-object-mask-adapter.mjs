@@ -19,7 +19,7 @@ const check = (name, pass, evidence = "") => checks.push({ name, pass: Boolean(p
 
 function packet(overrides = {}) {
   return {
-    format: "mingtu_multimodal_surgical_mask_correction_v1",
+    format: "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1",
     surfaceKind: "engineering_native_object",
     target: { objectType: "尺寸标注", objectId: "D04", action: "set_dimension", targetValue: 450, unit: "mm", constraints: "只修改 D04" },
     maskSemantics: { modify: [{ id: "D04-change" }], protect: [{ id: "D08-D10-protect" }], reference: [] },

@@ -2,6 +2,18 @@
 
 All notable changes to AI Apprentice are documented here.
 
+## 1.0.1 - 2026-07-13
+
+### Changed
+
+- Unified the repository, documentation, protocol identifiers, schemas, scripts, browser globals, screenshots, AICAD integration archive, and release metadata under the AI 学徒 / AI Apprentice name.
+- Renamed the GitHub repository target to `JMET04/ai-apprentice` and removed the former brand from current tracked files and packaged artifacts.
+
+### Verification
+
+- Rebuilt both the Codex plugin ZIP and the AICAD integration ZIP, then scanned archive names and contents for former-brand residue.
+- Re-ran plugin integrity, MCP surface, packaging, AICAD, mask workbench, documentation, unit, type, and production-build checks.
+
 ## 1.0.0 - 2026-07-12
 
 ### Added

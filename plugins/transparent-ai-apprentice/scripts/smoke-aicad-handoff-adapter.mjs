@@ -22,7 +22,7 @@ const fixturePath = resolve(
   "examples",
   "packaging-request.json"
 );
-const temp = mkdtempSync(join(tmpdir(), "mingtu-aicad-adapter-"));
+const temp = mkdtempSync(join(tmpdir(), "ai-apprentice-aicad-adapter-"));
 const request = JSON.parse(readFileSync(fixturePath, "utf8"));
 const requestPath = join(temp, "request.json");
 writeFileSync(requestPath, JSON.stringify(request, null, 2), "utf8");
@@ -33,7 +33,7 @@ assert.equal(preflight.locks.packagingGated, true);
 
 const planPath = join(pluginRoot, "runtime", "examples", "rectangle.plan.json");
 const result = runOfflineCompile({ requestPath, planPath, outputDir: join(temp, "output"), pluginRoot });
-assert.equal(result.format, "mingtu_aicad_result_v1");
+assert.equal(result.format, "transparent_ai_apprentice_aicad_result_v1");
 assert.equal(result.provenance.version, "1.2.0");
 assert.equal(result.provenance.imagePixelsUsedAsDimensions, false);
 assert.equal(result.status, "pass_with_host_skips");

@@ -20,7 +20,7 @@ node plugins/transparent-ai-apprentice/scripts/create-native-selection-workbench
 生成器在应用脚本之前注入：
 
 ```js
-window.__MINGTU_OVERLAY_CONFIG__ = {
+window.__AI_APPRENTICE_OVERLAY_CONFIG__ = {
   format: 'ai_apprentice_native_selection_workbench_config_v1',
   selectionId: 'selection-...',
   nativeSelection: {
@@ -45,11 +45,11 @@ window.__MINGTU_OVERLAY_CONFIG__ = {
 三页都提供：
 
 ```js
-globalThis.MingTuOverlay.validate();
-globalThis.MingTuOverlay.packet();
+globalThis.AIApprenticeOverlay.validate();
+globalThis.AIApprenticeOverlay.packet();
 ```
 
-`validate()` 在空蒙版、空意见、无效尺寸、预览过期或尚未进入审核步骤时返回失败。顶层 packet 使用 `mingtu_multimodal_surgical_mask_correction_v1`，并保持：
+`validate()` 在空蒙版、空意见、无效尺寸、预览过期或尚未进入审核步骤时返回失败。顶层 packet 使用 `transparent_ai_apprentice_multimodal_surgical_mask_correction_v1`，并保持：
 
 - `reviewOnly: true`
 - `accepted: false`

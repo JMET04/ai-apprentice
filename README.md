@@ -8,7 +8,7 @@
 
 </div>
 
-![AI 学徒老师蒙版纠错工作台](docs/assets/mingtu-mask-workbench-desktop.png)
+![AI 学徒老师蒙版纠错工作台](docs/assets/ai-apprentice-mask-workbench-desktop.png)
 
 AI 学徒（AI Apprentice）让用户像带教新同事一样培养 AI。它会先问清需求、规划方案，再执行和自查；用户可以通过文字、示范、截图或图上蒙版纠正结果。每次执行都会留下结构化步骤、证据、规则、置信度和人工复核点，纠错只会形成默认停用的规则草稿，不会悄悄变成自动权限。
 
@@ -65,7 +65,7 @@ flowchart LR
 
 ### 2. 深度方案
 
-根据需求选择包装结构，列出参数来源、结构关系、风险点、制造假设和验证计划。随后由 `image2-prompt-optimizer` 编译 `mingtu_image2_initial_prompt_guidance_v1`，把确认事实、保留项、修改项、版式、负面约束和检查项分开记录。
+根据需求选择包装结构，列出参数来源、结构关系、风险点、制造假设和验证计划。随后由 `image2-prompt-optimizer` 编译 `transparent_ai_apprentice_image2_initial_prompt_guidance_v1`，把确认事实、保留项、修改项、版式、负面约束和检查项分开记录。
 
 ### 3. Image2 中文样图
 
@@ -79,7 +79,7 @@ flowchart LR
 
 蒙版分成三个独立入口。原工程图片审校台保持原版界面与行为；办公文字蒙版只处理 Word / Excel 原生文字，绑定 `paragraph:N` 或 `工作表!单元格`；工程软件蒙版只处理软件截图上的对象编号、动作、目标值、单位、保护区和参考关系。三套页面互不提供内容类型切换。
 
-纠错会导出 `mingtu_multimodal_surgical_mask_correction_v1` 兼容数据包，包含精确变更边界、禁止改动区域、原生对象定位器、前后对比要求和安全锁。Word / Excel 点改会生成独立输出和差异报告，证明源文件未覆盖且只有目标 OOXML 部件变化。
+纠错会导出 `transparent_ai_apprentice_multimodal_surgical_mask_correction_v1` 兼容数据包，包含精确变更边界、禁止改动区域、原生对象定位器、前后对比要求和安全锁。Word / Excel 点改会生成独立输出和差异报告，证明源文件未覆盖且只有目标 OOXML 部件变化。
 
 两个新增工作台的提交按钮已接入 `mask-correction-service.mjs`。服务保存任务、数据包哈希、审核决定、重试次数、执行结果和事件历史；服务不可用时页面明确报告失败，并把任务放入浏览器待重试队列。
 
@@ -89,7 +89,7 @@ flowchart LR
 
 ### 7. AICAD 工程制图
 
-确认后的尺寸、材料和纠错证据会复制到会话内的交接目录，使用相对路径、媒体类型和 SHA-256 哈希生成 `mingtu_aicad_request_v1`。AICAD 1.2.0 使用确定性几何生成二维候选工程图，并可准备受控的 AutoCAD 或 SolidWorks 宿主流程。
+确认后的尺寸、材料和纠错证据会复制到会话内的交接目录，使用相对路径、媒体类型和 SHA-256 哈希生成 `transparent_ai_apprentice_aicad_request_v1`。AICAD 1.2.0 使用确定性几何生成二维候选工程图，并可准备受控的 AutoCAD 或 SolidWorks 宿主流程。
 
 CAD 回收会核对会话与请求绑定、生产者版本、请求哈希、输出路径范围和产物哈希。错误必须包含根因与修复建议；预防规则仍保持 `draft_disabled`。
 
@@ -177,8 +177,8 @@ plugins/transparent-ai-apprentice/
 - [`create-office-text-mask-workbench.mjs`](plugins/transparent-ai-apprentice/scripts/create-office-text-mask-workbench.mjs)：生成独立 Word / Excel 文字蒙版。
 - [`create-engineering-software-mask-workbench.mjs`](plugins/transparent-ai-apprentice/scripts/create-engineering-software-mask-workbench.mjs)：生成独立工程软件对象蒙版。
 - [`aicad-handoff-adapter.mjs`](plugins/transparent-ai-apprentice/scripts/aicad-handoff-adapter.mjs)：AI 学徒与 AICAD 的兼容及离线编译桥。
-- [`mingtu-aicad-request-v1.schema.json`](plugins/transparent-ai-apprentice/schemas/mingtu-aicad-request-v1.schema.json)：严格 CAD 请求协议。
-- [`mingtu-aicad-result-v1.schema.json`](plugins/transparent-ai-apprentice/schemas/mingtu-aicad-result-v1.schema.json)：绑定请求和产物哈希的结果协议。
+- [`ai-apprentice-aicad-request-v1.schema.json`](plugins/transparent-ai-apprentice/schemas/ai-apprentice-aicad-request-v1.schema.json)：严格 CAD 请求协议。
+- [`ai-apprentice-aicad-result-v1.schema.json`](plugins/transparent-ai-apprentice/schemas/ai-apprentice-aicad-result-v1.schema.json)：绑定请求和产物哈希的结果协议。
 
 ## 人工测试建议
 
@@ -229,6 +229,6 @@ plugins/transparent-ai-apprentice/
 
 ## 版本与许可
 
-当前首版：`1.0.0`。
+当前版本：`1.0.1`。
 
 AI 学徒以 MIT License 发布。第三方或集成组件继续遵循其各自目录中的许可证与再分发说明。

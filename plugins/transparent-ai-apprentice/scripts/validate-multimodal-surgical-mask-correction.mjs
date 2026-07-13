@@ -19,7 +19,7 @@ export function validateMultimodalSurgicalMask(packet) {
   const contract = packet?.surgicalEditContract || {};
   const locks = packet?.locks || {};
 
-  addCheck(checks, "Packet uses the multimodal surgical mask contract", packet?.modificationFormat === "mingtu_multimodal_surgical_mask_correction_v1", packet?.modificationFormat);
+  addCheck(checks, "Packet uses the multimodal surgical mask contract", packet?.modificationFormat === "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1", packet?.modificationFormat);
   addCheck(checks, "Content type is text image or engineering", ["text", "image", "engineering"].includes(packet?.activeContentType), packet?.activeContentType);
   addCheck(checks, "At least one exact change target exists", changeTargets.length > 0 && changeTargets.every((target) => target.role === "change"), `changeTargets=${changeTargets.length}`);
   addCheck(checks, "Every change target has complete teacher evidence", changeTargets.length > 0 && changeTargets.every((target) => target.completeness?.complete === true), changeTargets.filter((target) => !target.completeness?.complete).map((target) => `${target.id}:${target.completeness?.reason}`).join(", ") || "complete");
@@ -37,7 +37,7 @@ export function validateMultimodalSurgicalMask(packet) {
 
   const failed = checks.filter((check) => !check.pass);
   return {
-    format: "mingtu_multimodal_surgical_mask_validation_v1",
+    format: "transparent_ai_apprentice_multimodal_surgical_mask_validation_v1",
     status: failed.length ? "blocked" : "passed_review_contract",
     passed: failed.length === 0,
     checks,

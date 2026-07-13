@@ -8,7 +8,7 @@ import { chromium } from "playwright";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pluginRoot = resolve(__dirname, "..");
 const repoRoot = resolve(pluginRoot, "..", "..");
-const smokeRoot = join(repoRoot, ".ta-smoke", "mingtu-mask-workbench-smoke", String(Date.now()));
+const smokeRoot = join(repoRoot, ".ta-smoke", "ai-apprentice-mask-workbench-smoke", String(Date.now()));
 const outputRoot = join(smokeRoot, "kit");
 const screenshotRoot = join(smokeRoot, "screenshots");
 mkdirSync(screenshotRoot, { recursive: true });
@@ -66,7 +66,7 @@ try {
   desktop.on("console", (message) => { if (message.type() === "error") desktopErrors.push(message.text()); });
   desktop.on("pageerror", (error) => desktopErrors.push(error.message));
   await desktop.goto(pathToFileURL(generated.browserOverlay).href, { waitUntil: "load" });
-  await desktop.waitForFunction(() => Boolean(globalThis.MingTuOverlay));
+  await desktop.waitForFunction(() => Boolean(globalThis.AIApprenticeOverlay));
 
   await draw(desktop, "brush", [0.16, 0.72], [0.43, 0.45]);
   await draw(desktop, "ellipse", [0.42, 0.23], [0.65, 0.47]);
@@ -87,11 +87,11 @@ try {
 
   const desktopResult = await desktop.evaluate(() => ({
     packet: globalThis.packet(),
-    state: globalThis.MingTuOverlay.getState(),
+    state: globalThis.AIApprenticeOverlay.getState(),
     bodyWidth: document.body.scrollWidth,
     viewportWidth: innerWidth,
     status: document.querySelector("#submitStatus")?.textContent,
-    draft: Object.keys(localStorage).some((key) => key.startsWith("mingtu-overlay-draft:")),
+    draft: Object.keys(localStorage).some((key) => key.startsWith("ai-apprentice-overlay-draft:")),
     controls: document.querySelectorAll("[data-tool]").length
   }));
   const desktopScreenshot = join(screenshotRoot, "desktop.png");
@@ -115,7 +115,7 @@ try {
   );
   addCheck(
     "Export keeps visual correction review-only and preserves unmarked regions",
-    desktopResult.packet.workbenchFormat === "mingtu_teacher_mask_correction_v1" &&
+    desktopResult.packet.workbenchFormat === "transparent_ai_apprentice_teacher_mask_correction_v1" &&
       desktopResult.packet.teacherCorrection.preserveUnmarkedRegions === true &&
       desktopResult.packet.locks.accepted === false &&
       desktopResult.packet.locks.ruleEnabled === false &&
@@ -164,7 +164,7 @@ addCheck(
 const failed = checks.filter((check) => !check.pass);
 console.log(JSON.stringify({
   status: failed.length ? "failed" : "passed",
-  smoke: "mingtu_mask_workbench_browser_smoke_v1",
+  smoke: "transparent_ai_apprentice_mask_workbench_browser_smoke_v1",
   smokeRoot,
   generated,
   checks

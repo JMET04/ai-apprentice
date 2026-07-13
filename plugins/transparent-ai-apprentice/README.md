@@ -26,7 +26,7 @@ The compiler emits response guidance rather than a canned final answer. The styl
 
 The original `create_transparent_sketch_overlay_kit` and `assets/mask-workbench` remain the restored engineering-image overlay. They do not contain a text/image/engineering switch. Office text uses the standalone `create_office_text_mask_workbench` plus `assets/text-mask-workbench`; engineering software uses `create_engineering_software_mask_workbench` plus `assets/engineering-software-mask-workbench`. The dedicated pages have different result formats and do not show each other's fields.
 
-The two new workbenches still separate `change`, `protect`, and `reference` marks. Their `mingtu_surgical_edit_contract_v1` changes only selected targets, preserves every unmarked region, requires before/after comparison outside the mask, and blocks whole-artifact regeneration for a local issue unless the teacher chooses a separate regeneration candidate.
+The two new workbenches still separate `change`, `protect`, and `reference` marks. Their `transparent_ai_apprentice_surgical_edit_contract_v1` changes only selected targets, preserves every unmarked region, requires before/after comparison outside the mask, and blocks whole-artifact regeneration for a local issue unless the teacher chooses a separate regeneration candidate.
 
 Text masks are not treated as image OCR. A Word edit binds to `paragraph:N`; an Excel edit binds to `SheetName!A1`. `surgical-office-text-edit.py` writes a separate DOCX/XLSX, requires one exact source-text match, never overwrites the source, and hashes every package part to prove only `word/document.xml` or the selected worksheet XML changed. The report narrows any visual spot check to the changed paragraph or cell instead of asking the user to reread the whole file.
 
@@ -55,7 +55,7 @@ Apparent learned-rule conflicts are handled through `resolve_learned_rule_confli
 
 ## Image2 First-Generation Prompt Optimizer
 
-The packaged `image2-prompt-optimizer` skill runs before a first Image2 generation. It routes to existing capabilities, separates confirmed facts from assumptions, compiles `mingtu_image2_initial_prompt_guidance_v1`, and blocks packaging generation when product type or authoritative dimensions are missing.
+The packaged `image2-prompt-optimizer` skill runs before a first Image2 generation. It routes to existing capabilities, separates confirmed facts from assumptions, compiles `transparent_ai_apprentice_image2_initial_prompt_guidance_v1`, and blocks packaging generation when product type or authoritative dimensions are missing.
 
 ```bash
 node plugins/transparent-ai-apprentice/scripts/compile-image2-initial-prompt.mjs --input request.json --output prompt-guidance.json

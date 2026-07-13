@@ -45,8 +45,8 @@ const check = (name, pass, evidence = "") => checks.push({ name, pass: Boolean(p
 
 check(
   "Text and engineering software workbenches are separate generated artifacts",
-  textGenerated.format === "mingtu_office_text_mask_workbench_result_v1" &&
-    engineeringGenerated.format === "mingtu_engineering_software_mask_workbench_result_v1" &&
+  textGenerated.format === "transparent_ai_apprentice_office_text_mask_workbench_result_v1" &&
+    engineeringGenerated.format === "transparent_ai_apprentice_engineering_software_mask_workbench_result_v1" &&
     textGenerated.browserOverlay !== engineeringGenerated.browserOverlay,
   JSON.stringify({ text: textGenerated.browserOverlay, engineering: engineeringGenerated.browserOverlay })
 );
@@ -81,7 +81,7 @@ async function inspectWorkbench(generated, screenshotName) {
   page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto(pathToFileURL(generated.browserOverlay).href, { waitUntil: "load" });
-  await page.waitForFunction(() => Boolean(globalThis.MingTuOverlay));
+  await page.waitForFunction(() => Boolean(globalThis.AIApprenticeOverlay));
   const canvas = await page.locator("#overlayCanvas").boundingBox();
   if (!canvas) throw new Error("Overlay canvas is not visible");
   for (const [index, zone] of ["modify", "protect", "reference"].entries()) {
@@ -94,7 +94,7 @@ async function inspectWorkbench(generated, screenshotName) {
     await page.mouse.up();
   }
   const result = await page.evaluate(() => ({
-    packet: globalThis.MingTuOverlay.packet(),
+    packet: globalThis.AIApprenticeOverlay.packet(),
     bodyWidth: document.body.scrollWidth,
     viewportWidth: innerWidth,
     title: document.title,
@@ -116,7 +116,7 @@ try {
       text.bodyWidth <= text.viewportWidth + 1 &&
       text.officeFields === 4 &&
       text.engineeringFields === 0 &&
-      text.packet.format === "mingtu_multimodal_surgical_mask_correction_v1" &&
+      text.packet.format === "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1" &&
       text.packet.surfaceKind === "office_native_text" &&
       text.packet.source.nativeLocator === "paragraph:2" &&
       text.packet.correction.originalText === "周五" &&
@@ -137,7 +137,7 @@ try {
       engineering.bodyWidth <= engineering.viewportWidth + 1 &&
       engineering.officeFields === 0 &&
       engineering.engineeringFields === 4 &&
-      engineering.packet.format === "mingtu_multimodal_surgical_mask_correction_v1" &&
+      engineering.packet.format === "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1" &&
       engineering.packet.surfaceKind === "engineering_native_object" &&
       engineering.packet.target.objectId === "D04" &&
       engineering.packet.target.targetValue === 450 &&
@@ -175,7 +175,7 @@ try {
 
 const failed = checks.filter((item) => !item.pass);
 console.log(JSON.stringify({
-  format: "mingtu_independent_mask_workbenches_smoke_v1",
+  format: "transparent_ai_apprentice_independent_mask_workbenches_smoke_v1",
   status: failed.length ? "failed" : "passed",
   root,
   passed: checks.length - failed.length,

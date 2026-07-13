@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://mingtu.local/schemas/aicad-packaging-handoff.schema.json",
-  "title": "Legacy MingTu to AICAD packaging handoff",
-  "description": "Deprecated compatibility schema. New integrations must use mingtu-aicad-request-v1.schema.json and validate the bound result with mingtu-aicad-result-v1.schema.json.",
-  "$comment": "Kept for reading pre-1.0 review artifacts only; the 1.0 workflow emits mingtu_aicad_request_v1.",
+  "$id": "https://ai-apprentice.local/schemas/aicad-packaging-handoff.schema.json",
+  "title": "Legacy AI Apprentice to AICAD packaging handoff",
+  "description": "Deprecated compatibility schema. New integrations must use ai-apprentice-aicad-request-v1.schema.json and validate the bound result with ai-apprentice-aicad-result-v1.schema.json.",
+  "$comment": "Kept for reading pre-1.0 review artifacts only; the 1.0 workflow emits transparent_ai_apprentice_aicad_request_v1.",
   "type": "object",
   "required": ["format", "sessionId", "targetPlugin", "requirements", "evidence", "truthPriority", "prohibitedInferences", "requiredValidation", "locks"],
   "properties": {
-    "format": { "const": "mingtu_aicad_packaging_handoff_v1" },
+    "format": { "const": "transparent_ai_apprentice_aicad_packaging_handoff_v1" },
     "sessionId": { "type": "string", "minLength": 1 },
     "targetPlugin": { "const": "aicad-agent" },
     "requirements": { "type": "object" },

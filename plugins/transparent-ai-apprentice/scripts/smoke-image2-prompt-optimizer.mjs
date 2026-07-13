@@ -30,7 +30,7 @@ const packaging = compile({
   dimensions: { length: 200, width: 120, height: 60, unit: "mm" },
   confirmedFacts: { material: "0.5 mm 白卡纸" }
 }, "packaging");
-assert.equal(packaging.format, "mingtu_image2_initial_prompt_guidance_v1");
+assert.equal(packaging.format, "transparent_ai_apprentice_image2_initial_prompt_guidance_v1");
 assert.equal(packaging.route.domain, "packaging");
 assert.equal(packaging.readyForGeneration, true);
 assert.match(packaging.prompt, /200 × 120 × 60 mm/);
@@ -55,7 +55,7 @@ assert.equal(product.provenance.sourceThreadId, "019f09a9-90ab-76b2-aa1f-b7c9bdd
 
 console.log(JSON.stringify({
   ok: true,
-  smoke: "mingtu_image2_prompt_optimizer_smoke_v1",
+  smoke: "transparent_ai_apprentice_image2_prompt_optimizer_smoke_v1",
   checks: 18,
   routes: [packaging.route.domain, blockedPackaging.route.domain, ui.route.domain, product.route.domain],
   temp

@@ -1,6 +1,6 @@
 {
   "name": "transparent-ai-apprentice",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AI Apprentice is an Agent plugin for teachable, traceable visual correction, native host selections, reusable rules, and reviewed packaging-to-CAD workflows. It uses the host Agent and requires no separate model API or API key.",
   "author": {
     "name": "AI Apprentice"

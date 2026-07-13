@@ -135,7 +135,7 @@ const tools = [
       required: ["action"],
       properties: {
         action: { type: "string", enum: ["submit", "get", "list", "review", "retry", "execute_aicad", "record_result"] },
-        packet: { type: "object", description: "mingtu_multimodal_surgical_mask_correction_v1 packet for submit." },
+        packet: { type: "object", description: "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1 packet for submit." },
         metadata: { type: "object", description: "Optional submission metadata." },
         id: { type: "string", description: "Correction id for get, review, retry, or record_result." },
         decision: { type: "string", enum: ["needs_changes", "approved_for_separate_execution", "blocked"] },
@@ -8296,7 +8296,7 @@ const tools = [
       type: "object",
       required: ["input"],
       properties: {
-        input: { type: "string", description: "Path to a mingtu_multimodal_surgical_mask_correction_v1 compatible packet." },
+        input: { type: "string", description: "Path to a transparent_ai_apprentice_multimodal_surgical_mask_correction_v1 compatible packet." },
         output: { type: "string", description: "Optional validation report path." }
       }
     }
@@ -8334,7 +8334,7 @@ const tools = [
       type: "object",
       properties: {
         action: { type: "string", description: "create, update-requirements, record-plan, record-sample, record-self-check, record-correction, record-local-edit, prepare-cad-handoff, or record-cad-result." },
-        session: { type: "string", description: "Existing mingtu_packaging_design_session_v1 path for every action except create." },
+        session: { type: "string", description: "Existing transparent_ai_apprentice_packaging_design_session_v1 path for every action except create." },
         request: { type: "string", description: "Teacher's packaging request." },
         productType: { type: "string", description: "Product and packaging/box type." },
         length: { type: "number", description: "Confirmed internal/product length." },

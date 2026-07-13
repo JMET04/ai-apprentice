@@ -8,7 +8,7 @@ const root = resolve(import.meta.dirname, "..");
 const workflow = join(root, "scripts", "packaging-design-workflow.mjs");
 const smokeParent = resolve(root, "..", "..", ".ta-smoke");
 mkdirSync(smokeParent, { recursive: true });
-const temp = mkdtempSync(join(smokeParent, "mingtu-packaging-workflow-"));
+const temp = mkdtempSync(join(smokeParent, "ai-apprentice-packaging-workflow-"));
 
 function run(argumentsList, expected = 0) {
   const result = spawnSync(process.execPath, [workflow, ...argumentsList], { cwd: root, encoding: "utf8", env: { ...process.env, TEMP: smokeParent, TMP: smokeParent } });
@@ -39,13 +39,13 @@ assert.notEqual(skipped.status, 0);
 assert.match(skipped.stderr, /Stage skipping is blocked/);
 
 const plan = join(temp, "plan.json");
-writeFileSync(plan, JSON.stringify({ format: "mingtu_packaging_solution_plan_v1" }), "utf8");
+writeFileSync(plan, JSON.stringify({ format: "transparent_ai_apprentice_packaging_solution_plan_v1" }), "utf8");
 const planned = run(["--action", "record-plan", "--session", sessionPath, "--artifact", plan]);
 assert.equal(planned.stage, "image2_sample_generation");
 assert.ok(planned.artifacts.initialPromptGuidance);
 assert.match(planned.artifacts.initialPromptGuidanceSha256, /^[a-f0-9]{64}$/);
 const initialPromptGuidance = JSON.parse(readFileSync(planned.artifacts.initialPromptGuidance, "utf8"));
-assert.equal(initialPromptGuidance.format, "mingtu_image2_initial_prompt_guidance_v1");
+assert.equal(initialPromptGuidance.format, "transparent_ai_apprentice_image2_initial_prompt_guidance_v1");
 assert.equal(initialPromptGuidance.readyForGeneration, true);
 assert.equal(initialPromptGuidance.route.domain, "packaging");
 assert.match(initialPromptGuidance.prompt, /200 × 120 × 60 mm/);
@@ -71,7 +71,7 @@ const requiredIds = [
   "image2_pixels_not_dimension_truth"
 ];
 writeFileSync(selfCheck, JSON.stringify({
-  format: "mingtu_packaging_sample_self_check_v1",
+  format: "transparent_ai_apprentice_packaging_sample_self_check_v1",
   sessionId: session.id,
   dimensionTruthSource: "teacher_or_engineering_data_only",
   checks: requiredIds.map((id) => ({ id, status: "pass", evidence: "fixture" }))
@@ -87,7 +87,7 @@ writeFileSync(edited, "edited", "utf8");
 assert.equal(run(["--action", "record-local-edit", "--session", sessionPath, "--artifact", edited]).stage, "cad_handoff");
 const handoffResult = run(["--action", "prepare-cad-handoff", "--session", sessionPath]);
 const handoff = JSON.parse(readFileSync(handoffResult.artifacts.cadHandoff, "utf8"));
-assert.equal(handoff.format, "mingtu_aicad_request_v1");
+assert.equal(handoff.format, "transparent_ai_apprentice_aicad_request_v1");
 assert.equal(handoff.engineeringTruth.imagePixelsUsedAsDimensions, false);
 assert.equal(handoff.evidence.image2Sample.pixelMeasurementsAllowed, false);
 assert.equal(handoff.safety.packagingGated, true);
@@ -95,7 +95,7 @@ assert.match(handoff.evidence.solutionPlan.sha256, /^[a-f0-9]{64}$/);
 
 const cadResult = join(temp, "cad-result.json");
 writeFileSync(cadResult, JSON.stringify({
-  format: "mingtu_aicad_result_v1",
+  format: "transparent_ai_apprentice_aicad_result_v1",
   handoffId: handoff.handoffId,
   requestSha256: handoffResult.artifacts.cadHandoff ? (await import("node:crypto")).createHash("sha256").update(readFileSync(handoffResult.artifacts.cadHandoff)).digest("hex") : "",
   status: "pass_with_host_skips",

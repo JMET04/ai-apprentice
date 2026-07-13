@@ -1,7 +1,7 @@
 import {initAssistant} from '../shared/assistant-v2.js';
 
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
-const cfg=window.__MINGTU_OVERLAY_CONFIG__||{};
+const cfg=window.__AI_APPRENTICE_OVERLAY_CONFIG__||{};
 const state=$('#officeState');
 const submit=$('#submitOffice');
 const back=$('#rollback');
@@ -150,13 +150,13 @@ back.onclick=()=>{
   $('#instruction').focus();
 };
 
-globalThis.MingTuOverlay={
+globalThis.AIApprenticeOverlay={
   validate(){
     if(!$('#instruction').value.trim())return{valid:false,message:'请先填写老师修改意见'};
     if(!previewReady||!reviewReady)return{valid:false,message:'请重新生成预览并进入老师审核步骤'};
     return{valid:true};
   },
-  packet(){return{format:'mingtu_multimodal_surgical_mask_correction_v1',surfaceKind:'office_native_selection',nativeSelection:{schema:'ai_apprentice_native_selection_v1',host:'word',documentId:cfg.documentId||'project-retro-docx',locator:'paragraph:12',range:{start:18,end:42},sourceText:$('#sourceText').textContent,styleContext:{paragraphStyle:'正文',font:'宋体',sizePt:11}},contextAction:{schema:'ai_apprentice_context_action_v1',action:'replace_native_text',instruction:$('#instruction').value,formatConstraint:$('#formatConstraint').value,replacementText:$('#replacementText').textContent},previewReady,submitted,reviewOnly:true,accepted:false,ruleEnabled:false,packagingGated:true}}
+  packet(){return{format:'transparent_ai_apprentice_multimodal_surgical_mask_correction_v1',surfaceKind:'office_native_selection',nativeSelection:{schema:'ai_apprentice_native_selection_v1',host:'word',documentId:cfg.documentId||'project-retro-docx',locator:'paragraph:12',range:{start:18,end:42},sourceText:$('#sourceText').textContent,styleContext:{paragraphStyle:'正文',font:'宋体',sizePt:11}},contextAction:{schema:'ai_apprentice_context_action_v1',action:'replace_native_text',instruction:$('#instruction').value,formatConstraint:$('#formatConstraint').value,replacementText:$('#replacementText').textContent},previewReady,submitted,reviewOnly:true,accepted:false,ruleEnabled:false,packagingGated:true}}
 };
 
 addEventListener('resize',drawRelation);

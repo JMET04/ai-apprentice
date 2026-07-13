@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://mingtu.local/schemas/mingtu-aicad-request-v1.schema.json",
+  "$id": "https://ai-apprentice.local/schemas/ai-apprentice-aicad-request-v1.schema.json",
   "title": "Strict AI Apprentice AICAD request",
   "type": "object",
   "additionalProperties": false,
@@ -113,7 +113,7 @@
   },
   "properties": {
     "format": {
-      "const": "mingtu_aicad_request_v1"
+      "const": "transparent_ai_apprentice_aicad_request_v1"
     },
     "handoffId": {
       "type": "string",

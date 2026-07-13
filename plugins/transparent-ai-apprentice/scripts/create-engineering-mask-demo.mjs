@@ -29,7 +29,7 @@ const result = spawnSync(process.execPath, [
 if (result.status !== 0) throw new Error(result.stderr || result.stdout || "Engineering mask demo generation failed");
 const generated = JSON.parse(result.stdout);
 process.stdout.write(`${JSON.stringify({
-  format: "mingtu_engineering_surgical_mask_demo_v1",
+  format: "transparent_ai_apprentice_engineering_surgical_mask_demo_v1",
   status: "ready_for_teacher_demo",
   ...generated,
   demonstration: {

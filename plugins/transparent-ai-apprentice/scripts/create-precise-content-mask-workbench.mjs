@@ -244,7 +244,7 @@ const packetSchema = {
   supportedModes: ["screen_2d", "plane_2d", "perspective_grid", "depth_axis_3d"],
   supportedContentTypes: [contentType],
   supportedMaskRoles: ["change", "protect", "reference"],
-  modificationFormat: "mingtu_multimodal_surgical_mask_correction_v1",
+  modificationFormat: "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1",
   strokeFields: ["id", "mode", "points", "color", "width", "semanticLabel", "targetAnchorId", "depthHint"],
   pointFields: ["x", "y", "t", "pressure", "zHint", "planeId"],
   relationshipFields: [
@@ -277,7 +277,7 @@ const packetSchema = {
 
 const samplePacket = {
   format: "transparent_ai_sketch_overlay_packet_v1",
-  modificationFormat: "mingtu_multimodal_surgical_mask_correction_v1",
+  modificationFormat: "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1",
   kitId,
   software,
   goal,
@@ -429,7 +429,7 @@ if (initialAnnotations.length) {
   const protectionRegions = modificationTargets.filter((target) => target.role === "protect");
   const referenceRelations = modificationTargets.filter((target) => target.role === "reference");
   Object.assign(samplePacket, {
-    workbenchFormat: "mingtu_teacher_mask_correction_v1",
+    workbenchFormat: "transparent_ai_apprentice_teacher_mask_correction_v1",
     activeContentType: contentType,
     supportedContentTypes: [contentType],
     modificationTargets,
@@ -437,7 +437,7 @@ if (initialAnnotations.length) {
     preservationRegions: protectionRegions,
     referenceRelations,
     surgicalEditContract: {
-      format: "mingtu_surgical_edit_contract_v1",
+      format: "transparent_ai_apprentice_surgical_edit_contract_v1",
       policy: "surgical_only",
       selectedChangeTargetIds: changeTargets.map((target) => target.id),
       explicitProtectionRegionIds: protectionRegions.map((target) => target.id),
@@ -702,7 +702,7 @@ function inlineJson(value) {
 }
 
 const workbenchConfig = {
-  format: contentType === "text" ? "mingtu_office_text_mask_workbench_config_v1" : "mingtu_engineering_software_mask_workbench_config_v1",
+  format: contentType === "text" ? "transparent_ai_apprentice_office_text_mask_workbench_config_v1" : "transparent_ai_apprentice_engineering_software_mask_workbench_config_v1",
   kitId,
   software,
   goal,
@@ -894,7 +894,7 @@ $Form.Add_KeyDown({
 `;
 
 const manifest = {
-  format: contentType === "text" ? "mingtu_office_text_mask_workbench_v1" : "mingtu_engineering_software_mask_workbench_v1",
+  format: contentType === "text" ? "transparent_ai_apprentice_office_text_mask_workbench_v1" : "transparent_ai_apprentice_engineering_software_mask_workbench_v1",
   kitId,
   goal,
   software,
@@ -955,7 +955,7 @@ writeFileSync(readmePath, [
     ? "打开 `transparent-sketch-overlay.html` 后，用框选和文字标出 Word 或 Excel 中需要修改的原生文字，并填写段落或单元格定位器、原文、新文和排版约束。它是独立的办公文字工作台，不会改变原来的工程图片蒙版。"
     : "打开 `transparent-sketch-overlay.html` 后，在工程软件截图上标出修改对象、保护对象和参考关系，并填写对象编号、动作、目标值、单位和约束。它是独立的工程软件工作台，不会改变原来的工程图片蒙版。",
   "",
-  "默认策略是只修改选中的目标，并保持未标注内容不变。导出的 `mingtu_multimodal_surgical_mask_correction_v1` 兼容包包含修改目标、保护区域、参考关系和外部零改动验证；局部修改不可行时也必须先停下，由老师决定是否查看单独的整体重生成候选。",
+  "默认策略是只修改选中的目标，并保持未标注内容不变。导出的 `transparent_ai_apprentice_multimodal_surgical_mask_correction_v1` 兼容包包含修改目标、保护区域、参考关系和外部零改动验证；局部修改不可行时也必须先停下，由老师决定是否查看单独的整体重生成候选。",
   "",
   "Image2 像素不是工程尺寸真值。所有重要细节都会进入 `transparent_ai_universal_detail_logic_contract_v1`；位置、方向、透视、深度、尺寸、材料与工艺必须绑定已确认的数据、约束或老师规则。缺少逻辑来源时，系统会停止执行并返回人工复核。",
   "",
@@ -978,7 +978,7 @@ writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), "utf8");
 
 console.log(JSON.stringify({
   ok: true,
-  format: contentType === "text" ? "mingtu_office_text_mask_workbench_result_v1" : "mingtu_engineering_software_mask_workbench_result_v1",
+  format: contentType === "text" ? "transparent_ai_apprentice_office_text_mask_workbench_result_v1" : "transparent_ai_apprentice_engineering_software_mask_workbench_result_v1",
   kitId,
   kitPath: manifestPath,
   teacherReadme: readmePath,

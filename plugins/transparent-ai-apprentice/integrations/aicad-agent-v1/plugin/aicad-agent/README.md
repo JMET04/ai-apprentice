@@ -1,6 +1,6 @@
 # aicad-agent 1.2.0
 
-Deterministic, origin-anchored CAD plugin for review-only MingTu integration. It compiles 2D AICAD plans to AICAD/SCR/DXF/audit artifacts, runs packaging dieline QA, and supports transactional SolidWorks 3D plans through an optional Windows host.
+Deterministic, origin-anchored CAD plugin for review-only AI Apprentice integration. It compiles 2D AICAD plans to AICAD/SCR/DXF/audit artifacts, runs packaging dieline QA, and supports transactional SolidWorks 3D plans through an optional Windows host.
 
 ## Runtime
 

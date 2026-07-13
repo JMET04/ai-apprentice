@@ -99,8 +99,8 @@ export function resolveCorrectionStorePath(path = "") {
 
 export function validateMaskCorrectionPacket(packet) {
   const errors = [];
-  if (packet?.format !== "mingtu_multimodal_surgical_mask_correction_v1") {
-    errors.push("format must be mingtu_multimodal_surgical_mask_correction_v1");
+  if (packet?.format !== "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1") {
+    errors.push("format must be transparent_ai_apprentice_multimodal_surgical_mask_correction_v1");
   }
   if (!allowedSurfaceKinds.has(packet?.surfaceKind)) {
     errors.push("surfaceKind must be office_native_text, engineering_native_object, or packaging_image_mask");

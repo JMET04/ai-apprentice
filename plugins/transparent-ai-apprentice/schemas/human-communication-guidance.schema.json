@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://mingtu.local/schemas/human-communication-guidance.schema.json",
-  "title": "MingTu Human Communication Guidance",
+  "$id": "https://ai-apprentice.local/schemas/human-communication-guidance.schema.json",
+  "title": "AI Apprentice Human Communication Guidance",
   "type": "object",
   "required": [
     "format",
@@ -17,7 +17,7 @@
     "readyForResponse"
   ],
   "properties": {
-    "format": { "const": "mingtu_human_communication_guidance_v1" },
+    "format": { "const": "transparent_ai_apprentice_human_communication_guidance_v1" },
     "version": { "const": 1 },
     "generatedAt": { "type": "string", "format": "date-time" },
     "sourceThreadId": { "const": "019ef3df-9927-7363-9036-7e68d06c7809" },

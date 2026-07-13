@@ -7,7 +7,7 @@
 - Parameterized dimension-chain QA; removed case-specific dimensional constants.
 - Added honest no-host status and true SolidWorks `--no-execute` offline plan export.
 - Unified component version metadata and removed personal SolidWorks SDK path.
-- Added strict MingTu request/result contracts, adapters, hashes and safety locks.
+- Added strict AI Apprentice request/result contracts, adapters, hashes and safety locks.
 
 ## 1.1.0
 

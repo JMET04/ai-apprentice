@@ -1,6 +1,6 @@
 {
   "name": "ai-apprentice",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "packageManager": "npm@11.12.1",
   "engines": {
     "node": ">=22 <25",
@@ -11,11 +11,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JMET04/mingtu-ai.git"
+    "url": "git+https://github.com/JMET04/ai-apprentice.git"
   },
-  "homepage": "https://github.com/JMET04/mingtu-ai#readme",
+  "homepage": "https://github.com/JMET04/ai-apprentice#readme",
   "bugs": {
-    "url": "https://github.com/JMET04/mingtu-ai/issues"
+    "url": "https://github.com/JMET04/ai-apprentice/issues"
   },
   "scripts": {
     "dev": "node scripts/run-with-workspace-temp.mjs -- next dev",
@@ -104,7 +104,7 @@
     "smoke:human-communication": "node scripts/run-with-workspace-temp.mjs -- node plugins/transparent-ai-apprentice/scripts/smoke-human-communication.mjs",
     "smoke:image2-prompt-optimizer": "node scripts/run-with-workspace-temp.mjs -- node plugins/transparent-ai-apprentice/scripts/smoke-image2-prompt-optimizer.mjs",
     "smoke:packaging-workflow": "node scripts/run-with-workspace-temp.mjs -- node plugins/transparent-ai-apprentice/scripts/smoke-packaging-design-workflow.mjs",
-    "smoke:mask-workbench": "node scripts/run-with-workspace-temp.mjs -- node plugins/transparent-ai-apprentice/scripts/smoke-mingtu-mask-workbench-browser.mjs",
+    "smoke:mask-workbench": "node scripts/run-with-workspace-temp.mjs -- node plugins/transparent-ai-apprentice/scripts/smoke-ai-apprentice-mask-workbench-browser.mjs",
     "demo:engineering-mask": "node scripts/run-with-workspace-temp.mjs -- node plugins/transparent-ai-apprentice/scripts/create-engineering-mask-demo.mjs",
     "demo:office-text-mask": "node scripts/run-with-workspace-temp.mjs -- node plugins/transparent-ai-apprentice/scripts/create-office-text-mask-demo.mjs",
     "serve:mask-corrections": "node scripts/run-with-workspace-temp.mjs -- node plugins/transparent-ai-apprentice/scripts/mask-correction-service.mjs",
@@ -117,7 +117,7 @@
     "smoke:office-surgical-edit": "node scripts/run-with-workspace-temp.mjs -- node plugins/transparent-ai-apprentice/scripts/smoke-surgical-office-text-edit.mjs",
     "smoke:rule-conflicts": "node scripts/run-with-workspace-temp.mjs -- node plugins/transparent-ai-apprentice/scripts/smoke-learned-rule-conflict-resolution.mjs",
     "smoke:independent-masks": "node scripts/run-with-workspace-temp.mjs -- node plugins/transparent-ai-apprentice/scripts/smoke-independent-mask-workbenches.mjs",
-    "smoke:docs-page": "node scripts/run-with-workspace-temp.mjs -- node scripts/smoke-mingtu-docs-page.mjs",
+    "smoke:docs-page": "node scripts/run-with-workspace-temp.mjs -- node scripts/smoke-ai-apprentice-docs-page.mjs",
     "verify:aicad-integration": "node scripts/run-with-workspace-temp.mjs -- node scripts/verify-aicad-integration.mjs",
     "verify:aicad-manifest": "node scripts/run-with-workspace-temp.mjs -- python -B plugins/transparent-ai-apprentice/integrations/aicad-agent-v1/tests/verify_manifest.py",
     "smoke:aicad-handoff": "node scripts/run-with-workspace-temp.mjs -- node plugins/transparent-ai-apprentice/scripts/smoke-aicad-handoff-adapter.mjs",

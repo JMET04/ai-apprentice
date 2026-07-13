@@ -153,7 +153,7 @@ export function compileHumanCommunicationGuidance({ message, context = "auto", p
   if (preferredTone.trim()) requiredBehaviors.push(`Honor this user preference without role-play or false identity: ${preferredTone.trim()}`);
 
   return {
-    format: "mingtu_human_communication_guidance_v1",
+    format: "transparent_ai_apprentice_human_communication_guidance_v1",
     version: 1,
     generatedAt: new Date().toISOString(),
     sourceThreadId: SOURCE_THREAD_ID,

@@ -13,7 +13,7 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(json.loads(required[0].read_text(encoding="utf8"))["version"], "1.2.0")
 
     def test_contract_schema_and_semantics(self):
-        schema = json.loads((ROOT / "contracts/mingtu-aicad-request-v1.schema.json").read_text(encoding="utf8"))
+        schema = json.loads((ROOT / "contracts/ai-apprentice-aicad-request-v1.schema.json").read_text(encoding="utf8"))
         sample = json.loads((ROOT / "contracts/examples/packaging-request.json").read_text(encoding="utf8"))
         jsonschema.Draft202012Validator(schema).validate(sample)
         broken = json.loads(json.dumps(sample)); broken["engineeringTruth"]["imagePixelsUsedAsDimensions"] = True

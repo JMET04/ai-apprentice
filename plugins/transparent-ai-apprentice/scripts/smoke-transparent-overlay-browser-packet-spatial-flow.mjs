@@ -189,12 +189,12 @@ try {
   await page.goto(pathToFileURL(overlayKit.browserOverlay).href, { waitUntil: "load" });
   browserPacket = await page.evaluate(() => {
     const point = (x, y, zHint, planeId) => ({ x, y, t: Date.now(), pressure: 0.5, zHint, planeId });
-    globalThis.MingTuOverlay.setCorrection({
+    globalThis.AIApprenticeOverlay.setCorrection({
       note: "Move the reviewed structure into the marked target and preserve unmarked regions.",
       issueType: "结构错误",
       workflowStep: "Image2 样图复核"
     });
-    globalThis.MingTuOverlay.importAnnotations([
+    globalThis.AIApprenticeOverlay.importAnnotations([
       {
         id: "anchor-target",
         tool: "rect",

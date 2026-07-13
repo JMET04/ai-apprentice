@@ -3,8 +3,8 @@
 ## Copy
 
 - `plugin/aicad-agent/**` → `plugins/aicad-agent/**`
-- `contracts/mingtu-aicad-request-v1.schema.json` → `plugins/transparent-ai-apprentice/schemas/mingtu-aicad-request-v1.schema.json`
-- `contracts/mingtu-aicad-result-v1.schema.json` → `plugins/transparent-ai-apprentice/schemas/mingtu-aicad-result-v1.schema.json`
+- `contracts/ai-apprentice-aicad-request-v1.schema.json` → `plugins/transparent-ai-apprentice/schemas/ai-apprentice-aicad-request-v1.schema.json`
+- `contracts/ai-apprentice-aicad-result-v1.schema.json` → `plugins/transparent-ai-apprentice/schemas/ai-apprentice-aicad-result-v1.schema.json`
 - `adapters/transparent-ai-apprentice/aicad-handoff-adapter.mjs` → `plugins/transparent-ai-apprentice/scripts/aicad-handoff-adapter.mjs`
 - Add a main-project smoke wrapper based on the packaged adapter test.
 

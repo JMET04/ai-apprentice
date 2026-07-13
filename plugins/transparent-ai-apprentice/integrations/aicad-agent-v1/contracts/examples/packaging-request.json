@@ -1,5 +1,5 @@
 {
-  "format": "mingtu_aicad_request_v1",
+  "format": "transparent_ai_apprentice_aicad_request_v1",
   "handoffId": "example-packaging-001",
   "mode": "packaging_dieline",
   "project": {

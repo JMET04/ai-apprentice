@@ -148,7 +148,7 @@ function saveSession(sessionPath, session, traceRow) {
   writeFileSync(sessionPath, JSON.stringify(session, null, 2), "utf8");
   console.log(JSON.stringify({
     ok: true,
-    format: "mingtu_packaging_design_workflow_result_v1",
+    format: "transparent_ai_apprentice_packaging_design_workflow_result_v1",
     sessionPath,
     sessionId: session.id,
     stage: session.stage,
@@ -164,7 +164,7 @@ function saveSession(sessionPath, session, traceRow) {
 function loadSession() {
   const sessionPath = resolve(value("session"));
   const session = readJson(sessionPath, "session");
-  if (session.format !== "mingtu_packaging_design_session_v1") fail("Unsupported session format");
+  if (session.format !== "transparent_ai_apprentice_packaging_design_session_v1") fail("Unsupported session format");
   if (!stages.includes(session.stage)) fail(`Unknown session stage: ${session.stage}`);
   return { sessionPath, session };
 }
@@ -211,7 +211,7 @@ function createSession() {
   const sessionPath = join(dir, "packaging-design-session.json");
   const selfCheckTemplatePath = join(dir, "sample-self-check-template.json");
   const session = {
-    format: "mingtu_packaging_design_session_v1",
+    format: "transparent_ai_apprentice_packaging_design_session_v1",
     version: "1.0.0",
     id,
     createdAt: now(),
@@ -241,7 +241,7 @@ function createSession() {
     locks
   };
   const template = {
-    format: "mingtu_packaging_sample_self_check_v1",
+    format: "transparent_ai_apprentice_packaging_sample_self_check_v1",
     sessionId: id,
     samplePath: "<Image2 sample image path>",
     dimensionTruthSource: "teacher_or_engineering_data_only",
@@ -355,7 +355,7 @@ if (action === "update-requirements") {
     fail("Image2 initial prompt guidance hash mismatch");
   }
   const promptGuidance = readJson(session.artifacts.initialPromptGuidance, "Image2 initial prompt guidance");
-  if (promptGuidance.format !== "mingtu_image2_initial_prompt_guidance_v1") fail("Unsupported Image2 initial prompt guidance format");
+  if (promptGuidance.format !== "transparent_ai_apprentice_image2_initial_prompt_guidance_v1") fail("Unsupported Image2 initial prompt guidance format");
   if (promptGuidance.route?.domain !== "packaging" || promptGuidance.provenance?.skill !== "image2-prompt-optimizer" || promptGuidance.provenance?.sourceThreadId !== "019f09a9-90ab-76b2-aa1f-b7c9bddf93e8") {
     fail("Image2 initial prompt guidance provenance or packaging route is invalid");
   }
@@ -378,7 +378,7 @@ if (action === "update-requirements") {
   requireStage(session, "sample_self_check");
   const artifact = requireArtifact("self-check report");
   const report = readJson(artifact, "self-check report");
-  if (report.format !== "mingtu_packaging_sample_self_check_v1") fail("Unsupported self-check report format");
+  if (report.format !== "transparent_ai_apprentice_packaging_sample_self_check_v1") fail("Unsupported self-check report format");
   if (report.dimensionTruthSource !== "teacher_or_engineering_data_only") fail("Image2 pixels cannot be used as dimension truth");
   const ids = new Set((report.checks || []).map((check) => check.id));
   const missingChecks = requiredSelfChecks.filter((id) => !ids.has(id));
@@ -421,7 +421,7 @@ if (action === "update-requirements") {
   const unitFactor = unitFactors[sourceUnit];
   if (!unitFactor) fail(`Unsupported dimension unit for CAD handoff: ${sourceUnit}`);
 
-  const output = resolve(value("output", join(dirname(sessionPath), "mingtu-aicad-request.json")));
+  const output = resolve(value("output", join(dirname(sessionPath), "ai-apprentice-aicad-request.json")));
   const outputDir = dirname(output);
   const inputsDir = join(outputDir, "aicad-handoff-inputs");
   mkdirSync(inputsDir, { recursive: true });
@@ -464,7 +464,7 @@ if (action === "update-requirements") {
     if (requestedMap[item]) requestedArtifacts.add(requestedMap[item]);
   }
   const handoff = {
-    format: "mingtu_aicad_request_v1",
+    format: "transparent_ai_apprentice_aicad_request_v1",
     handoffId: session.id,
     mode: "packaging_dieline",
     project: {
@@ -536,7 +536,7 @@ if (action === "update-requirements") {
   if (!session.artifacts.cadHandoff) fail("Prepare CAD handoff before recording a CAD result");
   const artifact = requireArtifact("CAD result manifest");
   const result = readJson(artifact, "CAD result manifest");
-  if (result.format !== "mingtu_aicad_result_v1") fail("Unsupported CAD result format");
+  if (result.format !== "transparent_ai_apprentice_aicad_result_v1") fail("Unsupported CAD result format");
   if (result.handoffId !== session.id) fail("CAD result handoffId does not match the packaging session");
   if (result.requestSha256 !== sha256File(session.artifacts.cadHandoff)) fail("CAD result requestSha256 does not match the reviewed AICAD request");
   if (result.provenance?.producer !== "aicad-agent" || result.provenance?.version !== "1.2.0") fail("CAD result provenance is not aicad-agent 1.2.0");

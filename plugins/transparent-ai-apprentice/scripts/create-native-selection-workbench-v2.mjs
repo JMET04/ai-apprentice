@@ -72,22 +72,22 @@ const appSource = readFileSync(join(surfaceRoot, "app.js"), "utf8")
 const boundary = config.executionBoundary;
 const formalizer = surface === "office" ? `
 (() => {
-  const cfg = window.__MINGTU_OVERLAY_CONFIG__;
+  const cfg = window.__AI_APPRENTICE_OVERLAY_CONFIG__;
   const snapshot = cfg.nativeSelection || {};
   const selected = snapshot.selection || {};
   if (selected.text) {
     document.querySelector('#nativeSelection').textContent = selected.text;
     document.querySelector('#sourceText').textContent = selected.text;
   }
-  const originalPacket = globalThis.MingTuOverlay.packet;
-  globalThis.MingTuOverlay.packet = () => {
+  const originalPacket = globalThis.AIApprenticeOverlay.packet;
+  globalThis.AIApprenticeOverlay.packet = () => {
     const visual = originalPacket();
     const locator = selected.nativeLocator || visual.nativeSelection.locator;
     const originalText = selected.text || document.querySelector('#sourceText').textContent;
     const replacementText = document.querySelector('#replacementText').textContent;
     const instruction = document.querySelector('#instruction').value;
     return {
-      format: 'mingtu_multimodal_surgical_mask_correction_v1',
+      format: 'transparent_ai_apprentice_multimodal_surgical_mask_correction_v1',
       surfaceKind: 'office_native_text',
       createdAt: new Date().toISOString(),
       source: { officeType: 'docx', fileName: snapshot.host?.documentName || 'active-document.docx', documentPath: snapshot.host?.documentPath || '', nativeLocator: locator, selectionId: cfg.selectionId },
@@ -103,11 +103,11 @@ const formalizer = surface === "office" ? `
   };
 })();` : surface === "engineering" ? `
 (() => {
-  const cfg = window.__MINGTU_OVERLAY_CONFIG__;
+  const cfg = window.__AI_APPRENTICE_OVERLAY_CONFIG__;
   const snapshot = cfg.nativeSelection || {};
   const selected = snapshot.selection || {};
-  const originalPacket = globalThis.MingTuOverlay.packet;
-  globalThis.MingTuOverlay.packet = () => {
+  const originalPacket = globalThis.AIApprenticeOverlay.packet;
+  globalThis.AIApprenticeOverlay.packet = () => {
     const visual = originalPacket();
     const instruction = document.querySelector('#instruction').value;
     const targetValue = Number(document.querySelector('#targetValue').value);
@@ -116,7 +116,7 @@ const formalizer = surface === "office" ? `
     const locator = selected.nativeLocator || 'object:' + objectId;
     const operation = selected.nativeKind === 'autocad_face' ? 'offset_face' : 'set_dimension';
     return {
-      format: 'mingtu_multimodal_surgical_mask_correction_v1',
+      format: 'transparent_ai_apprentice_multimodal_surgical_mask_correction_v1',
       surfaceKind: 'engineering_native_object',
       createdAt: new Date().toISOString(),
       target: { objectType: selected.objectType || visual.nativeSelection.object.type, objectId, action: operation, targetValue, unit, constraints: instruction, selectionId: cfg.selectionId, nativeLocator: locator },
@@ -132,8 +132,8 @@ const formalizer = surface === "office" ? `
   };
 })();` : `
 (() => {
-  const originalPacket = globalThis.MingTuOverlay.packet;
-  globalThis.MingTuOverlay.packet = () => {
+  const originalPacket = globalThis.AIApprenticeOverlay.packet;
+  globalThis.AIApprenticeOverlay.packet = () => {
     const visual = originalPacket();
     return {
       ...visual,
@@ -142,7 +142,7 @@ const formalizer = surface === "office" ? `
         protect: [],
         reference: []
       },
-      executionBoundary: window.__MINGTU_OVERLAY_CONFIG__.executionBoundary
+      executionBoundary: window.__AI_APPRENTICE_OVERLAY_CONFIG__.executionBoundary
     };
   };
 })();`;
@@ -151,9 +151,9 @@ let submission = "";
 const client = readFileSync(join(pluginRoot, "assets", "mask-submission-client.js"), "utf8");
 const button = surface === "office" ? "#submitOffice" : surface === "engineering" ? "#submitEngineering" : "#submitReview";
 const state = surface === "office" ? "#officeState" : surface === "engineering" ? "#engineeringState" : "#saveState";
-submission = `${client}\nAIApprenticeMaskSubmission.install({ packet: () => MingTuOverlay.packet(), validate: () => MingTuOverlay.validate?.() ?? { valid: true }, button: document.querySelector('${button}'), stateElement: document.querySelector('${state}'), config: window.__MINGTU_OVERLAY_CONFIG__ });`;
+submission = `${client}\nAIApprenticeMaskSubmission.install({ packet: () => AIApprenticeOverlay.packet(), validate: () => AIApprenticeOverlay.validate?.() ?? { valid: true }, button: document.querySelector('${button}'), stateElement: document.querySelector('${state}'), config: window.__AI_APPRENTICE_OVERLAY_CONFIG__ });`;
 
-const runtime = `<script>window.__MINGTU_OVERLAY_CONFIG__=${JSON.stringify(config).replace(/</g, "\\u003c")};</script><script>${assistantSource}\n${appSource}\n${formalizer}\n${submission}</script>`;
+const runtime = `<script>window.__AI_APPRENTICE_OVERLAY_CONFIG__=${JSON.stringify(config).replace(/</g, "\\u003c")};</script><script>${assistantSource}\n${appSource}\n${formalizer}\n${submission}</script>`;
 html = html.replace(/<script type="module" src="app\.js"><\/script>/, () => runtime);
 
 mkdirSync(outputDir, { recursive: true });

@@ -358,7 +358,7 @@ export function contextActionToMaskPacket({ action, selection }) {
   };
   if (selection.snapshot.surfaceKind === "office_native_text") {
     return {
-      format: "mingtu_multimodal_surgical_mask_correction_v1",
+      format: "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1",
       surfaceKind: "office_native_text",
       executionBoundary: { ...executionBoundary },
       createdAt: new Date().toISOString(),
@@ -390,7 +390,7 @@ export function contextActionToMaskPacket({ action, selection }) {
     };
   }
   return {
-    format: "mingtu_multimodal_surgical_mask_correction_v1",
+    format: "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1",
     surfaceKind: "engineering_native_object",
     executionBoundary: { ...executionBoundary },
     createdAt: new Date().toISOString(),

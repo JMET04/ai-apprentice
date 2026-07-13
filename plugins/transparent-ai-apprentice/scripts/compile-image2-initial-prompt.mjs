@@ -213,7 +213,7 @@ export function compileInitialPrompt(input = {}, options = {}) {
   ];
 
   return {
-    format: "mingtu_image2_initial_prompt_guidance_v1",
+    format: "transparent_ai_apprentice_image2_initial_prompt_guidance_v1",
     version: "1.0.0",
     generatedAt: new Date().toISOString(),
     mode: "initial_generation_guidance",

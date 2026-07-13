@@ -11,8 +11,8 @@
     "codexPlugin": "plugin/aicad-agent/.codex-plugin/plugin.json",
     "mcp": "plugin/aicad-agent/.mcp.json",
     "cli": "plugin/aicad-agent/scripts/aicad_agent.py",
-    "strictRequestSchema": "contracts/mingtu-aicad-request-v1.schema.json",
-    "resultSchema": "contracts/mingtu-aicad-result-v1.schema.json",
+    "strictRequestSchema": "contracts/ai-apprentice-aicad-request-v1.schema.json",
+    "resultSchema": "contracts/ai-apprentice-aicad-result-v1.schema.json",
     "mainProjectAdapter": "adapters/transparent-ai-apprentice/aicad-handoff-adapter.mjs"
   },
   "runtime": {
@@ -97,43 +97,43 @@
   "files": [
     {
       "path": "adapters/transparent-ai-apprentice/aicad-handoff-adapter.mjs",
-      "sha256": "6073e83497e1bca7d084e75e75ae795ad048da319ff9d637d35be84ce4cb0ee8",
-      "sizeBytes": 3090
+      "sha256": "962fe9f9f32df04d4aac4165e5bc9f9ef84154e19f6db05c94c84feffb9a47d8",
+      "sizeBytes": 3135
     },
     {
       "path": "adapters/transparent-ai-apprentice/package-scripts.patch.json",
-      "sha256": "b4bcbb12dd4b3722fa37c48fa23c640604c58fbd934800845e9cc9d590a33e1d",
-      "sizeBytes": 489
+      "sha256": "502e4bfb79097ba17128cb8bc89936dd854dd1944b068932f7ef54a3840d3c60",
+      "sizeBytes": 496
+    },
+    {
+      "path": "contracts/ai-apprentice-aicad-packaging-handoff-v1.compat.schema.json",
+      "sha256": "6e03be49631afd60c3ec59f83a06e68ed89651d9031bfdfc0ef51affa12bd3c6",
+      "sizeBytes": 1790
+    },
+    {
+      "path": "contracts/ai-apprentice-aicad-request-v1.schema.json",
+      "sha256": "33368e0e4d1dfd924eaa813f843b6233891fe18448c77ffbf2db8e3b97af7a57",
+      "sizeBytes": 10208
+    },
+    {
+      "path": "contracts/ai-apprentice-aicad-result-v1.schema.json",
+      "sha256": "cb6087bf86b6aae3d46f6928bafc5c8feb636a35221792abf1764f2c66c31c99",
+      "sizeBytes": 6216
     },
     {
       "path": "contracts/examples/packaging-request.json",
-      "sha256": "394023e9e8983c0d5a57a5f988822d5c78f25e16caaf1caed72d493f890cf0a1",
-      "sizeBytes": 2410
-    },
-    {
-      "path": "contracts/mingtu-aicad-packaging-handoff-v1.compat.schema.json",
-      "sha256": "baa85aeae585ecbf11de0ece294f0eab6a1c54fb9be2dd6c278b9b7394b2900a",
-      "sizeBytes": 1757
-    },
-    {
-      "path": "contracts/mingtu-aicad-request-v1.schema.json",
-      "sha256": "434ec1fb350333cb4ffbd33351e15085dd263e10f9ab44dc4b9b5f31f0979010",
-      "sizeBytes": 10168
-    },
-    {
-      "path": "contracts/mingtu-aicad-result-v1.schema.json",
-      "sha256": "8c2f9ed805b794c097a3b4a75e0a105c4c3260dc3287e38a466c408232db8404",
-      "sizeBytes": 6176
+      "sha256": "031e8efbd4620112a043487c6bbed062b5b8c2e3fbc603fe07921e9e52fd8a74",
+      "sizeBytes": 2429
     },
     {
       "path": "docs/MAIN_PROJECT_INTEGRATION.md",
-      "sha256": "1603593d927c96bd8911e81d8fbabe3f535061dc529cf618cb94bb86acb67970",
-      "sizeBytes": 2354
+      "sha256": "72c74c56868a5cc69bfb4f6e8d35d14b52d82b565c0315485bc8663d355b1086",
+      "sizeBytes": 2392
     },
     {
       "path": "docs/MERGE_CHECKLIST.md",
-      "sha256": "cc8406d0d137a7b6429a8f396b0e6ae4a0c7123204c063a4ca9cf986e44e7d60",
-      "sizeBytes": 1306
+      "sha256": "444cf81ecdc6d59d23479cb0af6d24e1dab115d64a0239927a565dbbde610d9c",
+      "sizeBytes": 1334
     },
     {
       "path": "docs/SECURITY_AND_LIMITS.md",
@@ -152,8 +152,8 @@
     },
     {
       "path": "plugin/aicad-agent/.codex-plugin/plugin.json",
-      "sha256": "4d58b9297aa13e4b96e6d3eb992e3dc12c260fb8596746cf4195e1827d1e9259",
-      "sizeBytes": 1559
+      "sha256": "ae1e973a8b62c58a12dc5212bd735b82f280465a3b95c5a8294903d0e6ce638c",
+      "sizeBytes": 1566
     },
     {
       "path": "plugin/aicad-agent/.mcp.json",
@@ -162,8 +162,8 @@
     },
     {
       "path": "plugin/aicad-agent/CHANGELOG.md",
-      "sha256": "769c001605637f91853dc3380727b6e2588fa8cdd9910d1b4c2d5a362981cdca",
-      "sizeBytes": 647
+      "sha256": "88d496bb622c9659b9fc327dc8f7dcef8f2a45f63c41cc1a310ac63234e8080f",
+      "sizeBytes": 654
     },
     {
       "path": "plugin/aicad-agent/installers/build-solidworks-host.ps1",
@@ -202,8 +202,8 @@
     },
     {
       "path": "plugin/aicad-agent/README.md",
-      "sha256": "7f17587bdaee8d3ccedb0bef193c90291efbf115a7c6bfce190813d14eef0b62",
-      "sizeBytes": 1020
+      "sha256": "860bf10d44f13d5e3b9faa25aa6a082b3a156393d5d6bdeae7673afac24d752c",
+      "sizeBytes": 1027
     },
     {
       "path": "plugin/aicad-agent/requirements-qa.txt",
@@ -507,8 +507,8 @@
     },
     {
       "path": "tests/run_integration_tests.py",
-      "sha256": "5178f136aa20f6bdb5eb1083c1f6004e3615b1d0548a333803523ce626123856",
-      "sizeBytes": 4313
+      "sha256": "126844a4050559c35dc47aa17ada0b1082863276175fcaf40a9d9d61277cdbcf",
+      "sizeBytes": 4320
     },
     {
       "path": "tests/verify_manifest.py",
@@ -516,9 +516,14 @@
       "sizeBytes": 625
     },
     {
+      "path": "tools/__pycache__/build_handoff.cpython-312.pyc",
+      "sha256": "8bcd205429471b42b80dd4e3d468ee9ced2ab54120ddfd837964ed9266c48217",
+      "sizeBytes": 66119
+    },
+    {
       "path": "tools/build_handoff.py",
-      "sha256": "f012930889117640190620e0e3f93832fd7e25754626f02aa23d9442e5bb6e37",
-      "sizeBytes": 61254
+      "sha256": "572cf360f5a2dde6b7bc024ff04c1412ba4ad20bac90f0e63f7cbd0489908278",
+      "sizeBytes": 61541
     },
     {
       "path": "validation/validation.json",

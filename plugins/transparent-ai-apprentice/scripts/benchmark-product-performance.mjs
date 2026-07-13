@@ -73,7 +73,7 @@ function officePacket(locator, sourceText, replacementText) {
   };
   return {
     format: "transparent_ai_sketch_overlay_packet_v1",
-    modificationFormat: "mingtu_multimodal_surgical_mask_correction_v1",
+    modificationFormat: "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1",
     changeTargets: [target],
     surgicalEditContract: { changeOnlyInsideSelectedTargets: true }
   };
@@ -81,7 +81,7 @@ function officePacket(locator, sourceText, replacementText) {
 
 function correctionPacket(index, surfaceKind = "office_native_text") {
   return {
-    format: "mingtu_multimodal_surgical_mask_correction_v1",
+    format: "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1",
     surfaceKind,
     source: surfaceKind === "office_native_text" ? { nativeLocator: `paragraph:${index + 1}` } : undefined,
     correction: surfaceKind === "office_native_text" ? { operation: "replace_text", originalText: `old-${index}`, replacementText: `new-${index}` } : undefined,
@@ -118,7 +118,7 @@ for (const generated of [officePage, engineeringPage]) {
     const page = await browser.newPage({ viewport: { width: 1440, height: 960 } });
     const started = now();
     await page.goto(pathToFileURL(generated.browserOverlay).href, { waitUntil: "load" });
-    await page.waitForFunction(() => Boolean(globalThis.MingTuOverlay?.packet));
+    await page.waitForFunction(() => Boolean(globalThis.AIApprenticeOverlay?.packet));
     pageReadyMs.push(now() - started);
     await page.close();
   }

@@ -165,7 +165,7 @@ const managedCorrection = await withServer({}, async server => parseToolJson(awa
       action: "submit",
       storePath: correctionStore,
       packet: {
-        format: "mingtu_multimodal_surgical_mask_correction_v1",
+        format: "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1",
         surfaceKind: "office_native_text",
         source: { nativeLocator: "paragraph:2" },
         correction: { operation: "replace_text", originalText: "周五", replacementText: "周一" },
@@ -339,7 +339,7 @@ const officeMaskResult = await withServer(advancedEnv, async (server) =>
 const officeMaskHtml = readFileSync(officeMaskResult.browserOverlay, "utf8");
 check(
   "Standalone Office text mask is callable through its own MCP tool",
-  officeMaskResult.format === "mingtu_office_text_mask_workbench_result_v1" &&
+  officeMaskResult.format === "transparent_ai_apprentice_office_text_mask_workbench_result_v1" &&
     officeMaskResult.dedicatedMaskType === "text" &&
     officeMaskHtml.includes('id="nativeLocator"') &&
     !officeMaskHtml.includes('id="objectId"') &&
@@ -368,7 +368,7 @@ const engineeringKitResult = await withServer(advancedEnv, async (server) =>
 check(
   "Standalone engineering-software mask creates a surgical D04 demonstration through MCP",
   engineeringKitResult.ok === true &&
-    engineeringKitResult.format === "mingtu_engineering_software_mask_workbench_result_v1" &&
+    engineeringKitResult.format === "transparent_ai_apprentice_engineering_software_mask_workbench_result_v1" &&
     engineeringKitResult.dedicatedMaskType === "engineering" &&
     engineeringKitResult.demoPreset === "engineering_dimension_change" &&
     engineeringKitResult.enforcesSurgicalEditAndOutsideMaskPreservation === true &&
@@ -428,12 +428,12 @@ const officeTarget = {
   completeness: { complete: true, reason: "exact_source_and_text_operation_present" }
 };
 const officeRequest = {
-  modificationFormat: "mingtu_multimodal_surgical_mask_correction_v1",
+  modificationFormat: "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1",
   activeContentType: "text",
   modificationTargets: [officeTarget],
   changeTargets: [officeTarget],
   surgicalEditContract: {
-    format: "mingtu_surgical_edit_contract_v1",
+    format: "transparent_ai_apprentice_surgical_edit_contract_v1",
     policy: "surgical_only",
     selectedChangeTargetIds: [officeTarget.id],
     globalPreserveInstruction: "Preserve every unselected paragraph, style, and package part.",

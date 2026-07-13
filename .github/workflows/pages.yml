@@ -1,4 +1,4 @@
-name: Deploy MingTu docs
+name: Deploy AI Apprentice docs
 
 on:
   push:

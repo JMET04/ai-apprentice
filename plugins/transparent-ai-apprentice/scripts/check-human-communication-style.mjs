@@ -127,7 +127,7 @@ export function checkHumanCommunicationStyle({ text, context = "technical" }) {
   }
 
   return {
-    format: "mingtu_human_communication_style_check_v1",
+    format: "transparent_ai_apprentice_human_communication_style_check_v1",
     context,
     passed: findings.length === 0,
     findingCount: findings.length,

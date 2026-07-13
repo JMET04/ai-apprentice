@@ -107,7 +107,7 @@ Word 使用 `paragraph:2` 将唯一出现的“周五”替换为“周一”；
 
 ## 场景六：AICAD 交接
 
-确认材料与厚度后生成 `mingtu_aicad_request_v1`。
+确认材料与厚度后生成 `transparent_ai_apprentice_aicad_request_v1`。
 
 检查：
 

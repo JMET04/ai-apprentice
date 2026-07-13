@@ -91,19 +91,19 @@ const formula = checkHumanCommunicationStyle({
 });
 check("Repeated polished reframes are flagged", formula.findings.some((item) => item.id === "formulaic_reframe"));
 
-const tempDir = mkdtempSync(join(tmpdir(), "mingtu-human-communication-"));
+const tempDir = mkdtempSync(join(tmpdir(), "ai-apprentice-human-communication-"));
 try {
   const schema = JSON.parse(readFileSync(new URL("../schemas/human-communication-guidance.schema.json", import.meta.url), "utf8"));
-  check("Schema declares guidance format", schema.properties.format.const === "mingtu_human_communication_guidance_v1");
+  check("Schema declares guidance format", schema.properties.format.const === "transparent_ai_apprentice_human_communication_guidance_v1");
   check("Schema locks false human identity", schema.properties.locks.properties.pretendsToBeHuman.const === false);
-  check("Smoke temp directory is isolated", tempDir.includes("mingtu-human-communication-"));
+  check("Smoke temp directory is isolated", tempDir.includes("ai-apprentice-human-communication-"));
 } finally {
   rmSync(tempDir, { recursive: true, force: true });
 }
 
 const failed = checks.filter((item) => !item.passed);
 const result = {
-  format: "mingtu_human_communication_smoke_v1",
+  format: "transparent_ai_apprentice_human_communication_smoke_v1",
   passed: failed.length === 0,
   total: checks.length,
   passedCount: checks.length - failed.length,

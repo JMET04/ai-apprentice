@@ -114,7 +114,7 @@ def assemble_plugin() -> None:
 
     patch_text(PACKAGE / ".codex-plugin" / "plugin.json", [
         ('"version": "1.1.0"', f'"version": "{VERSION}"'),
-        ('"Audit manifests"]', '"Audit manifests", "Packaging dieline QA", "Review-only MingTu handoff"]'),
+        ('"Audit manifests"]', '"Audit manifests", "Packaging dieline QA", "Review-only AI Apprentice handoff"]'),
     ])
     patch_text(PACKAGE / "scripts" / "aicad_agent.py", [
         ('AGENT_API_VERSION = "1.1.0"', f'AGENT_API_VERSION = "{VERSION}"'),
@@ -364,7 +364,7 @@ def create_self_contained_packaging_fixtures() -> None:
 def create_plugin_docs() -> None:
     write_text(PACKAGE / "README.md", f'''# aicad-agent {VERSION}
 
-Deterministic, origin-anchored CAD plugin for review-only MingTu integration. It compiles 2D AICAD plans to AICAD/SCR/DXF/audit artifacts, runs packaging dieline QA, and supports transactional SolidWorks 3D plans through an optional Windows host.
+Deterministic, origin-anchored CAD plugin for review-only AI Apprentice integration. It compiles 2D AICAD plans to AICAD/SCR/DXF/audit artifacts, runs packaging dieline QA, and supports transactional SolidWorks 3D plans through an optional Windows host.
 
 ## Runtime
 
@@ -392,7 +392,7 @@ This is an engineering candidate for teacher review. It does not represent produ
 - Parameterized dimension-chain QA; removed case-specific dimensional constants.
 - Added honest no-host status and true SolidWorks `--no-execute` offline plan export.
 - Unified component version metadata and removed personal SolidWorks SDK path.
-- Added strict MingTu request/result contracts, adapters, hashes and safety locks.
+- Added strict AI Apprentice request/result contracts, adapters, hashes and safety locks.
 
 ## 1.1.0
 
@@ -424,7 +424,7 @@ def contract_safety() -> dict:
 
 def create_contracts() -> None:
     compatibility = json.loads((MAIN / "plugins" / "transparent-ai-apprentice" / "schemas" / "aicad-packaging-handoff.schema.json").read_text(encoding="utf-8"))
-    write_json(TARGET / "contracts" / "mingtu-aicad-packaging-handoff-v1.compat.schema.json", compatibility)
+    write_json(TARGET / "contracts" / "ai-apprentice-aicad-packaging-handoff-v1.compat.schema.json", compatibility)
     ref = {
         "type": "object", "additionalProperties": False,
         "required": ["id", "relativePath", "sha256", "mediaType"],
@@ -446,12 +446,12 @@ def create_contracts() -> None:
     }
     request = {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://mingtu.local/schemas/mingtu-aicad-request-v1.schema.json",
+        "$id": "https://ai-apprentice.local/schemas/ai-apprentice-aicad-request-v1.schema.json",
         "title": "Strict AI Apprentice AICAD request", "type": "object", "additionalProperties": False,
         "required": ["format", "handoffId", "mode", "project", "product", "materials", "engineeringTruth", "evidence", "requestedArtifacts", "hostPolicy", "safety"],
         "$defs": {"artifactRef": ref, "visualArtifactRef": visual_ref, "safety": contract_safety()},
         "properties": {
-            "format": {"const": "mingtu_aicad_request_v1"},
+            "format": {"const": "transparent_ai_apprentice_aicad_request_v1"},
             "handoffId": {"type": "string", "minLength": 1},
             "mode": {"enum": ["drawing_2d", "packaging_dieline", "part_3d", "hybrid"]},
             "project": {"type": "object", "additionalProperties": False, "required": ["name", "productType", "requestedUnits"],
@@ -484,12 +484,12 @@ def create_contracts() -> None:
         },
     }
     result = {
-        "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://mingtu.local/schemas/mingtu-aicad-result-v1.schema.json",
+        "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://ai-apprentice.local/schemas/ai-apprentice-aicad-result-v1.schema.json",
         "title": "AI Apprentice AICAD result", "type": "object", "additionalProperties": False,
         "required": ["format", "handoffId", "requestSha256", "status", "provenance", "artifacts", "validation", "hostExecutions", "errors", "preventionRuleDrafts", "safety"],
         "$defs": {"safety": contract_safety()},
         "properties": {
-            "format": {"const": "mingtu_aicad_result_v1"}, "handoffId": {"type": "string"}, "requestSha256": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"},
+            "format": {"const": "transparent_ai_apprentice_aicad_result_v1"}, "handoffId": {"type": "string"}, "requestSha256": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"},
             "status": {"enum": ["pass", "pass_with_host_skips", "fail", "blocked", "needs_review"]},
             "provenance": {"type": "object", "required": ["producer", "version", "imagePixelsUsedAsDimensions"], "properties": {"producer": {"const": "aicad-agent"}, "version": {"const": VERSION}, "imagePixelsUsedAsDimensions": {"const": False}}, "additionalProperties": True},
             "artifacts": {"type": "array", "items": {"type": "object", "additionalProperties": False, "required": ["id", "kind", "relativePath", "required", "status"],
@@ -503,10 +503,10 @@ def create_contracts() -> None:
             "safety": {"$ref": "#/$defs/safety"},
         },
     }
-    write_json(TARGET / "contracts" / "mingtu-aicad-request-v1.schema.json", request)
-    write_json(TARGET / "contracts" / "mingtu-aicad-result-v1.schema.json", result)
+    write_json(TARGET / "contracts" / "ai-apprentice-aicad-request-v1.schema.json", request)
+    write_json(TARGET / "contracts" / "ai-apprentice-aicad-result-v1.schema.json", result)
     example = {
-        "format": "mingtu_aicad_request_v1", "handoffId": "example-packaging-001", "mode": "packaging_dieline",
+        "format": "transparent_ai_apprentice_aicad_request_v1", "handoffId": "example-packaging-001", "mode": "packaging_dieline",
         "project": {"name": "Review carton", "productType": "transport_box", "structureFamily": "FEFCO_0201", "requestedUnits": "mm"},
         "product": {"name": "Electronic device", "shape": "rectangular", "weightKg": 15,
                     "dimensions": [{"id": "product_envelope", "semantic": "product_envelope", "axes": ["length", "width", "height"], "values": [380, 280, 200], "unit": "mm", "authority": "approved_engineering", "sourceRef": "design-result", "immutable": True}]},
@@ -535,7 +535,7 @@ const sha = value => crypto.createHash("sha256").update(value).digest("hex");
 const fail = message => { throw new Error(message); };
 
 export function semanticPreflight(request) {
-  if (request?.format !== "mingtu_aicad_request_v1") fail("unsupported request format");
+  if (request?.format !== "transparent_ai_apprentice_aicad_request_v1") fail("unsupported request format");
   for (const [key, value] of Object.entries(locks)) if (request?.safety?.[key] !== value) fail(`unsafe lock: ${key}`);
   if (request?.engineeringTruth?.imagePixelsUsedAsDimensions !== false) fail("PIXEL_DIMENSION_FORBIDDEN");
   if (request?.evidence?.image2Sample?.role !== "visual_topology_only" || request?.evidence?.image2Sample?.pixelMeasurementsAllowed !== false) fail("IMAGE2_ROLE_INVALID");
@@ -548,10 +548,10 @@ export function runOfflineCompile({ requestPath, planPath, outputDir, pluginRoot
   const bytes = fs.readFileSync(requestPath);
   const request = JSON.parse(bytes.toString("utf8"));
   semanticPreflight(request);
-  const args = [path.join(pluginRoot, "scripts", "aicad_agent.py"), "compile", "--plan", planPath, "--out", outputDir, "--name", "mingtu-handoff"];
+  const args = [path.join(pluginRoot, "scripts", "aicad_agent.py"), "compile", "--plan", planPath, "--out", outputDir, "--name", "ai-apprentice-handoff"];
   const proc = spawnSync("python", args, { encoding: "utf8", windowsHide: true });
   if (proc.status !== 0) fail(proc.stderr || proc.stdout || "AICAD compile failed");
-  return { format: "mingtu_aicad_result_v1", handoffId: request.handoffId, requestSha256: sha(bytes), status: "pass_with_host_skips",
+  return { format: "transparent_ai_apprentice_aicad_result_v1", handoffId: request.handoffId, requestSha256: sha(bytes), status: "pass_with_host_skips",
     provenance: { producer: "aicad-agent", version: "1.2.0", imagePixelsUsedAsDimensions: false },
     artifacts: [], validation: { aicadDeterministicValidation: { status: "passed", raw: JSON.parse(proc.stdout) }, mainRuleDslValidation: { status: "not_run", note: "coarse compatibility layer" } },
     hostExecutions: [{ host: "autocad", executedThisRun: false, mode: "offline_compile", status: "skipped", saveReopenStatus: "not_run" }, { host: "solidworks", executedThisRun: false, mode: "not_run", status: "skipped", saveReopenStatus: "not_run" }],
@@ -570,7 +570,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     write_json(TARGET / "adapters" / "transparent-ai-apprentice" / "package-scripts.patch.json", {
         "scripts": {"verify:aicad-integration": "python integration-handoffs/aicad-agent-v1/tests/run_integration_tests.py",
                     "smoke:aicad-handoff": "node plugins/transparent-ai-apprentice/scripts/smoke-aicad-handoff-adapter.mjs"},
-        "verifyPluginRequiredFiles": ["plugins/aicad-agent/.codex-plugin/plugin.json", "plugins/transparent-ai-apprentice/schemas/mingtu-aicad-result-v1.schema.json", "plugins/transparent-ai-apprentice/scripts/aicad-handoff-adapter.mjs"],
+        "verifyPluginRequiredFiles": ["plugins/aicad-agent/.codex-plugin/plugin.json", "plugins/transparent-ai-apprentice/schemas/ai-apprentice-aicad-result-v1.schema.json", "plugins/transparent-ai-apprentice/scripts/aicad-handoff-adapter.mjs"],
     })
 
 
@@ -591,7 +591,7 @@ This audit is engineering evidence only, not production or technical acceptance.
 
 Use the existing main-project route; do not add a parallel workflow:
 
-`packaging-design-apprentice` → `mingtu_aicad_packaging_handoff_v1` → strict adapter preflight → AICAD offline compile → optional host gate → `mingtu_aicad_result_v1` → `record-cad-result` → teacher review.
+`packaging-design-apprentice` → `transparent_ai_apprentice_aicad_packaging_handoff_v1` → strict adapter preflight → AICAD offline compile → optional host gate → `transparent_ai_apprentice_aicad_result_v1` → `record-cad-result` → teacher review.
 
 ## Recommended merge
 
@@ -623,8 +623,8 @@ Every request/result and prevention-rule draft stays `reviewOnly=true`, `accepte
 ## Copy
 
 - `plugin/aicad-agent/**` → `plugins/aicad-agent/**`
-- `contracts/mingtu-aicad-request-v1.schema.json` → `plugins/transparent-ai-apprentice/schemas/mingtu-aicad-request-v1.schema.json`
-- `contracts/mingtu-aicad-result-v1.schema.json` → `plugins/transparent-ai-apprentice/schemas/mingtu-aicad-result-v1.schema.json`
+- `contracts/ai-apprentice-aicad-request-v1.schema.json` → `plugins/transparent-ai-apprentice/schemas/ai-apprentice-aicad-request-v1.schema.json`
+- `contracts/ai-apprentice-aicad-result-v1.schema.json` → `plugins/transparent-ai-apprentice/schemas/ai-apprentice-aicad-result-v1.schema.json`
 - `adapters/transparent-ai-apprentice/aicad-handoff-adapter.mjs` → `plugins/transparent-ai-apprentice/scripts/aicad-handoff-adapter.mjs`
 - Add a main-project smoke wrapper based on the packaged adapter test.
 
@@ -690,7 +690,7 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(json.loads(required[0].read_text(encoding="utf8"))["version"], "1.2.0")
 
     def test_contract_schema_and_semantics(self):
-        schema = json.loads((ROOT / "contracts/mingtu-aicad-request-v1.schema.json").read_text(encoding="utf8"))
+        schema = json.loads((ROOT / "contracts/ai-apprentice-aicad-request-v1.schema.json").read_text(encoding="utf8"))
         sample = json.loads((ROOT / "contracts/examples/packaging-request.json").read_text(encoding="utf8"))
         jsonschema.Draft202012Validator(schema).validate(sample)
         broken = json.loads(json.dumps(sample)); broken["engineeringTruth"]["imagePixelsUsedAsDimensions"] = True
@@ -812,7 +812,7 @@ def create_manifest_and_release() -> None:
     manifest = {
         "schema": "aicad_agent_integration_manifest_v1", "name": "aicad-agent", "version": VERSION,
         "releaseDecision": {"previous": "1.1.0", "rebuilt": True, "reason": "1.1.0 omitted current packaging rules/QA/tests and complete host/integration assets"},
-        "entries": {"codexPlugin": "plugin/aicad-agent/.codex-plugin/plugin.json", "mcp": "plugin/aicad-agent/.mcp.json", "cli": "plugin/aicad-agent/scripts/aicad_agent.py", "strictRequestSchema": "contracts/mingtu-aicad-request-v1.schema.json", "resultSchema": "contracts/mingtu-aicad-result-v1.schema.json", "mainProjectAdapter": "adapters/transparent-ai-apprentice/aicad-handoff-adapter.mjs"},
+        "entries": {"codexPlugin": "plugin/aicad-agent/.codex-plugin/plugin.json", "mcp": "plugin/aicad-agent/.mcp.json", "cli": "plugin/aicad-agent/scripts/aicad_agent.py", "strictRequestSchema": "contracts/ai-apprentice-aicad-request-v1.schema.json", "resultSchema": "contracts/ai-apprentice-aicad-result-v1.schema.json", "mainProjectAdapter": "adapters/transparent-ai-apprentice/aicad-handoff-adapter.mjs"},
         "runtime": {"python": ">=3.10", "coreDependencies": [], "qaDependenciesFile": "plugin/aicad-agent/requirements-qa.txt", "defaultProvider": "offline", "platform": "cross-platform core; Windows optional hosts"},
         "optionalHosts": [{"name": "AutoCAD", "testedHistoricalVersion": "2025", "required": False}, {"name": "SolidWorks", "testedHistoricalVersion": "2026 / revision 34.0.0", "required": False, "framework": ".NET Framework 4.8 x64"}],
         "tools": ["aicad_capabilities", "aicad_get_plan_schema", "aicad_generate", "aicad_validate_plan", "aicad_compile_plan", "aicad_solidworks_doctor", "aicad_get_3d_plan_schema", "aicad_validate_3d_plan", "aicad_build_solidworks_part"],
@@ -825,7 +825,7 @@ def create_manifest_and_release() -> None:
         "files": all_hash_rows({"integration-manifest.json", "SHA256SUMS"}),
     }
     write_json(TARGET / "integration-manifest.json", manifest)
-    release = TARGET / "release" / f"aicad-agent-{VERSION}-mingtu-integration.zip"
+    release = TARGET / "release" / f"aicad-agent-{VERSION}-ai-apprentice-integration.zip"
     release.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(release, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for path in sorted(TARGET.rglob("*"), key=lambda value: value.as_posix().lower()):

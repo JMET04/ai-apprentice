@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const config = globalThis.__MINGTU_OVERLAY_CONFIG__ || {};
+  const config = globalThis.__AI_APPRENTICE_OVERLAY_CONFIG__ || {};
   const locks = {
     ruleEnabled: false,
     accepted: false,
@@ -24,7 +24,7 @@
   const viewport = byId("canvasViewport");
   const baseImage = byId("baseImage");
   const ctx = canvas.getContext("2d");
-  const storageKey = `mingtu-overlay-draft:${config.kitId || "local"}`;
+  const storageKey = `ai-apprentice-overlay-draft:${config.kitId || "local"}`;
   const state = {
     tool: "brush",
     annotations: [],
@@ -183,7 +183,7 @@
   function saveDraft() {
     try {
       localStorage.setItem(storageKey, JSON.stringify({
-        format: "mingtu_overlay_draft_v1",
+        format: "transparent_ai_apprentice_overlay_draft_v1",
         savedAt: new Date().toISOString(),
         annotations: state.annotations,
         backdropName: state.backdropName,
@@ -200,7 +200,7 @@
   function restoreDraft() {
     try {
       const draft = JSON.parse(localStorage.getItem(storageKey) || "null");
-      if (!draft || draft.format !== "mingtu_overlay_draft_v1") return toast("没有可恢复的本地草稿");
+      if (!draft || draft.format !== "transparent_ai_apprentice_overlay_draft_v1") return toast("没有可恢复的本地草稿");
       state.annotations = Array.isArray(draft.annotations) ? draft.annotations : [];
       state.redoStack = [];
       if (draft.backdropDataUrl) setBackdrop(draft.backdropDataUrl, draft.backdropName || "本地草稿底图");
@@ -435,7 +435,7 @@
     const rows = detailRows(anchors, strokes);
     return {
       format: "transparent_ai_sketch_overlay_packet_v1",
-      workbenchFormat: "mingtu_teacher_mask_correction_v1",
+      workbenchFormat: "transparent_ai_apprentice_teacher_mask_correction_v1",
       kitId: config.kitId || "local-mask-review",
       software: config.software || "Image2 packaging review",
       goal: config.goal || "老师纠正包装样图",
@@ -507,7 +507,7 @@
     try { await navigator.clipboard?.writeText(text); } catch {}
     try {
       const link = document.createElement("a");
-      link.download = `mingtu-teacher-correction-${config.kitId || "local"}.json`;
+      link.download = `ai-apprentice-teacher-correction-${config.kitId || "local"}.json`;
       link.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
       link.click();
       globalThis.setTimeout?.(() => URL.revokeObjectURL?.(link.href), 1000);
@@ -625,7 +625,7 @@
   }
 
   globalThis.packet = packet;
-  globalThis.MingTuOverlay = {
+  globalThis.AIApprenticeOverlay = {
     packet,
     importAnnotations,
     setBackdrop,

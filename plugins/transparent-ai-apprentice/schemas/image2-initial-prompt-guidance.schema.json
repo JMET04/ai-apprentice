@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://mingtu.local/schemas/image2-initial-prompt-guidance.schema.json",
+  "$id": "https://ai-apprentice.local/schemas/image2-initial-prompt-guidance.schema.json",
   "title": "Image2 initial prompt guidance",
   "type": "object",
   "additionalProperties": false,
@@ -21,7 +21,7 @@
     "locks"
   ],
   "properties": {
-    "format": { "const": "mingtu_image2_initial_prompt_guidance_v1" },
+    "format": { "const": "transparent_ai_apprentice_image2_initial_prompt_guidance_v1" },
     "version": { "const": "1.0.0" },
     "generatedAt": { "type": "string", "format": "date-time" },
     "mode": { "const": "initial_generation_guidance" },

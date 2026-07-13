@@ -1,4 +1,4 @@
-name: Package MingTu release
+name: Package AI Apprentice release
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
           "$hash  transparent-ai-apprentice-codex-plugin.zip" | Set-Content -Encoding ascii dist/SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: mingtu-ai-codex-plugin
+          name: ai-apprentice-codex-plugin
           path: |
             dist/transparent-ai-apprentice-codex-plugin.zip
             dist/SHA256SUMS.txt
@@ -46,5 +46,5 @@ jobs:
           dist/SHA256SUMS.txt
           --verify-tag
           --latest
-          --title "明徒 AI $env:GITHUB_REF_NAME"
+          --title "AI 学徒 $env:GITHUB_REF_NAME"
           --notes-file RELEASE_NOTES.md

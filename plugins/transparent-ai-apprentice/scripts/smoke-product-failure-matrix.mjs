@@ -55,7 +55,7 @@ function request(documentType, locator, sourceText, replacementText, id, operati
   };
   return {
     format: "transparent_ai_sketch_overlay_packet_v1",
-    modificationFormat: "mingtu_multimodal_surgical_mask_correction_v1",
+    modificationFormat: "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1",
     changeTargets: [target],
     surgicalEditContract: { changeOnlyInsideSelectedTargets: true },
     locks: { accepted: false, ruleEnabled: false, packagingGated: true }
@@ -93,7 +93,7 @@ officeCase("Office document type mismatch", request("word_docx", "paragraph:2", 
 
 function engineeringPacket({ objectId = "D04", value = 450, unit = "mm", protect = ["D08", "D10"], action = "set_dimension" } = {}) {
   return {
-    format: "mingtu_multimodal_surgical_mask_correction_v1",
+    format: "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1",
     surfaceKind: "engineering_native_object",
     target: { objectType: "尺寸标注", objectId, action, targetValue: value, unit },
     maskSemantics: { modify: [{ id: `change-${objectId}-${value}` }], protect: [], reference: [] },
@@ -141,7 +141,7 @@ scenario("mask", "missing modification mask", !validateMaskCorrectionPacket(empt
 const packagingImageSha256 = shaFile(packagingImage);
 function packagingRequest() {
   return {
-    format: "mingtu_aicad_request_v1",
+    format: "transparent_ai_apprentice_aicad_request_v1",
     handoffId: "failure-matrix",
     safety: { reviewOnly: true, accepted: false, ruleEnabled: false, packagingGated: true, productionApprovalClaimed: false },
     engineeringTruth: { imagePixelsUsedAsDimensions: false },

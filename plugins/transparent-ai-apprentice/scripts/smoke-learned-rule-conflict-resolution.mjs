@@ -46,7 +46,7 @@ check("Conflict resolution never mutates or silently drops learned rules", highI
 
 const failed = checks.filter((item) => !item.pass);
 console.log(JSON.stringify({
-  format: "mingtu_learned_rule_conflict_resolution_smoke_v1",
+  format: "transparent_ai_apprentice_learned_rule_conflict_resolution_smoke_v1",
   status: failed.length ? "failed" : "passed",
   passed: checks.length - failed.length,
   total: checks.length,

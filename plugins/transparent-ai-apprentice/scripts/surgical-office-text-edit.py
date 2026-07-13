@@ -327,8 +327,8 @@ def select_change_target(packet: dict, target_id: str) -> dict:
 
 def execute(request_path: Path, source: Path, output: Path, target_id: str = "") -> dict:
     packet = json.loads(request_path.read_text(encoding="utf-8-sig"))
-    if packet.get("modificationFormat") != "mingtu_multimodal_surgical_mask_correction_v1":
-        raise ValueError("Request is not a MingTu multimodal surgical mask correction packet.")
+    if packet.get("modificationFormat") != "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1":
+        raise ValueError("Request is not a AI Apprentice multimodal surgical mask correction packet.")
     if packet.get("surgicalEditContract", {}).get("changeOnlyInsideSelectedTargets") is not True:
         raise ValueError("Surgical edit contract is missing the selected-target-only lock.")
     target = select_change_target(packet, target_id)
@@ -357,7 +357,7 @@ def execute(request_path: Path, source: Path, output: Path, target_id: str = "")
         raise ValueError(f"Unexpected Office package changes: changed={changed_parts}, added={added_parts}, removed={removed_parts}")
 
     report = {
-        "format": "mingtu_surgical_office_text_edit_report_v1",
+        "format": "transparent_ai_apprentice_surgical_office_text_edit_report_v1",
         "status": "passed_targeted_edit",
         "requestPath": str(request_path.resolve()),
         "sourcePath": str(source.resolve()),
@@ -492,7 +492,7 @@ def main() -> int:
         if args.create_large_test_fixture:
             result = create_large_docx(Path(args.create_large_test_fixture), args.paragraph_count)
         elif args.create_test_fixtures:
-            result = {"format": "mingtu_surgical_office_test_fixtures_v1", **create_test_fixtures(Path(args.create_test_fixtures))}
+            result = {"format": "transparent_ai_apprentice_surgical_office_test_fixtures_v1", **create_test_fixtures(Path(args.create_test_fixtures))}
         else:
             if not args.request or not args.input or not args.output:
                 raise ValueError("--request, --input, and --output are required.")
@@ -500,7 +500,7 @@ def main() -> int:
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
     except Exception as error:  # noqa: BLE001
-        print(json.dumps({"format": "mingtu_surgical_office_text_edit_error_v1", "status": "blocked", "error": str(error)}, ensure_ascii=False, indent=2))
+        print(json.dumps({"format": "transparent_ai_apprentice_surgical_office_text_edit_error_v1", "status": "blocked", "error": str(error)}, ensure_ascii=False, indent=2))
         return 1
 
 

@@ -31,8 +31,8 @@ const requiredFiles = [
   "scripts/compile-human-communication-guidance.mjs",
   "scripts/check-human-communication-style.mjs",
   "scripts/smoke-human-communication.mjs",
-  "schemas/mingtu-aicad-request-v1.schema.json",
-  "schemas/mingtu-aicad-result-v1.schema.json",
+  "schemas/ai-apprentice-aicad-request-v1.schema.json",
+  "schemas/ai-apprentice-aicad-result-v1.schema.json",
   "scripts/aicad-handoff-adapter.mjs",
   "scripts/smoke-aicad-handoff-adapter.mjs",
   "skills/aicad-draw/SKILL.md",
@@ -694,7 +694,7 @@ const requiredFiles = [
   "scripts/smoke-existing-drawing-spatial-controlled-execution.mjs",
   "scripts/smoke-sketch-demonstration-implementation-audit.mjs",
   "scripts/smoke-transparent-overlay-browser-packet-spatial-flow.mjs",
-  "scripts/smoke-mingtu-mask-workbench-browser.mjs",
+  "scripts/smoke-ai-apprentice-mask-workbench-browser.mjs",
   "scripts/smoke-engineering-command-confirmation.mjs",
   "scripts/smoke-visual-engineering-target-confirmation.mjs",
   "scripts/create-engineering-voice-control-session.mjs",
@@ -4255,10 +4255,10 @@ const checks = [
   {
     name: "Human communication compiler and style checker are deterministic and callable",
     pass:
-      humanCommunicationGuidanceSchemaText.includes("mingtu_human_communication_guidance_v1") &&
+      humanCommunicationGuidanceSchemaText.includes("transparent_ai_apprentice_human_communication_guidance_v1") &&
       humanCommunicationGuidanceCompilerText.includes("compileHumanCommunicationGuidance") &&
       humanCommunicationStyleCheckText.includes("checkHumanCommunicationStyle") &&
-      humanCommunicationSmokeText.includes("mingtu_human_communication_smoke_v1") &&
+      humanCommunicationSmokeText.includes("transparent_ai_apprentice_human_communication_smoke_v1") &&
       packageText.includes("smoke:human-communication") &&
       mcpServerText.includes("compile_human_communication_guidance") &&
       mcpServerText.includes("check_human_communication_style"),
@@ -4353,13 +4353,13 @@ const checks = [
   {
     name: "Image2 initial prompt compiler works without the external library",
     pass:
-      image2InitialPromptCompilerText.includes("mingtu_image2_initial_prompt_guidance_v1") &&
+      image2InitialPromptCompilerText.includes("transparent_ai_apprentice_image2_initial_prompt_guidance_v1") &&
       image2InitialPromptCompilerText.includes("bundled_fallback") &&
       image2InitialPromptCompilerText.includes("existingCapabilityFirst: true") &&
       image2InitialPromptCompilerText.includes("sourceThreadId: \"019f09a9-90ab-76b2-aa1f-b7c9bddf93e8\"") &&
       image2InitialPromptCompilerText.includes("IMAGE2_PROMPT_LIBRARY") &&
       image2PromptLibrarySearchText.includes("prompt_library.sqlite") &&
-      image2PromptOptimizerSmokeText.includes("mingtu_image2_prompt_optimizer_smoke_v1") &&
+      image2PromptOptimizerSmokeText.includes("transparent_ai_apprentice_image2_prompt_optimizer_smoke_v1") &&
       packageText.includes("smoke:image2-prompt-optimizer"),
     evidence: "Bundled deterministic guidance is the baseline; the 125k-entry local SQLite library is optional enhancement"
   },
@@ -8799,8 +8799,8 @@ const checks = [
       maskWorkbenchStylesText.includes("@media (max-width: 860px)") &&
       maskWorkbenchStylesText.includes("prefers-reduced-motion") &&
       maskWorkbenchStylesText.includes("pointer: coarse") &&
-      maskWorkbenchScriptText.includes("mingtu_teacher_mask_correction_v1") &&
-      maskWorkbenchScriptText.includes("MingTuOverlay") &&
+      maskWorkbenchScriptText.includes("transparent_ai_apprentice_teacher_mask_correction_v1") &&
+      maskWorkbenchScriptText.includes("AIApprenticeOverlay") &&
       maskWorkbenchScriptText.includes("image2_local_edit_only") &&
       maskWorkbenchScriptText.includes("preserveUnmarkedRegions: true") &&
       transparentOverlayText.includes("downloadablePacketExport: true") &&
@@ -8852,8 +8852,8 @@ const checks = [
       engineeringSoftwareMaskScriptText.includes("surfaceKind:'engineering_native_object'") &&
       preciseContentMaskGeneratorText.includes("text-mask-workbench") &&
       preciseContentMaskGeneratorText.includes("engineering-software-mask-workbench") &&
-      preciseContentMaskGeneratorText.includes("mingtu_office_text_mask_workbench_result_v1") &&
-      preciseContentMaskGeneratorText.includes("mingtu_engineering_software_mask_workbench_result_v1") &&
+      preciseContentMaskGeneratorText.includes("transparent_ai_apprentice_office_text_mask_workbench_result_v1") &&
+      preciseContentMaskGeneratorText.includes("transparent_ai_apprentice_engineering_software_mask_workbench_result_v1") &&
       multimodalSurgicalMaskSchemaText.includes("preserveAllUnmarkedContent") &&
       multimodalSurgicalMaskValidationText.includes("Every mask preserves content outside its boundary") &&
       engineeringMaskDemoText.includes("engineering_dimension_change") &&

@@ -21,7 +21,7 @@ const check = (name, pass, evidence = "") => checks.push({ name, pass: Boolean(p
 
 function packet(surfaceKind = "office_native_text") {
   return {
-    format: "mingtu_multimodal_surgical_mask_correction_v1",
+    format: "transparent_ai_apprentice_multimodal_surgical_mask_correction_v1",
     surfaceKind,
     source: surfaceKind === "office_native_text" ? { nativeLocator: "paragraph:2" } : undefined,
     correction: surfaceKind === "office_native_text" ? { operation: "replace_text", originalText: "周五", replacementText: "周一" } : undefined,

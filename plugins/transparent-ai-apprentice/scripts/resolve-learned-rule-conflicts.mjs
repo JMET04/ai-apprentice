@@ -49,7 +49,7 @@ export function resolveLearnedRuleConflicts(input) {
 
   if (!enabledRules.length) {
     return {
-      format: "mingtu_learned_rule_conflict_resolution_v1",
+      format: "transparent_ai_apprentice_learned_rule_conflict_resolution_v1",
       status: "no_applicable_rule",
       context,
       decision: null,
@@ -69,7 +69,7 @@ export function resolveLearnedRuleConflicts(input) {
   if (actionGroups.size === 1) {
     const selected = [...enabledRules].sort((a, b) => b._score - a._score)[0];
     return {
-      format: "mingtu_learned_rule_conflict_resolution_v1",
+      format: "transparent_ai_apprentice_learned_rule_conflict_resolution_v1",
       status: enabledRules.length === 1 ? "single_rule_selected" : "compatible_rules_merged",
       context,
       decision: {
@@ -104,7 +104,7 @@ export function resolveLearnedRuleConflicts(input) {
   const reviewRequired = highImpact || confidence === "low";
 
   return {
-    format: "mingtu_learned_rule_conflict_resolution_v1",
+    format: "transparent_ai_apprentice_learned_rule_conflict_resolution_v1",
     status: reviewRequired && highImpact ? "blocked_high_impact_ambiguity" : resolvedByTeacherException ? "resolved_by_teacher_exception" : resolvedBySpecificity ? "resolved_by_context_specificity" : "reasoned_decision_with_visible_warning",
     context,
     decision: {

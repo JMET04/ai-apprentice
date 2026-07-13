@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://mingtu.local/schemas/packaging-design-session.schema.json",
+  "$id": "https://ai-apprentice.local/schemas/packaging-design-session.schema.json",
   "title": "AI Apprentice packaging design session",
   "type": "object",
   "required": ["format", "version", "id", "stage", "status", "requirements", "artifacts", "locks"],
   "properties": {
-    "format": { "const": "mingtu_packaging_design_session_v1" },
+    "format": { "const": "transparent_ai_apprentice_packaging_design_session_v1" },
     "version": { "type": "string" },
     "id": { "type": "string", "minLength": 1 },
     "stage": {

@@ -473,7 +473,7 @@ function inlineJson(value) {
 }
 
 const workbenchConfig = {
-  format: "mingtu_mask_workbench_config_v1",
+  format: "transparent_ai_apprentice_mask_workbench_config_v1",
   kitId,
   software,
   goal,
@@ -707,7 +707,7 @@ writeFileSync(readmePath, [
   "",
   "打开 `transparent-sketch-overlay.html` 后，可以在 Image2 样图、包装刀版图或工程截图上使用自由画笔、圈选、框选、箭头和文字进行纠错。支持颜色与粗细、撤销与重做、草稿恢复、缩放适配、蒙版显隐、无底图状态、只读回放和触控操作。",
   "",
-  "在右侧填写问题类型、影响步骤、空间关系、深度提示和老师意见，然后点击“提交纠错”。页面会导出 `mingtu_teacher_mask_correction_v1` / `transparent_ai_sketch_overlay_packet_v1` 兼容数据，可交给 Image2 做局部修改，也可继续进入空间意图解释与目标确认。",
+  "在右侧填写问题类型、影响步骤、空间关系、深度提示和老师意见，然后点击“提交纠错”。页面会导出 `transparent_ai_apprentice_teacher_mask_correction_v1` / `transparent_ai_sketch_overlay_packet_v1` 兼容数据，可交给 Image2 做局部修改，也可继续进入空间意图解释与目标确认。",
   "",
   "Image2 像素不是工程尺寸真值。所有重要细节都会进入 `transparent_ai_universal_detail_logic_contract_v1`；位置、方向、透视、深度、尺寸、材料与工艺必须绑定已确认的数据、约束或老师规则。缺少逻辑来源时，系统会停止执行并返回人工复核。",
   "",

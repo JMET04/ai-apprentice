@@ -1,7 +1,7 @@
 import {initAssistant} from '../shared/assistant-v2.js';
 
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
-const cfg=window.__MINGTU_OVERLAY_CONFIG__||{};
+const cfg=window.__AI_APPRENTICE_OVERLAY_CONFIG__||{};
 const state=$('#engineeringState');
 const submit=$('#submitEngineering');
 const back=$('#rollback');
@@ -176,7 +176,7 @@ back.onclick=()=>{
   $('#targetValue').focus();
 };
 
-globalThis.MingTuOverlay={
+globalThis.AIApprenticeOverlay={
   validate(){
     const targetValue=Number($('#targetValue').value);
     if(!Number.isFinite(targetValue)||targetValue<=0)return{valid:false,message:'请输入大于 0 的有效目标值'};
@@ -184,7 +184,7 @@ globalThis.MingTuOverlay={
     if(!previewReady||!reviewReady)return{valid:false,message:'请重新计算预览并进入老师审核步骤'};
     return{valid:true};
   },
-  packet(){return{format:'mingtu_multimodal_surgical_mask_correction_v1',surfaceKind:'engineering_native_selection',nativeSelection:{schema:'ai_apprentice_native_selection_v1',host:'engineering_software',documentId:cfg.documentId||'pack-12-structure-rev07',object:{id:'D04',type:'linear_dimension',value:420,unit:'mm',feature:'Body01/Sketch03',topologyRefs:['E06','E14'],protectedObjects:['D08','D10','other_entities','constraints']}},contextAction:{schema:'ai_apprentice_context_action_v1',action:$('#action').value,targetValue:Number($('#targetValue').value),unit:$('#unit').value,instruction:$('#instruction').value,preserveTopology:true,preserveConstraints:true},previewReady,submitted,activeTool,reviewOnly:true,accepted:false,ruleEnabled:false,packagingGated:true}}
+  packet(){return{format:'transparent_ai_apprentice_multimodal_surgical_mask_correction_v1',surfaceKind:'engineering_native_selection',nativeSelection:{schema:'ai_apprentice_native_selection_v1',host:'engineering_software',documentId:cfg.documentId||'pack-12-structure-rev07',object:{id:'D04',type:'linear_dimension',value:420,unit:'mm',feature:'Body01/Sketch03',topologyRefs:['E06','E14'],protectedObjects:['D08','D10','other_entities','constraints']}},contextAction:{schema:'ai_apprentice_context_action_v1',action:$('#action').value,targetValue:Number($('#targetValue').value),unit:$('#unit').value,instruction:$('#instruction').value,preserveTopology:true,preserveConstraints:true},previewReady,submitted,activeTool,reviewOnly:true,accepted:false,ruleEnabled:false,packagingGated:true}}
 };
 
 addEventListener('resize',draw);

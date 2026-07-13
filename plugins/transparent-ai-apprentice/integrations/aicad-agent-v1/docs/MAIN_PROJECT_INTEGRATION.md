@@ -2,7 +2,7 @@
 
 Use the existing main-project route; do not add a parallel workflow:
 
-`packaging-design-apprentice` → `mingtu_aicad_packaging_handoff_v1` → strict adapter preflight → AICAD offline compile → optional host gate → `mingtu_aicad_result_v1` → `record-cad-result` → teacher review.
+`packaging-design-apprentice` → `transparent_ai_apprentice_aicad_packaging_handoff_v1` → strict adapter preflight → AICAD offline compile → optional host gate → `transparent_ai_apprentice_aicad_result_v1` → `record-cad-result` → teacher review.
 
 ## Recommended merge
 

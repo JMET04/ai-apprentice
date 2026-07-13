@@ -76,12 +76,12 @@ try {
       page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
       page.on("pageerror", error => errors.push(error.message));
       await page.goto(pathToFileURL(result.outputPath).href, { waitUntil: "load" });
-      await page.waitForFunction(() => Boolean(globalThis.MingTuOverlay?.packet));
+      await page.waitForFunction(() => Boolean(globalThis.AIApprenticeOverlay?.packet));
       if (result.surface !== "packaging") {
         await page.locator("#selectionSurface").dispatchEvent("contextmenu", { clientX: 120, clientY: 160, button: 2 });
       }
       const inspected = await page.evaluate(() => {
-        const packet = globalThis.MingTuOverlay.packet();
+        const packet = globalThis.AIApprenticeOverlay.packet();
         const beacon = document.querySelector("#aiBeacon")?.getBoundingClientRect();
         const menu = document.querySelector("#contextMenu");
         return {
@@ -137,7 +137,7 @@ try {
           await page.click('.flow button[data-step="request"]');
           if (result.surface === "office") await page.fill("#instruction", "Use the revised cautious recommendation and preserve the selected paragraph style.");
           else await page.fill("#targetValue", "455");
-          const stale = await page.evaluate(() => ({ disabled: document.querySelector('[id^="submit"]').disabled, previewReady: globalThis.MingTuOverlay.packet().previewReady }));
+          const stale = await page.evaluate(() => ({ disabled: document.querySelector('[id^="submit"]').disabled, previewReady: globalThis.AIApprenticeOverlay.packet().previewReady }));
           check(`${result.surface} invalidates a stale preview when inputs change`, stale.disabled && !stale.previewReady, JSON.stringify(stale));
           await page.click("#generatePreview");
           await page.click("#toReview");

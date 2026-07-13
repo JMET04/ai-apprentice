@@ -1,4 +1,4 @@
-name: Verify MingTu plugin
+name: Verify AI Apprentice plugin
 
 on:
   push:

@@ -5,7 +5,7 @@ import { pathToFileURL } from "node:url";
 import { chromium } from "playwright";
 
 const pagePath = resolve("docs", "index.html");
-const output = join(resolve(".ta-smoke"), "mingtu-docs-page-smoke", String(Date.now()));
+const output = join(resolve(".ta-smoke"), "ai-apprentice-docs-page-smoke", String(Date.now()));
 mkdirSync(output, { recursive: true });
 process.env.TEMP = output;
 process.env.TMP = output;
@@ -53,5 +53,5 @@ try {
 }
 
 const failed = checks.filter((check) => !check.pass);
-console.log(JSON.stringify({ status: failed.length ? "failed" : "passed", smoke: "mingtu_docs_page_smoke_v1", output, checks }, null, 2));
+console.log(JSON.stringify({ status: failed.length ? "failed" : "passed", smoke: "transparent_ai_apprentice_docs_page_smoke_v1", output, checks }, null, 2));
 if (failed.length) process.exit(1);

@@ -1,7 +1,7 @@
 import {initAssistant} from '../shared/assistant-v2.js';
 
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
-const cfg=window.__MINGTU_OVERLAY_CONFIG__||{};
+const cfg=window.__AI_APPRENTICE_OVERLAY_CONFIG__||{};
 const canvas=$('#maskCanvas'),reference=$('#referenceCanvas'),stage=$('#stage');
 const context=canvas.getContext('2d'),referenceContext=reference.getContext('2d');
 const history=[];
@@ -261,13 +261,13 @@ $('#submitReview').addEventListener('ai-apprentice:submission-success',()=>{
   assistant.setState('waiting','等待老师审核');
 });
 
-globalThis.MingTuOverlay={
+globalThis.AIApprenticeOverlay={
   validate(){
     if(!strokes)return{valid:false,message:'请先在图纸上绘制修改范围'};
     if(!$('#teacherNote').value.trim())return{valid:false,message:'请先填写老师修改意见'};
     return{valid:true};
   },
-  packet(){return{format:'mingtu_multimodal_surgical_mask_correction_v1',surfaceKind:'packaging_image_mask',brand:'AI 学徒',reviewOnly:true,accepted:false,ruleEnabled:false,packagingGated:true,tool,maskDataUrl:canvas.toDataURL(),annotations:{modify:strokes?1:0,protect:1,reference:1},issueType:$('#issueType').value,workflowStep:$('#workflowStep').value,teacherNote:$('#teacherNote').value,config:cfg}}
+  packet(){return{format:'transparent_ai_apprentice_multimodal_surgical_mask_correction_v1',surfaceKind:'packaging_image_mask',brand:'AI 学徒',reviewOnly:true,accepted:false,ruleEnabled:false,packagingGated:true,tool,maskDataUrl:canvas.toDataURL(),annotations:{modify:strokes?1:0,protect:1,reference:1},issueType:$('#issueType').value,workflowStep:$('#workflowStep').value,teacherNote:$('#teacherNote').value,config:cfg}}
 };
 
 addEventListener('resize',resize);

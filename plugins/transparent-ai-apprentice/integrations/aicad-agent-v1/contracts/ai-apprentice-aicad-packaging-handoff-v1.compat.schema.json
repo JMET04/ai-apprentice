@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://mingtu.local/schemas/aicad-packaging-handoff.schema.json",
-  "title": "MingTu to AICAD packaging handoff",
+  "$id": "https://ai-apprentice.local/schemas/aicad-packaging-handoff.schema.json",
+  "title": "AI Apprentice to AICAD packaging handoff",
   "type": "object",
   "required": [
     "format",
@@ -16,7 +16,7 @@
   ],
   "properties": {
     "format": {
-      "const": "mingtu_aicad_packaging_handoff_v1"
+      "const": "transparent_ai_apprentice_aicad_packaging_handoff_v1"
     },
     "sessionId": {
       "type": "string",
