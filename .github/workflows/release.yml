@@ -24,11 +24,12 @@ jobs:
         run: npm run verify:plugin
       - name: Build verified plugin ZIP
         run: npm run package:codex-plugin
-      - name: Write release checksum
+      - name: Verify release checksum exists
         shell: powershell
         run: |
-          $hash = (Get-FileHash -Algorithm SHA256 dist/transparent-ai-apprentice-codex-plugin.zip).Hash.ToLowerInvariant()
-          "$hash  transparent-ai-apprentice-codex-plugin.zip" | Set-Content -Encoding ascii dist/SHA256SUMS.txt
+          if (-not (Test-Path -LiteralPath dist/SHA256SUMS.txt)) {
+            throw "Packaging did not create dist/SHA256SUMS.txt"
+          }
       - uses: actions/upload-artifact@v4
         with:
           name: ai-apprentice-codex-plugin

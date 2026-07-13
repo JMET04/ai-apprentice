@@ -4,6 +4,20 @@
 
 $ErrorActionPreference = "Stop"
 
+function Get-Sha256Hex([string]$Path) {
+  $Stream = [IO.File]::OpenRead($Path)
+  try {
+    $Hasher = [Security.Cryptography.SHA256]::Create()
+    try {
+      return -join ($Hasher.ComputeHash($Stream) | ForEach-Object { $_.ToString("x2") })
+    } finally {
+      $Hasher.Dispose()
+    }
+  } finally {
+    $Stream.Dispose()
+  }
+}
+
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 $PluginName = "transparent-ai-apprentice"
 $SourcePlugin = Join-Path $RepoRoot "plugins\$PluginName"
@@ -350,7 +364,7 @@ if ($BuildArtifacts.Count -gt 0) {
 
 $FileCount = (Get-ChildItem -LiteralPath $VerifyRoot -Recurse -Force -File).Count
 $PackageInfo = Get-Item -LiteralPath $OutputPath
-$PackageHash = (Get-FileHash -LiteralPath $PackageInfo.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+$PackageHash = Get-Sha256Hex $PackageInfo.FullName
 $ChecksumPath = Join-Path $PackageInfo.DirectoryName "SHA256SUMS.txt"
 $ChecksumLine = "$PackageHash  $($PackageInfo.Name)"
 Set-Content -LiteralPath $ChecksumPath -Value $ChecksumLine -Encoding ascii
